@@ -1,8 +1,8 @@
-import * as pino from 'packages/logger/loggers/pino';
+import * as pino from 'pino';
 import { merge } from '@uzert/helpers';
 import Config from '@uzert/config';
-import * as serializers from '../serializers/serializers';
-import { ILoggerMetadata } from '../types';
+import * as serializers from '../serializers/http-serializers';
+import { ILoggerMetadata } from '../interfaces';
 
 export const createPino = (options: pino.LoggerOptions = {}, metadata: ILoggerMetadata = {}): pino.Logger => {
   const defaultOptions = merge(
@@ -29,7 +29,7 @@ export const createPino = (options: pino.LoggerOptions = {}, metadata: ILoggerMe
     logger = pino(defaultOptions, pino.extreme());
     logger.info('Pino extreme mode is enabled');
 
-    setInterval(function() {
+    setInterval(function () {
       logger.flush();
     }, Config.get('logger:pino:extremeMode:tick', 10000)).unref();
 
