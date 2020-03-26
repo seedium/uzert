@@ -3,7 +3,7 @@ import { IProvider } from '@uzert/core';
 import Config from '@uzert/config';
 import Logger from '@uzert/logger';
 // errors
-import ServerNotBootedError from '../errors/ServerNotBootedError';
+import { ServerNotBootedError } from '../errors';
 
 let startDate: number;
 

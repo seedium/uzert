@@ -1,6 +1,6 @@
 import Logger from '@uzert/logger';
 
-export default class ServerNotBootedError extends Error {
+export class ServerNotBootedError extends Error {
   constructor() {
     Logger.pino.error(new Error(`Server not booted. Please use "BootService" for server initialization`));
 
