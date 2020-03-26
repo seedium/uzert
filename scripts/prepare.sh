@@ -7,8 +7,8 @@ npm run build &>/dev/null
 npm run test:docker:up
 
 # initialize mongo replica set
-docker exec mongo0 mongo --eval "rs.initiate(); rs.add('mongo1'); rs.add('mongo2')"
-docker exec mongo0 mongo --eval "conf = rs.conf(); conf.members[0].priority = 2; rs.reconfig(conf)"
+docker exec test-mongo0 mongo --eval "rs.initiate(); rs.add('mongo1'); rs.add('mongo2')"
+docker exec test-mongo0 mongo --eval "conf = rs.conf(); conf.members[0].priority = 2; rs.reconfig(conf)"
 
 # Check mongo status
-docker exec mongo0 mongo --eval "rs.status()"
+docker exec test-mongo0 mongo --eval "rs.status()"
