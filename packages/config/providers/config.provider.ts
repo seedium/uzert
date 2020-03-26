@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as glob from 'glob';
 import { IProvider } from '@uzert/core';
 import { prop } from '@uzert/helpers';
-import { IStore, IConfigBootSpec, IConfigOptions } from '../interfaces/Config.interface';
+import { IStore, IConfigBootSpec, IConfigOptions } from '../interfaces';
 
 export class ConfigProvider implements IProvider {
   public stores: IStore = {};
@@ -15,7 +15,7 @@ export class ConfigProvider implements IProvider {
     const configs = await this.loadConfigs(basePath, pattern, useAbsolute);
 
     await Promise.all(
-      Object.keys(configs).map(async configKey => {
+      Object.keys(configs).map(async (configKey) => {
         const config = await configs[configKey];
         this.stores[configKey] = config.default;
       }),

@@ -11,5 +11,3 @@ export interface IConfigOptions {
   pattern?: string;
   useAbsolute?: boolean;
 }
-
-export { default } from '../providers/Config';

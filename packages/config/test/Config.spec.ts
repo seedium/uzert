@@ -1,9 +1,8 @@
 import * as path from 'path';
 import { expect } from 'chai';
-import Config from '../src/index';
+import Config from '../providers/config.provider';
 
 describe('Config', async () => {
-
   afterEach(() => {
     Config.unBoot();
   });
@@ -76,7 +75,5 @@ describe('Config', async () => {
     it('should get nested string key', () => {
       expect(Config.get('testCustom:nested:unknown')).is.undefined;
     });
-
   });
-
 });
