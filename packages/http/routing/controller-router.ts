@@ -1,13 +1,8 @@
-import {
-  HTTPMethod,
-  ControllerDefinitionOrHandler,
-  IControllerRouter,
-  IControllerDefinition,
-} from '../interfaces/ControllerRouter.interface';
-import Controller from '../services/Controller';
-import Middleware from '../services/Middleware';
-// services
+// core providers
 import Validation, { IRequestSchema, IResponseSchema, RouteSchema } from '@uzert/validation';
+// internal
+import { HTTPMethod, ControllerDefinitionOrHandler, IControllerRouter, IControllerDefinition } from '../interfaces';
+import { Controller, Middleware } from '../services';
 
 export class ControllerRouter implements IControllerRouter {
   protected router: any;

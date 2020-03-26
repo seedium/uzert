@@ -1,10 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Handler, HighLevelHandler } from '../interfaces/Route.interface';
-import ControllerRouter from './ControllerRouter';
-import Middleware from '../services/Middleware';
+import { Handler, HighLevelHandler } from '../interfaces';
+import { ControllerRouter } from './controller-router';
+import { Middleware } from '../services';
 // errors
-import RoutesNotFoundError from '../errors/RoutesNotFoundError';
+import { RoutesNotFoundError } from '../errors';
 
 export class Route {
   public static routes: Route[] = [];

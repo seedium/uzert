@@ -1,4 +1,4 @@
-export default class RoutesNotFoundError extends Error {
+export class RoutesNotFoundError extends Error {
   constructor() {
     super('Folder with routes not found. Please create folder "routes" with file "web.ts" inside in your "src" folder');
 
