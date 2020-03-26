@@ -1,6 +1,4 @@
-export { Ajv, ErrorObject, KeywordDefinition } from 'ajv';
-import { KeywordDefinition } from 'ajv';
-// copy from fastify reference
+import { JSONSchema } from './index';
 
 export interface IExtendSchema {
   extends?: {

@@ -1,4 +1,4 @@
-export type JSONSchema = any;
+import { KeywordDefinition } from 'ajv';
 
 export interface IKeywordDefinitions {
   [name: string]: KeywordDefinition;

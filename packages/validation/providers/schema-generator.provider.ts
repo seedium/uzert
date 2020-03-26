@@ -3,18 +3,14 @@ import * as YAML from 'yaml';
 import * as fs from 'fs';
 import { getAbsoluteFSPath } from 'swagger-ui-dist';
 // types
-import {
-  ISwaggerRouteInput,
-  ISwaggerRoute,
-  ISharedRefName,
-  ISwaggerOptions,
-  ISwaggerObj,
-} from '../index';
+import { ISwaggerRouteInput, ISwaggerRoute, ISharedRefName, ISwaggerOptions, ISwaggerObj } from '../interfaces';
 // errors
-import SchemasGeneratorInvalidDataError from '../errors/SchemaGeneratorInvalidDataError';
-import SchemaNotFoundError from '../errors/SchemaNotFoundError';
-import SwaggerNoOptionsError from '../errors/SwaggerOptionsNotSetError';
-import SchemaGeneratorMergeError from '../errors/SchemaGeneratorMerge';
+import {
+  SchemasGeneratorInvalidDataError,
+  SchemaNotFoundError,
+  SwaggerNoOptionsError,
+  SchemaGeneratorMergeError,
+} from '../errors';
 
 export default class SchemaGeneratorProvider {
   public static docFileName: string = 'doc.yaml';
@@ -27,10 +23,7 @@ export default class SchemaGeneratorProvider {
   protected _removeProperties: string[];
   protected _prefix?: string;
 
-  constructor(
-    ajv: any,
-    removeProperties: string[] = ['$id', 'additionalProperties', 'objectId'],
-  ) {
+  constructor(ajv: any, removeProperties: string[] = ['$id', 'additionalProperties', 'objectId']) {
     this._ajv = ajv;
     this._routeData = [];
     this._sharedRefNames = [];
@@ -70,9 +63,7 @@ export default class SchemaGeneratorProvider {
   }
 
   public addSharedSchema(data: ISharedRefName) {
-    const isExists =
-      this._sharedRefNames.findIndex((f) => f.schemaRef === data.schemaRef) ===
-      -1;
+    const isExists = this._sharedRefNames.findIndex((f) => f.schemaRef === data.schemaRef) === -1;
 
     if (isExists) {
       this._sharedRefNames.push(data);
@@ -89,9 +80,7 @@ export default class SchemaGeneratorProvider {
       return {
         in: type,
         name: property,
-        required:
-          data.required &&
-          data.required.findIndex((f: string) => f === property) !== -1,
+        required: data.required && data.required.findIndex((f: string) => f === property) !== -1,
         schema: data.properties[property],
       };
     });
@@ -105,9 +94,7 @@ export default class SchemaGeneratorProvider {
     const swaggerObj: ISwaggerObj = {
       ...this._swaggerOptions,
       paths: {},
-      components: this._swaggerOptions.components
-        ? this._swaggerOptions.components
-        : {},
+      components: this._swaggerOptions.components ? this._swaggerOptions.components : {},
     };
 
     this._routeData.forEach((item) => {
@@ -168,9 +155,7 @@ export default class SchemaGeneratorProvider {
           }
 
           const contentType =
-            Array.isArray(schema.consumes) && schema.consumes.lenth > 0
-              ? schema.consumes[0]
-              : 'application/json';
+            Array.isArray(schema.consumes) && schema.consumes.lenth > 0 ? schema.consumes[0] : 'application/json';
 
           methodLevel.requestBody = {
             content: {
@@ -182,15 +167,11 @@ export default class SchemaGeneratorProvider {
         }
 
         if (schema.querystring) {
-          methodLevel.parameters.push(
-            ...this.getParameters(schema.querystring, 'query'),
-          );
+          methodLevel.parameters.push(...this.getParameters(schema.querystring, 'query'));
         }
 
         if (schema.headers) {
-          methodLevel.parameters.push(
-            ...this.getParameters(schema.headers, 'header'),
-          );
+          methodLevel.parameters.push(...this.getParameters(schema.headers, 'header'));
         }
 
         methodLevel.responses = {};
@@ -206,19 +187,14 @@ export default class SchemaGeneratorProvider {
 
           let schemaResponse: any = {};
 
-          if (
-            schema.response[key].extends &&
-            schema.response[key].extends.listSchema
-          ) {
+          if (schema.response[key].extends && schema.response[key].extends.listSchema) {
             schemaResponse = schema.response[key].extends.listSchema;
 
             schemaResponse.properties.data.items = {
               oneOf: this.extendToSchemaData(schema.response[key].extends),
             };
           } else if (schema.response[key].extends) {
-            schemaResponse.oneOf = this.extendToSchemaData(
-              schema.response[key].extends,
-            );
+            schemaResponse.oneOf = this.extendToSchemaData(schema.response[key].extends);
           } else {
             schemaResponse = schema.response[key];
           }
@@ -272,10 +248,7 @@ export default class SchemaGeneratorProvider {
 
     const indexFile = fs.readFileSync(indexFilePath).toString();
 
-    fs.writeFileSync(
-      indexFilePath,
-      indexFile.replace(/(\.\/[^"']+\/)|(\.\/)/g, replacement),
-    );
+    fs.writeFileSync(indexFilePath, indexFile.replace(/(\.\/[^"']+\/)|(\.\/)/g, replacement));
   }
 
   public async generateSwaggerDoc() {
@@ -289,10 +262,7 @@ export default class SchemaGeneratorProvider {
       fs
         .readFileSync(indexFilePath)
         .toString()
-        .replace(
-          /url: ".*"/,
-          `url: "${this._prefix || ''}/${SchemaGeneratorProvider.docFileName}"`,
-        ),
+        .replace(/url: ".*"/, `url: "${this._prefix || ''}/${SchemaGeneratorProvider.docFileName}"`),
     );
   }
 
@@ -337,9 +307,7 @@ export default class SchemaGeneratorProvider {
 
   protected setSwaggerRef(key: string, obj: any) {
     if (key === '$ref') {
-      const sharedRefName = this._sharedRefNames.find(
-        (f) => f.schemaRef === obj[key],
-      );
+      const sharedRefName = this._sharedRefNames.find((f) => f.schemaRef === obj[key]);
 
       if (!sharedRefName) {
         throw new SchemaNotFoundError(obj[key]);

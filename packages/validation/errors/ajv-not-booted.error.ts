@@ -1,4 +1,4 @@
-export default class AjvNotBootedError extends Error {
+export class AjvNotBootedError extends Error {
   constructor() {
     super('Ajv not booted. Please use your "BootService" for using validation');
 

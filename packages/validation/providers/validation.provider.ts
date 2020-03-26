@@ -4,19 +4,19 @@ import * as Ajv from 'ajv';
 import { IProvider } from '@uzert/core';
 import { Request, Response } from '@uzert/app';
 import { isPlainObject, isString } from '@uzert/helpers';
+import SchemasGenerator from './schema-generator.provider';
 // errors
-import AjvNotBootedError from '../errors/AjvNotBootedError';
-import UnknownModelNameError from '../errors/UnknownModelNameError';
-import SchemaNotFoundError from '../errors/SchemaNotFoundError';
-// utils
 import {
-  capitalize,
-  keywords as customKeywords,
-  validateRequest,
-  validateResponse,
-} from '../utils';
-import SchemasGenerator from './SchemaGenerator';
-import SchemasGeneratorNotBootedError from '../errors/SchemaGeneratorNotBootedError';
+  AjvNotBootedError,
+  UnknownModelNameError,
+  SchemaNotFoundError,
+  SchemasGeneratorNotBootedError,
+} from '../errors';
+// utils
+import { capitalize, keywords as customKeywords, validateRequest, validateResponse } from '../utils';
+import * as constants from '../constants';
+// interfaces
+import { IKeywordDefinitions, IRefResult, ISchemaDefinitions } from '../interfaces';
 
 export class ValidationProvider implements IProvider {
   public sharedKey = 'shared';
@@ -92,7 +92,7 @@ export class ValidationProvider implements IProvider {
       ...schema,
     };
 
-    if (scope.toLowerCase() !== controllers) {
+    if (scope.toLowerCase() !== constants.controllers) {
       this.schemasGenerator.addSharedSchema({
         name: key,
         schemaRef,
@@ -156,15 +156,13 @@ export class ValidationProvider implements IProvider {
     return this.getSchema(this.sharedKey, key);
   }
 
+  // @ts-ignore
   public validateRequest = async (req: Request, res: Response) => {
     return validateRequest(this.ajv, req, res);
   };
 
-  public validateResponse = async (
-    req: Request,
-    res: Response,
-    payload: any,
-  ) => {
+  // @ts-ignore
+  public validateResponse = async (req: Request, res: Response, payload: any) => {
     return validateResponse(this.ajv, req, res, payload);
   };
 
@@ -189,10 +187,7 @@ export class ValidationProvider implements IProvider {
     }
 
     for (const keyword in keywordsToAdd) {
-      if (
-        keywordsToAdd.hasOwnProperty(keyword) &&
-        !this.ajv.getKeyword(keyword)
-      ) {
+      if (keywordsToAdd.hasOwnProperty(keyword) && !this.ajv.getKeyword(keyword)) {
         this.ajv.addKeyword(keyword, keywordsToAdd[keyword]);
       }
     }

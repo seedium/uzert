@@ -1,4 +1,4 @@
-export default class SwaggerNoOptionsError extends Error {
+export class SwaggerNoOptionsError extends Error {
   constructor() {
     super('Swagger options not set');
 

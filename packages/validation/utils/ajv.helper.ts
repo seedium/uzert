@@ -1,11 +1,12 @@
 import { Ajv, KeywordDefinition, ValidateFunction } from 'ajv';
 import { isPlainObject } from '@uzert/helpers';
 import { Request, Response } from '@uzert/app';
+// helpers
+import { getStringFromObjectId, getObjectId } from './mongo.helper';
 // types
-import { IRequestSchema, IResponseSchema } from './index';
+import { IRequestSchema, IResponseSchema } from '../interfaces';
 // errors
-import SchemaError from './errors/SchemaError';
-import ValidationError from './errors/ValidationError';
+import { SchemaInvalidError, ValidationError } from '../errors';
 
 const objectIdKeyword: KeywordDefinition = {
   validate(
@@ -32,6 +33,7 @@ export const keywords = {
   objectId: objectIdKeyword,
 };
 
+// @ts-ignore
 export const validateRequest = (ajv: Ajv, req: Request, res: Response) => {
   const { schemas } = res.context.config;
 
@@ -94,7 +96,7 @@ export const validateRequest = (ajv: Ajv, req: Request, res: Response) => {
 
 const checkDiscriminatorKey = (key: string, payload: any) => {
   if (!payload[key]) {
-    throw new SchemaError(`Key "${key}" doesn't exists in extends schema`);
+    throw new SchemaInvalidError(`Key "${key}" doesn't exists in extends schema`);
   }
 };
 
@@ -104,7 +106,7 @@ const getAvailableSchema = (schemas: any, key: string, payload: any, fallback?: 
   } else if (fallback) {
     return fallback;
   } else {
-    throw new SchemaError(`Schema is not available for key "${key}" and fallback didn't provided`);
+    throw new SchemaInvalidError(`Schema is not available for key "${key}" and fallback didn't provided`);
   }
 };
 
@@ -116,6 +118,7 @@ const getCompiler = (ajv: Ajv, schema: any): ValidateFunction => {
   }
 };
 
+// @ts-ignore
 export const validateResponse = (ajv: Ajv, req: Request, res: Response, payload: any): any => {
   const { schemas } = res.context.config;
 
@@ -134,11 +137,11 @@ export const validateResponse = (ajv: Ajv, req: Request, res: Response, payload:
 
     if (schema.extends) {
       if (!schema.extends.key) {
-        throw new SchemaError('Please provide key in extends schema for schema recognition');
+        throw new SchemaInvalidError('Please provide key in extends schema for schema recognition');
       }
 
       if (!schema.extends.schemas || !isPlainObject(schema.extends.schemas)) {
-        throw new SchemaError('Provide schemas based on key');
+        throw new SchemaInvalidError('Provide schemas based on key');
       }
 
       if (schema.extends.listSchema) {

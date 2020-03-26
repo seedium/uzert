@@ -1,4 +1,4 @@
-export default class SchemaInvalidError extends Error {
+export class SchemaInvalidError extends Error {
   constructor(message: string) {
     super(message);
 

@@ -1,12 +1,10 @@
-import { controllers, RouteSchema } from '../index';
+import { controllers } from '../constants';
+import { RouteSchema } from '../interfaces';
+import Validation from '../providers/validation.provider';
 
 export const schema = (routeSchema: RouteSchema) => {
   return (target: any, propertyKey: string) => {
-    validation.addSchema(
-      controllers,
-      `${target.name}${propertyKey}`,
-      routeSchema,
-    );
+    Validation.addSchema(controllers, `${target.name}${propertyKey}`, routeSchema);
 
     return target;
   };

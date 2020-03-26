@@ -1,4 +1,4 @@
-export default class SchemaGeneratorMergeError extends Error {
+export class SchemaGeneratorMergeError extends Error {
   constructor() {
     super('Support only $ref source');
 

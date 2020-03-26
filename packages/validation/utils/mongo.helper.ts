@@ -1,7 +1,7 @@
 import { ObjectId } from 'bson';
 import { isPlainObject } from '@uzert/helpers';
 
-const getObjectId = (dataOrId: any): ObjectId | false => {
+export const getObjectId = (dataOrId: any): ObjectId | false => {
   if (isPlainObject(dataOrId)) {
     if (dataOrId._id) {
       dataOrId = dataOrId._id;
@@ -21,7 +21,7 @@ const getObjectId = (dataOrId: any): ObjectId | false => {
   return new ObjectId(dataOrId);
 };
 
-const getStringFromObjectId = (dataOrId: any): string | false => {
+export const getStringFromObjectId = (dataOrId: any): string | false => {
   if (isPlainObject(dataOrId)) {
     if (dataOrId._id) {
       dataOrId._id = getStringFromObjectId(dataOrId._id);

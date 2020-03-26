@@ -1,6 +1,6 @@
 import { ErrorObject } from 'ajv';
 
-export default class ValidationError extends Error {
+export class ValidationError extends Error {
   public validation: ErrorObject[] = [];
 
   constructor(message?: string, errors: ErrorObject[] = []) {

@@ -1,4 +1,4 @@
-export default class SchemasGeneratorInvalidDataError extends Error {
+export class SchemasGeneratorInvalidDataError extends Error {
   constructor() {
     super('Invalid Data');
 

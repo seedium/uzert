@@ -1,4 +1,4 @@
-export default class AppAlreadyStartedError extends Error {
+export class AppAlreadyStartedError extends Error {
   constructor() {
     super('App already started. Please boot your "Server" provider it last');
 

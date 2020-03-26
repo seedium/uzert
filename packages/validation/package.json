@@ -21,5 +21,9 @@
     "fastify-static": "^2.5.1",
     "swagger-ui-dist": "^3.24.3",
     "yaml": "^1.7.2"
+  },
+  "devDependencies": {
+    "bson": "^4.0.4",
+    "swagger-parser": "^9.0.1"
   }
 }

@@ -1,20 +1,15 @@
 import { IApplication } from '@uzert/app';
-import Validation from '../providers/validation';
 import * as fp from 'fastify-plugin';
 import * as fastifyStatic from 'fastify-static';
-import { IPluginSchemaGeneratorOptions, ISwaggerOptions } from '../index';
+import Validation from '../providers/validation.provider';
+import { IPluginSchemaGeneratorOptions, ISwaggerOptions } from '../interfaces';
 
-export default fp(function(
-  fastify: IApplication,
-  opts: IPluginSchemaGeneratorOptions,
-  done: any,
-) {
+export default fp(function (fastify: IApplication, opts: IPluginSchemaGeneratorOptions, done: any) {
   if (opts.exposeRoute) {
     let routePrefix = '/';
 
     if (opts.routePrefix) {
-      routePrefix =
-        opts.routePrefix[0] !== '/' ? `/${opts.routePrefix}` : opts.routePrefix;
+      routePrefix = opts.routePrefix[0] !== '/' ? `/${opts.routePrefix}` : opts.routePrefix;
     }
 
     fastify.register(fastifyStatic, {
