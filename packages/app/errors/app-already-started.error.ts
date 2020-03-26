@@ -1,7 +1,7 @@
-import AppInternalError from './AppError';
 import Logger from '@uzert/logger';
+import { AppInternalError } from './app-internal.error';
 
-export default class AppAlreadyStartedError extends AppInternalError {
+export class AppAlreadyStartedError extends AppInternalError {
   constructor() {
     Logger.pino.error(`App already started. Please change your method invokes`);
 

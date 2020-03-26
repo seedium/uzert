@@ -1,6 +1,6 @@
-import HttpKernel from './HttpKernel';
+import { HttpKernel } from './http-kernel';
 
-export default class DefaultHttpKernel extends HttpKernel {
+export class DefaultHttpKernel extends HttpKernel {
   public plugins = [];
   public middlewares = [];
 }

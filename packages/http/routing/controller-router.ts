@@ -1,10 +1,15 @@
-import { HTTPMethod, ControllerDefinitionOrHandler, IControllerRouter, IControllerDefinition } from '../interfaces/ControllerRouter.interface';
+import {
+  HTTPMethod,
+  ControllerDefinitionOrHandler,
+  IControllerRouter,
+  IControllerDefinition,
+} from '../interfaces/ControllerRouter.interface';
 import Controller from '../services/Controller';
 import Middleware from '../services/Middleware';
 // services
 import Validation, { IRequestSchema, IResponseSchema, RouteSchema } from '@uzert/validation';
 
-export default class ControllerRouter implements IControllerRouter {
+export class ControllerRouter implements IControllerRouter {
   protected router: any;
   protected middlewares: any[];
   protected prefix: string = '';
@@ -78,7 +83,7 @@ export default class ControllerRouter implements IControllerRouter {
     } else if (typeof controllerDefinitionOrHandler === 'object' && controllerDefinition) {
       // TODO add type for middleware definition
       const promises = controllerDefinitionOrHandler.map((middlewareDefinition: any) => {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
           if (typeof middlewareDefinition === 'function') {
             return resolve(middlewareDefinition);
           } else if (Array.isArray(middlewareDefinition)) {

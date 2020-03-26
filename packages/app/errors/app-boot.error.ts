@@ -1,7 +1,7 @@
-import AppInternalError from './AppError';
+import { AppInternalError } from './app-internal.error';
 import Logger from '@uzert/logger';
 
-export default class AppBootError extends AppInternalError {
+export class AppBootError extends AppInternalError {
   constructor() {
     Logger.pino.error(`App not loaded. Please use "BootService" for app initialization`);
 

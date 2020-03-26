@@ -1,9 +1,6 @@
 import { IncomingMessage, Server, ServerResponse } from 'http';
-import { Request, Response } from '../Application/Application.interface';
-import {
-  Plugin as FastifyPlugin,
-  FastifyInstance as Application,
-} from 'fastify';
+import { Request, Response } from '../interfaces';
+import { Plugin as FastifyPlugin } from 'fastify';
 
 export type Plugin = FastifyPlugin<
   Server,
@@ -12,7 +9,7 @@ export type Plugin = FastifyPlugin<
   {
     [name: string]: any;
   }
-  >;
+>;
 
 export interface IPluginKernel {
   plugin: Plugin;

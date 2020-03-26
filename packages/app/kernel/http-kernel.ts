@@ -1,7 +1,7 @@
-import { Request, Response, IPluginKernel, IHttpKernel } from '../index';
+import { Request, Response, IPluginKernel, IHttpKernel } from '@uzert/app';
 import Logger from '@uzert/logger';
 
-export default abstract class HttpKernel implements IHttpKernel {
+export abstract class HttpKernel implements IHttpKernel {
   public abstract plugins: IPluginKernel[] = [];
   public abstract middlewares: string[] = [];
 

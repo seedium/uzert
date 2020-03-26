@@ -3,7 +3,7 @@ import { Logger as PinoLogger } from 'pino';
 import { ILoggerMetadata, ILoggerOptions } from '../interfaces';
 import { createPino } from '../loggers';
 
-export class LoggerProvider implements IProvider {
+export class Logger implements IProvider {
   protected _pino?: PinoLogger;
 
   get pino() {
@@ -29,4 +29,4 @@ export class LoggerProvider implements IProvider {
   }
 }
 
-export default new LoggerProvider();
+export default new Logger();

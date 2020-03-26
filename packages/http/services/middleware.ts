@@ -1,6 +1,6 @@
 import { IMiddleware } from '../index';
 
-export default abstract class Middleware implements IMiddleware {
+export abstract class Middleware implements IMiddleware {
   public static async loadMiddleware(middlewarePath: string, params?: any) {
     if (!middlewarePath) {
       throw new Error('Path to middlewarePath are empty');

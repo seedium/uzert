@@ -1,6 +1,6 @@
 import { IControllerDefinition } from '../interfaces';
 
-export default class Controller {
+export class Controller {
   public static async loadController(controller: string): Promise<IControllerDefinition> {
     const [controllerPath, controllerMethod] = controller.split('@');
 

@@ -6,11 +6,11 @@ import Middleware from '../services/Middleware';
 // errors
 import RoutesNotFoundError from '../errors/RoutesNotFoundError';
 
-class Route {
+export class Route {
   public static routes: Route[] = [];
 
   public static namespace(namespace: string) {
-    const route = Route.routes.find(routeInstance => {
+    const route = Route.routes.find((routeInstance) => {
       return routeInstance.namespace === namespace;
     });
 
@@ -34,7 +34,7 @@ class Route {
     await import('routes/web');
 
     Route.routes.forEach((plugin: Route) => {
-      plugin.getRegisteredRouters().forEach(router => {
+      plugin.getRegisteredRouters().forEach((router) => {
         app.register(router, {
           prefix: plugin.pref,
         });
@@ -82,7 +82,7 @@ class Route {
 
   public middleware(middlewares: any[]) {
     if (middlewares.length) {
-      middlewares.forEach(async middleware => {
+      middlewares.forEach(async (middleware) => {
         if (typeof middleware === 'string') {
           this.middlewares.push(await Middleware.loadMiddleware(middleware));
         } else {
@@ -104,5 +104,3 @@ class Route {
     return this.handlers;
   }
 }
-
-export default Route;

@@ -1,26 +1,24 @@
 import * as fastify from 'fastify';
 import { v4 as uuidv4 } from 'uuid';
 import * as qs from 'qs';
-import HttpKernel from '../../kernel/HttpKernel';
-import DefaultHttpKernel from '../../kernel/DefaultHttpKernel';
-// types
 import { IncomingMessage } from 'http';
-import { IPluginKernel, IApplication } from '../index';
 // core providers
 import { IProvider } from '@uzert/core';
 import Logger from '@uzert/logger';
 import Config from '@uzert/config';
 import { Route, Middleware } from '@uzert/http';
+import { IPluginKernel } from '../interfaces';
+import { HttpKernel, DefaultHttpKernel } from '../kernel';
 // errors
-import AppBootErrorError from '../../errors/AppBootError';
+import { AppBootError } from '../errors';
 
 class FastifyApplicationProvider implements IProvider {
   // Fastify instance
-  protected _app?: IApplication;
+  protected _app?: fastify.FastifyInstance;
 
-  get app(): IApplication {
+  get app(): fastify.FastifyInstance {
     if (!this._app) {
-      throw new AppBootErrorError();
+      throw new AppBootError();
     }
 
     return this._app;
@@ -28,7 +26,7 @@ class FastifyApplicationProvider implements IProvider {
 
   get isReady(): boolean {
     if (!this._app) {
-      throw new AppBootErrorError();
+      throw new AppBootError();
     }
 
     return !!this._app.isReady;
@@ -72,9 +70,9 @@ class FastifyApplicationProvider implements IProvider {
     }
   }
 
-  public async run(): Promise<IApplication> {
+  public async run(): Promise<fastify.FastifyInstance> {
     if (!this._app) {
-      throw new AppBootErrorError();
+      throw new AppBootError();
     }
 
     if (this._app.isReady) {
@@ -91,7 +89,7 @@ class FastifyApplicationProvider implements IProvider {
     const startTime = new Date().getTime();
 
     if (!this._app) {
-      throw new AppBootErrorError();
+      throw new AppBootError();
     }
 
     // init users plugins
@@ -112,7 +110,7 @@ class FastifyApplicationProvider implements IProvider {
     const startTime = new Date().getTime();
 
     if (!this._app) {
-      throw new AppBootErrorError();
+      throw new AppBootError();
     }
 
     await Route.initRoutes(this._app);
@@ -122,7 +120,7 @@ class FastifyApplicationProvider implements IProvider {
 
   protected async applyMiddleware(middleware: string) {
     if (!this._app) {
-      throw new AppBootErrorError();
+      throw new AppBootError();
     }
 
     this._app.use(await Middleware.loadMiddleware(middleware));
@@ -130,7 +128,7 @@ class FastifyApplicationProvider implements IProvider {
 
   protected applyPlugin(plugin: IPluginKernel) {
     if (!this._app) {
-      throw new AppBootErrorError();
+      throw new AppBootError();
     }
 
     this._app.register(plugin.plugin, plugin.properties);
