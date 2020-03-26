@@ -5,7 +5,7 @@ import Config from '@uzert/config';
 import Logger from '@uzert/logger';
 import Validation, { ErrorObject } from '@uzert/validation';
 import { isPlainObject, merge } from '@uzert/helpers';
-import Bootstrap from '../providers/bootstrap';
+import Bootstrap from '../providers/model-bootstrap.provider';
 // types
 import {
   IRefsCollection,
@@ -27,9 +27,9 @@ import {
   IPageInfo,
   IPaginateDirection,
   IPrepareListOptions,
-} from '../index';
+} from '../interfaces';
 // errors
-import ClientNotBootedError from '../errors/ClientNotBootedError';
+import { ClientNotBootedError } from '../errors';
 
 export default abstract class Model<T extends IResourceObject> implements IModel<T> {
   // collection name in database
@@ -401,6 +401,7 @@ export default abstract class Model<T extends IResourceObject> implements IModel
         let lookupOperator = '$eq';
 
         if (isArray) {
+          // @ts-ignore
           [data] = this.expandable[field];
 
           if (data.local) {
@@ -609,7 +610,7 @@ export default abstract class Model<T extends IResourceObject> implements IModel
     sort: string[],
     pageInfo?: IPageInfo | null,
   ): {
-    match: object;
+    match: any;
     sort: object;
   } {
     let $match: any = {};
@@ -711,7 +712,7 @@ export default abstract class Model<T extends IResourceObject> implements IModel
 
 // decorators
 export function Parent(parent: IModel) {
-  return function<T extends new (...args: any[]) => {}>(constructor: T) {
+  return function <T extends new (...args: any[]) => {}>(constructor: T) {
     return class extends constructor {
       public parent = parent;
     };
@@ -719,7 +720,7 @@ export function Parent(parent: IModel) {
 }
 
 export function Name(name: string) {
-  return function<T extends new (...args: any[]) => {}>(constructor: T) {
+  return function <T extends new (...args: any[]) => {}>(constructor: T) {
     return class extends constructor {
       public name = name;
     };
@@ -727,7 +728,7 @@ export function Name(name: string) {
 }
 
 export function Collection(collection: string) {
-  return function<T extends new (...args: any[]) => {}>(constructor: T) {
+  return function <T extends new (...args: any[]) => {}>(constructor: T) {
     return class extends constructor {
       public $collection = collection;
     };

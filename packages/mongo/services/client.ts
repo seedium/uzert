@@ -5,8 +5,7 @@ import Logger from '@uzert/logger';
 // types
 import { IProvider } from '@uzert/core';
 // errors
-import ClientNotBootedError from '../errors/ClientNotBootedError';
-import MissedParamsError from '../errors/MissedParamsError';
+import { ClientNotBootedError, MissedParamsError } from '../errors';
 
 class Client implements IProvider {
   public _client: MongoClient | undefined;

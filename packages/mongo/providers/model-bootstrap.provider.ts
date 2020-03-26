@@ -1,10 +1,10 @@
 import * as path from 'path';
 import * as glob from 'glob';
 // providers
-import MongoClient from '../services/Client';
+import MongoClient from '../services/client';
 // types
 import { IProvider } from '@uzert/core';
-import { IBootstrapOptions, IModel } from '../index';
+import { IBootstrapOptions, IModel } from '../interfaces';
 
 class ModelBootstrapProvider implements IProvider {
   public repository: {
@@ -19,13 +19,13 @@ class ModelBootstrapProvider implements IProvider {
   }: IBootstrapOptions = {}) {
     const models = await this.loadModels(basePath, pattern);
 
-    const promises = models.map(async name => {
+    const promises = models.map(async (name) => {
       const model = (useAbsolute
         ? await import('app/Models/' + name)
         : await import(path.resolve(basePath as string, name))
       ).default;
 
-      return await model.boot(MongoClient.db, {
+      await model.boot(MongoClient.db, {
         errorHandler,
       });
     });

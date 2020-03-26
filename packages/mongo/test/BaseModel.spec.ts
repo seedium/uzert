@@ -6,7 +6,7 @@ import Log from '@uzert/logger';
 import Config from '@uzert/config';
 import Validation from '@uzert/validation';
 import MongoClient from '../services/Client';
-import Bootstrap from '../providers/Bootstrap';
+import Bootstrap from '../providers/model-bootstrap.provider';
 // models
 import TestModel, { ITestModel } from './examples/TestModel';
 import ChildrenTestModel, { IChildrenTestModel } from './examples/ChildrenTestModel';
@@ -98,9 +98,7 @@ describe('BaseModel', () => {
 
     it('model should be booted', async () => {
       expect(TestModel).property('collection').not.undefined;
-      expect(ChildrenTestModel)
-        .property('parent')
-        .eq(TestModel);
+      expect(ChildrenTestModel).property('parent').eq(TestModel);
     });
 
     it('schemas should work', async () => {
@@ -108,9 +106,7 @@ describe('BaseModel', () => {
       expect(test).not.property('children');
 
       expect(relatedTest).property('related');
-      expect(relatedTest)
-        .property('link')
-        .eq(test._id);
+      expect(relatedTest).property('link').eq(test._id);
 
       expect(childrenTest).property('testField');
       expect(childrenTest).property('children');
@@ -118,9 +114,7 @@ describe('BaseModel', () => {
 
     it('should not expand object fields by default', async () => {
       const result = await RelatedTestModel.retrieve(relatedTest._id);
-      expect(result)
-        .property('link')
-        .not.property('_id');
+      expect(result).property('link').not.property('_id');
     });
 
     it('should not expand array fields in list by default', async () => {
@@ -134,9 +128,7 @@ describe('BaseModel', () => {
         expand: ['links'],
       });
       const [firstElem] = result.data;
-      expect(firstElem)
-        .property('links')
-        .length(1);
+      expect(firstElem).property('links').length(1);
     });
 
     it('should expand nested field', async () => {
@@ -144,10 +136,7 @@ describe('BaseModel', () => {
         expand: ['links', 'links.link'],
       });
       const [elem] = result.links;
-      expect(elem)
-        .property('link')
-        .an('object')
-        .property('_id');
+      expect(elem).property('link').an('object').property('_id');
       expect(elem.link._id.toString()).eq(test._id.toString());
     });
 
@@ -155,10 +144,7 @@ describe('BaseModel', () => {
       const result = await RelatedTestModel.retrieve(relatedTest._id, {
         expand: ['link.extra', 'link.links'],
       });
-      expect(result)
-        .property('link')
-        .an('object')
-        .property('_id');
+      expect(result).property('link').an('object').property('_id');
       expect(result.link._id.toString()).eq(test._id.toString());
     });
 
@@ -174,10 +160,7 @@ describe('BaseModel', () => {
         expand: ['link'],
       });
       const [firstElem] = result.data as IRelatedTestModel[];
-      expect(firstElem)
-        .property('link')
-        .an('object')
-        .property('_id');
+      expect(firstElem).property('link').an('object').property('_id');
       // @ts-ignore
       expect(firstElem.link._id.toString()).eq(test._id.toString());
     });
@@ -193,15 +176,12 @@ describe('BaseModel', () => {
         expand: ['localLinks'],
       });
 
-      expect(result)
-        .property('localLinks')
-        .an('array');
+      expect(result).property('localLinks').an('array');
 
+      // @ts-ignore
       const [localLink] = result.localLinks;
 
-      expect(localLink)
-        .an('object')
-        .property('_id');
+      expect(localLink).an('object').property('_id');
       expect(localLink._id.toString()).eq(relatedTest._id.toString());
     });
   });
@@ -226,9 +206,7 @@ describe('BaseModel', () => {
 
     it('should get list without additional properties', async () => {
       const list = await TestModel.list();
-      expect(list)
-        .property('data')
-        .length(tests.length);
+      expect(list).property('data').length(tests.length);
       expect(list).property('nextUrl').is.null;
       expect(list).property('prevUrl').is.null;
     });

@@ -1,6 +1,7 @@
 import { ObjectId } from 'bson';
-import { Collection as ICollection, IndexSpecification, Db, ClientSession } from 'mongodb';
+import { IndexSpecification, ClientSession, Collection } from 'mongodb';
 import { IProvider } from '@uzert/core';
+import { IErrorHandler } from './boot.interface';
 
 export interface IList<T> {
   /**
@@ -70,28 +71,28 @@ export interface IListOptions extends IDataOptions {
 export type IDateFilter =
   | number
   | {
-  /**
-   * Return values where the created field is after this timestamp.
-   */
-  gt?: number;
+      /**
+       * Return values where the created field is after this timestamp.
+       */
+      gt?: number;
 
-  /**
-   * Return values where the created field is after or equal to this timestamp.
-   */
-  gte?: number;
+      /**
+       * Return values where the created field is after or equal to this timestamp.
+       */
+      gte?: number;
 
-  /**
-   * Return values where the created field is before this timestamp.
-   */
-  lt?: number;
+      /**
+       * Return values where the created field is before this timestamp.
+       */
+      lt?: number;
 
-  /**
-   * Return values where the created field is before or equal to this timestamp.
-   */
-  lte?: number;
+      /**
+       * Return values where the created field is before or equal to this timestamp.
+       */
+      lte?: number;
 
-  [operator: string]: number | undefined;
-};
+      [operator: string]: number | undefined;
+    };
 
 export interface IListOptionsCreated extends IListOptions {
   created?: IDateFilter;
@@ -114,8 +115,8 @@ export type ExtractIdType<TSchema> = TSchema extends { _id: infer U } // user ha
   ? {} extends U
     ? Exclude<U, {}>
     : unknown extends U
-      ? ObjectId
-      : U
+    ? ObjectId
+    : U
   : ObjectId; // user has not defined _id on schema
 
 export type WithId<TSchema> = Omit<TSchema, '_id'> & { _id: ExtractIdType<TSchema> };
@@ -139,12 +140,12 @@ export interface ISchemasCollection {
 export interface ILookupOptions {
   [firstLevel: string]:
     | {
-    [secondLevel: string]:
-      | {
-      [thirdLevel: string]: object | [];
-    }
-      | [];
-  }
+        [secondLevel: string]:
+          | {
+              [thirdLevel: string]: object | [];
+            }
+          | [];
+      }
     | [];
 }
 

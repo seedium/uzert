@@ -1,4 +1,4 @@
-export default class ClientNotBootedError extends Error {
+export class ClientNotBootedError extends Error {
   constructor() {
     super('Client not booted yet. Please add mongo client to your "BootService"');
 

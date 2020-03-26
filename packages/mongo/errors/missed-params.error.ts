@@ -1,4 +1,4 @@
-export default class MissedParamsError extends Error {
+export class MissedParamsError extends Error {
   constructor(params: string[]) {
     super(`Some params were missed. Please check "${params.join(', ')}" params in you "database" config.
 		Also check that you have created config "database"`);

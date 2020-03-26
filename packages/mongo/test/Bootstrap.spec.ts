@@ -1,8 +1,8 @@
 import * as path from 'path';
 import Config from '@uzert/config';
 import Validation from '@uzert/validation';
-import Loggger from '@uzert/logger';
-import Bootstrap from '../providers/Bootstrap';
+import Logger from '@uzert/logger';
+import Bootstrap from '../providers/model-bootstrap.provider';
 import MongoClient from '../services/Client';
 // models
 import TestModel from './examples/TestModel';
@@ -17,7 +17,7 @@ describe('Bootstrap', () => {
       pattern: '*.ts',
       useAbsolute: false,
     });
-    await Loggger.boot();
+    await Logger.boot();
     await MongoClient.boot();
     await Validation.boot();
   });
@@ -25,7 +25,7 @@ describe('Bootstrap', () => {
   after(async () => {
     await Validation.unBoot();
     await MongoClient.unBoot();
-    await Loggger.unBoot();
+    await Logger.unBoot();
     await Config.unBoot();
     TestModel.unBoot();
     NestedTestModel.unBoot();

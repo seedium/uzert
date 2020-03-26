@@ -163,6 +163,7 @@ The following is the list of supported scopes:
 - **mongo**
 - **server**
 - **validation**
+- **helpers**
 
 If changes affects many of scopes, the scope can be missed
 
