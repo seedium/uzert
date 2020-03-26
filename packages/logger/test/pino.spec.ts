@@ -1,6 +1,6 @@
 import * as path from 'path';
 import Config from '@uzert/config';
-import Log from '../src';
+import Log from '../index';
 
 describe('Pino default', function() {
   before(async () => {

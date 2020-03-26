@@ -1,7 +1,7 @@
 import TestModel from './examples/TestModel';
 import { expect } from 'chai';
 import * as qs from 'qs';
-import { IList } from '../src';
+import { IList } from '../index';
 
 export const sortFieldBy = (field: string, direction: 'asc' | 'desc' = 'asc') => {
   if (direction === 'asc') {

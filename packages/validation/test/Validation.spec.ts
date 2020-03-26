@@ -1,10 +1,10 @@
 import { expect } from 'chai';
 import * as Ajv from 'ajv';
 import { isString } from '@uzert/helpers';
-import { keywords, validateResponse } from '../src/utils';
+import { keywords, validateResponse } from '../utils';
 import { ObjectId } from 'bson';
 import { createResponse } from './utils';
-import SchemasGenerator from '../src/SchemaGenerator';
+import SchemasGenerator from '../providers/SchemaGenerator';
 import * as SwaggerParser from 'swagger-parser';
 import { SHARED_TYPES, SWAGGER_OPTIONS, ROUTE_DATA } from './constants';
 

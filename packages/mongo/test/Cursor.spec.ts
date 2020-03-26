@@ -3,7 +3,7 @@ import { ObjectId } from 'bson';
 import * as qs from 'qs';
 // models
 import TestModel from './examples/TestModel';
-import { IPageInfo } from '../src';
+import { IPageInfo } from '../index';
 
 describe('Cursor', () => {
   it('should get empty cursor', () => {

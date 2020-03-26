@@ -1,4 +1,4 @@
-import Model, { Name, Collection } from '../../../src/Model';
+import Model, { Name, Collection } from '../../../services/Model';
 
 export interface INestedTestModel {
   _id?: string | any;

@@ -2,46 +2,10 @@
   "name": "@uzert/app",
   "version": "2.0.0",
   "description": "",
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
-  "scripts": {
-    "test": "ts-mocha test/*.spec.ts",
-    "check-types": "tsc --noEmit",
-    "build": "rm -rf lib && tsc",
-    "postversion": "git push --set-upstream origin master --follow-tags",
-    "dev": "NODE_ENV=development tsc -w"
-  },
-  "files": [
-    "lib/**/*"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@gitlab.com/uzert/app.git"
-  },
   "author": "Seedium",
   "license": "ISC",
-  "bugs": {
-    "url": "https://gitlab.com/uzert/app/issues"
-  },
-  "homepage": "https://gitlab.com/uzert/app#readme",
-  "devDependencies": {
-    "@types/chai": "^4.2.4",
-    "@types/mocha": "^5.2.7",
-    "@types/node": "^12.12.5",
-    "@uzert/config": "^1.2.1",
-    "@uzert/core": "^1.0.4",
-    "@uzert/http": "^1.0.6",
-    "@uzert/logger": "^2.1.1",
-    "chai": "^4.2.0",
-    "husky": "^4.2.3",
-    "lint-staged": "^10.0.7",
-    "mocha": "^6.2.2",
-    "prettier": "^1.18.2",
-    "ts-mocha": "^6.0.0",
-    "tslint": "^5.20.0",
-    "tslint-config-prettier": "^1.18.0",
-    "tslint-no-unused-expression-chai": "^0.1.4",
-    "typescript": "^3.6.4"
+  "publishConfig": {
+    "@uzert:registry": "https://package.registry.seedium.io"
   },
   "peerDependencies": {
     "@uzert/config": ">1.0.0",
@@ -54,6 +18,7 @@
     "@types/uuid": "^3.4.6",
     "fastify": "^2.10.0",
     "qs": "^6.9.0",
-    "uuid": "^3.3.3"
+    "uuid": "^3.3.3",
+    "tslib": "1.11.1"
   }
 }

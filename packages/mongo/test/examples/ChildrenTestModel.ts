@@ -1,4 +1,4 @@
-import { Name, Parent } from '../../src/Model';
+import { Name, Parent } from '../../services/Model';
 import TestModel, { ITestModel, TestModel as TestModelBase } from './TestModel';
 
 export interface IChildrenTestModel extends ITestModel {

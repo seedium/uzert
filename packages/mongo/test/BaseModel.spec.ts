@@ -5,8 +5,8 @@ import * as qs from 'qs';
 import Log from '@uzert/logger';
 import Config from '@uzert/config';
 import Validation from '@uzert/validation';
-import MongoClient from '../src/Client';
-import Bootstrap from '../src/Bootstrap';
+import MongoClient from '../services/Client';
+import Bootstrap from '../providers/Bootstrap';
 // models
 import TestModel, { ITestModel } from './examples/TestModel';
 import ChildrenTestModel, { IChildrenTestModel } from './examples/ChildrenTestModel';

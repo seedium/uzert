@@ -2,40 +2,10 @@
   "name": "@uzert/server",
   "version": "2.0.0",
   "description": "",
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
-  "scripts": {
-    "test": "ts-mocha test/*.spec.ts",
-    "check-types": "tsc --noEmit",
-    "build": "rm -rf lib && tsc",
-    "postversion": "git push --set-upstream origin master --follow-tags",
-    "dev": "NODE_ENV=development tsc -w"
-  },
-  "files": [
-    "lib/**/*"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@gitlab.com/uzert/server.git"
-  },
   "author": "Seedium",
   "license": "ISC",
-  "bugs": {
-    "url": "https://gitlab.com/uzert/server/issues"
-  },
-  "homepage": "https://gitlab.com/uzert/server#readme",
-  "devDependencies": {
-    "@types/node": "^10.17.16",
-    "@uzert/app": "^2.0.0",
-    "@uzert/config": "^1.2.2",
-    "@uzert/core": "^1.0.4",
-    "@uzert/logger": "^2.1.1",
-    "husky": "^4.2.3",
-    "lint-staged": "^10.0.7",
-    "prettier": "^1.19.1",
-    "tslint": "^6.0.0",
-    "tslint-config-prettier": "^1.18.0",
-    "typescript": "^3.8.2"
+  "publishConfig": {
+    "@uzert:registry": "https://package.registry.seedium.io"
   },
   "peerDependencies": {
     "@uzert/app": ">1.0.1",

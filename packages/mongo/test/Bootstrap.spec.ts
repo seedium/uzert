@@ -2,8 +2,8 @@ import * as path from 'path';
 import Config from '@uzert/config';
 import Validation from '@uzert/validation';
 import Loggger from '@uzert/logger';
-import Bootstrap from '../src/Bootstrap';
-import MongoClient from '../src/Client';
+import Bootstrap from '../providers/Bootstrap';
+import MongoClient from '../services/Client';
 // models
 import TestModel from './examples/TestModel';
 import NestedTestModel from './examples/Nested/NestedTestModel';

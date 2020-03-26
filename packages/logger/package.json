@@ -2,49 +2,15 @@
   "name": "@uzert/logger",
   "version": "2.3.0",
   "description": "",
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
-  "scripts": {
-    "test": "ts-mocha test/*.spec.ts",
-    "check-types": "tsc --noEmit",
-    "build": "rm -rf lib && tsc",
-    "postversion": "git push --set-upstream origin master --follow-tags",
-    "dev": "NODE_ENV=development tsc -w"
-  },
-  "files": [
-    "lib/**/*"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@gitlab.com/uzert/logger.git"
-  },
   "author": "Seedium",
   "license": "ISC",
-  "bugs": {
-    "url": "https://gitlab.com/uzert/logger/issues"
+  "publishConfig": {
+    "@uzert:registry": "https://package.registry.seedium.io"
   },
-  "homepage": "https://gitlab.com/uzert/logger#readme",
   "dependencies": {
     "@types/pino": "^5.15.5",
     "@uzert/helpers": "^2.0.1",
     "pino": "^5.16.0"
-  },
-  "devDependencies": {
-    "@types/chai": "^4.2.9",
-    "@types/mocha": "^7.0.1",
-    "@types/node": "^12.12.28",
-    "@uzert/config": "^1.2.2",
-    "@uzert/core": "^1.0.4",
-    "chai": "^4.2.0",
-    "husky": "^4.2.3",
-    "lint-staged": "^10.0.7",
-    "mocha": "^7.0.1",
-    "pino-pretty": "^3.6.0",
-    "prettier": "^1.19.1",
-    "ts-mocha": "^6.0.0",
-    "tslint": "^5.20.1",
-    "tslint-config-prettier": "^1.18.0",
-    "typescript": "^3.8.2"
   },
   "peerDependencies": {
     "@uzert/config": ">1.0.0",

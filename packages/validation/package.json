@@ -2,54 +2,10 @@
   "name": "@uzert/validation",
   "version": "2.4.8",
   "description": "",
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
-  "scripts": {
-    "test": "ts-mocha test/*.spec.ts",
-    "format": "prettier --write \"src/**/*.ts\" && git add .",
-    "lint": "tslint -p tsconfig.json --fix",
-    "build": "rm -rf lib && tsc",
-    "dev": "NODE_ENV=development tsc -w",
-    "postversion": "git push --set-upstream origin master --follow-tags"
-  },
-  "pre-commit": [
-    "lint",
-    "format"
-  ],
-  "files": [
-    "lib/**/*"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@gitlab.com/uzert/validation.git"
-  },
   "author": "Seedium",
   "license": "ISC",
-  "bugs": {
-    "url": "https://gitlab.com/uzert/validation/issues"
-  },
-  "homepage": "https://gitlab.com/uzert/validation#readme",
-  "devDependencies": {
-    "@types/bson": "^4.0.0",
-    "@types/chai": "^4.2.4",
-    "@types/mocha": "^5.2.7",
-    "@types/node": "^12.12.6",
-    "@types/swagger-ui-dist": "^3.0.3",
-    "@types/yaml": "^1.2.0",
-    "@uzert/app": "^1.1.4",
-    "@uzert/config": "^1.2.1",
-    "@uzert/core": "^1.0.3",
-    "bson": "^4.0.2",
-    "chai": "^4.2.0",
-    "mocha": "^6.2.2",
-    "pre-commit": "^1.2.2",
-    "prettier": "^1.18.2",
-    "ts-mocha": "^6.0.0",
-    "tslint": "^5.20.1",
-    "tslint-config-prettier": "^1.18.0",
-    "tslint-no-unused-expression-chai": "^0.1.4",
-    "typescript": "^3.7.2",
-    "swagger-parser": "^8.0.3"
+  "publishConfig": {
+    "@uzert:registry": "https://package.registry.seedium.io"
   },
   "peerDependencies": {
     "@uzert/core": ">1.0.0",

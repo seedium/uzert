@@ -1,4 +1,4 @@
-import Model, { Name, Collection } from '../../src/Model';
+import Model, { Name, Collection } from '../../services/Model';
 import { ITestModel } from './TestModel';
 
 export interface IRelatedTestModel {
