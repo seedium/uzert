@@ -9,7 +9,7 @@
     "url": "https://gitlab.com/kostyazgara/uzert"
   },
   "scripts": {
-    "build": "gulp build --dist node_modules/@nestjs",
+    "build": "gulp build --dist node_modules/@uzert",
     "postbuild": "gulp move",
     "prebuild:prod": "npm run clean",
     "build:prod": "gulp build",
@@ -24,12 +24,12 @@
     "lint:integration": "eslint 'integration/*/{,!(node_modules)/**/}/*.ts' -c '.eslintrc.spec.js' --fix",
     "lint:packages": "eslint 'packages/**/**.ts' --fix --ignore-pattern 'packages/**/*.spec.ts'",
     "lint:spec": "eslint 'packages/**/**.spec.ts' -c '.eslintrc.spec.js' --fix",
-    "prerelease": "gulp copy-misc && gulp build --dist node_modules/@nestjs",
-    "publish": "npm run prerelease && npm run build:prod && ./node_modules/.bin/lerna publish --force-publish --access public --exact -m \"chore(@nestjs) publish %s release\"",
-    "publish:beta": "npm run prerelease && npm run build:prod && ./node_modules/.bin/lerna publish --npm-tag=beta --access public -m \"chore(@nestjs) publish %s release\"",
-    "publish:next": "npm run prerelease && npm run build:prod && ./node_modules/.bin/lerna publish --npm-tag=next --access public --skip-git -m \"chore(@nestjs) publish %s release\"",
-    "publish:rc": "npm run prerelease && npm run build:prod && ./node_modules/.bin/lerna publish --npm-tag=rc --access public -m \"chore(@nestjs) publish %s release\"",
-    "publish:test": "npm run prerelease && npm run build:prod && ./node_modules/.bin/lerna publish --force-publish --access public --npm-tag=test --skip-git -m \"chore(@nestjs) publish %s release\""
+    "prerelease": "gulp copy-misc && npm run build",
+    "publish": "npm run prerelease && npm run build:prod && ./node_modules/.bin/lerna publish --force-publish --access public --exact -m \"chore(@uzert) publish %s release\"",
+    "publish:beta": "npm run prerelease && npm run build:prod && ./node_modules/.bin/lerna publish --npm-tag=beta --access public -m \"chore(@uzert) publish %s release\"",
+    "publish:next": "npm run prerelease && npm run build:prod && ./node_modules/.bin/lerna publish --npm-tag=next --access public --skip-git -m \"chore(@uzert) publish %s release\"",
+    "publish:rc": "npm run prerelease && npm run build:prod && ./node_modules/.bin/lerna publish --npm-tag=rc --access public -m \"chore(@uzert) publish %s release\"",
+    "publish:test": "npm run prerelease && npm run build:prod && ./node_modules/.bin/lerna publish --force-publish --access public --npm-tag=test --skip-git -m \"chore(@uzert) publish %s release\""
   },
   "dependencies": {
     "reflect-metadata": "0.1.13",

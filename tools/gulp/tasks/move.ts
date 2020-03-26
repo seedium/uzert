@@ -8,10 +8,10 @@ import { getDirs } from '../util/task-helpers';
  */
 function move() {
   const samplesDirs = getDirs(samplePath);
-  const distFiles = src(['node_modules/@nestjs/**/*']);
+  const distFiles = src(['node_modules/@uzert/**/*']);
 
   return samplesDirs.reduce(
-    (distFile, dir) => distFile.pipe(dest(join(dir, '/node_modules/@nestjs'))),
+    (distFile, dir) => distFile.pipe(dest(join(dir, '/node_modules/@uzert'))),
     distFiles,
   );
 }
