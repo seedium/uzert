@@ -98,20 +98,13 @@ const checkDiscriminatorKey = (key: string, payload: any) => {
   }
 };
 
-const getAvailableSchema = (
-  schemas: any,
-  key: string,
-  payload: any,
-  fallback?: any,
-): any => {
+const getAvailableSchema = (schemas: any, key: string, payload: any, fallback?: any): any => {
   if (schemas[payload[key]]) {
     return schemas[payload[key]];
   } else if (fallback) {
     return fallback;
   } else {
-    throw new SchemaError(
-      `Schema is not available for key "${key}" and fallback didn't provided`,
-    );
+    throw new SchemaError(`Schema is not available for key "${key}" and fallback didn't provided`);
   }
 };
 
@@ -123,12 +116,7 @@ const getCompiler = (ajv: Ajv, schema: any): ValidateFunction => {
   }
 };
 
-export const validateResponse = (
-  ajv: Ajv,
-  req: Request,
-  res: Response,
-  payload: any,
-): any => {
+export const validateResponse = (ajv: Ajv, req: Request, res: Response, payload: any): any => {
   const { schemas } = res.context.config;
 
   if (!schemas) {
@@ -146,9 +134,7 @@ export const validateResponse = (
 
     if (schema.extends) {
       if (!schema.extends.key) {
-        throw new SchemaError(
-          'Please provide key in extends schema for schema recognition',
-        );
+        throw new SchemaError('Please provide key in extends schema for schema recognition');
       }
 
       if (!schema.extends.schemas || !isPlainObject(schema.extends.schemas)) {
@@ -162,9 +148,7 @@ export const validateResponse = (
         const listKey = schema.extends.listKey || 'data';
 
         if (!payload[listKey]) {
-          throw new Error(
-            `Cannot find key with list data. Please specify property "listKey" in "extends" schema`,
-          );
+          throw new Error(`Cannot find key with list data. Please specify property "listKey" in "extends" schema`);
         }
 
         payload[listKey].forEach((object: any) => {

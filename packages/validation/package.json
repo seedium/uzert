@@ -9,12 +9,12 @@
   },
   "peerDependencies": {
     "@uzert/core": ">1.0.0",
-    "@uzert/app": ">1.1.1"
+    "@uzert/app": ">1.1.1",
+    "@uzert/helpers": ">2.0.1"
   },
   "dependencies": {
     "@types/ajv": "^1.0.0",
     "@types/ajv-merge-patch": "^4.1.0",
-    "@uzert/helpers": "^1.1.2",
     "ajv": "^6.10.2",
     "ajv-merge-patch": "^4.1.0",
     "fastify-plugin": "^1.6.0",

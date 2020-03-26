@@ -9,11 +9,11 @@
   },
   "dependencies": {
     "@types/pino": "^5.15.5",
-    "@uzert/helpers": "^2.0.1",
     "pino": "^5.16.0"
   },
   "peerDependencies": {
     "@uzert/config": ">1.0.0",
-    "@uzert/core": ">1.0.0"
+    "@uzert/core": ">1.0.0",
+    "@uzert/helpers": ">2.0.1"
   }
 }
