@@ -1,6 +1,5 @@
 import Logger from '@uzert/logger';
-import { IProvider } from '../interfaces';
-import { IProviderLoaders } from '../interfaces/Boot.interface';
+import { IProvider, IProviderLoaders } from '../interfaces';
 
 export default class BootService implements IProvider {
   public loadedProviders: {
@@ -22,7 +21,7 @@ export default class BootService implements IProvider {
     process.on('SIGINT', this.handleGracefullyShutdown);
   }
 
-  public async dispose() {
+  public async unBoot() {
     // unboot providers in reverse order
     const providerNames = Object.keys(this.loadedProviders).reverse();
 
@@ -60,5 +59,5 @@ export default class BootService implements IProvider {
     Logger.pino.info(`Gracefully shutdown`);
     await this.unBoot();
     process.exit(0);
-  }
+  };
 }

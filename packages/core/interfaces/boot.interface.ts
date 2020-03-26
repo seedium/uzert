@@ -1,4 +1,4 @@
-import { IProvider } from "@uzert/core";
+import { IProvider } from '../interfaces';
 
 export interface IProviderLoaders {
   [name: string]: [IProvider, ...any[]];
