@@ -1,0 +1,20 @@
+{
+  "name": "@uzert/core",
+  "version": "1.0.4",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postversion": "git push --set-upstream origin master --follow-tags"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/uzert/core.git"
+  },
+  "author": "Seedium",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/uzert/core/issues"
+  },
+  "homepage": "https://gitlab.com/uzert/core#readme"
+}

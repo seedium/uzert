@@ -1,0 +1,47 @@
+{
+  "extends": [
+    "tslint:recommended",
+    "tslint-no-unused-expression-chai",
+    "tslint-config-prettier"
+  ],
+  "rulesDirectory": ["src/"],
+  "rules": {
+    "quotemark": [true, "single"],
+    "indent": [true, "tabs", 4],
+    "new-parens": true,
+    "no-arg": true,
+    "no-bitwise": true,
+    "trailing-comma": true,
+    "interface-name": false,
+    "object-literal-sort-keys": false,
+    "no-conditional-assignment": true,
+    "no-consecutive-blank-lines": false,
+    "no-trailing-whitespace": false,
+    "ordered-imports": false,
+    "space-before-function-paren": false,
+    "only-arrow-functions": false,
+    "prefer-object-spread": true,
+    "curly": true,
+    "no-require-imports": true,
+    "arrow-return-shorthand": true,
+    "import-spacing": true,
+    "semicolon": true,
+    "no-empty-interface": false,
+    "no-console": {
+      "options": [
+        "debug",
+        "info",
+        "log",
+        "time",
+        "timeEnd",
+        "trace"
+      ]
+    },
+    "whitespace": [true, "check-module", "check-operator", "check-rest-spread"]
+  },
+  "jsRules": {
+    "max-line-length": {
+      "options": [120]
+    }
+  }
+}

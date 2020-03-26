@@ -1,0 +1,11 @@
+{
+  "version": "0.0.0",
+  "packages": [
+    "packages/*"
+  ],
+  "command": {
+    "publish": {
+      "registry": "https://package.registry.seedium.io"
+    }
+  }
+}

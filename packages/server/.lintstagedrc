@@ -1,0 +1,6 @@
+{
+  "{test,src}/**/*.{js,ts,json,md}": [
+    "prettier --write",
+    "tslint"
+  ]
+}

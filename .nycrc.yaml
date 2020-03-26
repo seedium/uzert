@@ -1,0 +1,19 @@
+include:
+  - packages/**/*.ts
+
+exclude:
+  - node_modules/
+  - packages/**/test/**
+
+extension:
+  - .ts
+
+require:
+  - ts-node/register
+
+reporter:
+  - text-summary
+  - html
+
+sourceMap: true
+instrument: true
