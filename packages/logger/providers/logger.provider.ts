@@ -15,10 +15,6 @@ export class LoggerProvider implements IProvider {
   }
 
   set pino(instance) {
-    if (this._pino) {
-      throw new Error('Pino logger is already initialized. Did you include logger in boot service twice?');
-    }
-
     this._pino = instance;
   }
 
