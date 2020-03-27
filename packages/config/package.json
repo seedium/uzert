@@ -7,6 +7,10 @@
   "publishConfig": {
     "@uzert:registry": "https://package.registry.seedium.io"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/seedium/uzert"
+  },
   "peerDependencies": {
     "@uzert/helpers": ">2.0.1"
   },

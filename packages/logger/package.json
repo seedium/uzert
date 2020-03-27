@@ -7,6 +7,10 @@
   "publishConfig": {
     "@uzert:registry": "https://package.registry.seedium.io"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/seedium/uzert"
+  },
   "dependencies": {
     "@types/pino": "5.17.0",
     "pino": "5.17.0"

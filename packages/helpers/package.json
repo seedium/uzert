@@ -3,5 +3,9 @@
   "version": "2.0.1",
   "description": "",
   "author": "Seedium",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/seedium/uzert"
+  }
 }
