@@ -6,15 +6,15 @@ import * as log from 'fancy-log';
 
 // Has to be a hardcoded object due to build order
 const packages = {
-  app: createProject('packages/app/tsconfig.json'),
-  config: createProject('packages/config/tsconfig.json'),
-  core: createProject('packages/core/tsconfig.json'),
   helpers: createProject('packages/helpers/tsconfig.json'),
-  http: createProject('packages/http/tsconfig.json'),
+  core: createProject('packages/core/tsconfig.json'),
+  config: createProject('packages/config/tsconfig.json'),
   logger: createProject('packages/logger/tsconfig.json'),
+  validation: createProject('packages/validation/tsconfig.json'),
+  http: createProject('packages/http/tsconfig.json'),
+  app: createProject('packages/app/tsconfig.json'),
   mongo: createProject('packages/mongo/tsconfig.json'),
   server: createProject('packages/server/tsconfig.json'),
-  validation: createProject('packages/validation/tsconfig.json'),
 };
 
 const modules = Object.keys(packages);

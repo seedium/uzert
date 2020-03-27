@@ -1,4 +1,3 @@
-import Logger from '@uzert/logger';
 import { IProvider, IProviderLoaders } from '../interfaces';
 
 export default class BootService implements IProvider {
@@ -46,17 +45,17 @@ export default class BootService implements IProvider {
       // add provider to loaded
       this.loadedProviders[name] = provider;
     } catch (e) {
-      Logger.pino.error(new Error(`Can't load service "${name}"`));
+      console.error(new Error(`Can't load service "${name}"`));
       throw e;
     }
   }
 
   protected handleError(err: Error | any) {
-    Logger.pino.error(err);
+    console.error(err);
   }
 
   protected handleGracefullyShutdown = async () => {
-    Logger.pino.info(`Gracefully shutdown`);
+    console.info(`Gracefully shutdown`);
     await this.unBoot();
     process.exit(0);
   };
