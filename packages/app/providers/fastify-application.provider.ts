@@ -15,6 +15,7 @@ import { AppBootError } from '../errors';
 class FastifyApplicationProvider implements IProvider {
   // Fastify instance
   protected _app?: fastify.FastifyInstance;
+  protected _isReady: boolean = false;
 
   get app(): fastify.FastifyInstance {
     if (!this._app) {
@@ -24,12 +25,16 @@ class FastifyApplicationProvider implements IProvider {
     return this._app;
   }
 
+  set isReady(value: boolean) {
+    this._isReady = value;
+  }
+
   get isReady(): boolean {
     if (!this._app) {
       throw new AppBootError();
     }
 
-    return !!this._app.isReady;
+    return this._isReady;
   }
 
   public async boot(kernel?: HttpKernel) {
@@ -51,7 +56,6 @@ class FastifyApplicationProvider implements IProvider {
       genReqId: () => uuidv4(),
       querystringParser: (str) => qs.parse(str),
     });
-    this._app.isReady = false;
 
     this._app.addContentTypeParser(Config.get('filesystems:supportMimes') || [], async (req: IncomingMessage) => {
       Logger.pino.debug(`Uploading binary data with size - ${req.headers['content-length']}`);
@@ -75,12 +79,12 @@ class FastifyApplicationProvider implements IProvider {
       throw new AppBootError();
     }
 
-    if (this._app.isReady) {
+    if (this.isReady) {
       return this._app;
     }
 
     await this._app.ready();
-    this._app.isReady = true;
+    this.isReady = true;
 
     return this._app;
   }
