@@ -15,8 +15,8 @@
     "@uzert/helpers": ">2.0.1"
   },
   "dependencies": {
-    "@types/mongodb": "^3.3.16",
-    "glob": "^7.1.6",
-    "mongodb": "^3.5.3"
+    "@types/mongodb": "3.5.4",
+    "glob": "7.1.6",
+    "mongodb": "3.5.5"
   }
 }
