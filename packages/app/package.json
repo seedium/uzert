@@ -12,10 +12,7 @@
     "url": "https://github.com/seedium/uzert"
   },
   "peerDependencies": {
-    "@uzert/config": ">1.0.0",
-    "@uzert/core": ">1.0.0",
-    "@uzert/logger": ">2.0.0",
-    "@uzert/http": ">1.0.0"
+    "reflect-metadata": "^0.1.12"
   },
   "dependencies": {
     "@types/qs": "6.9.1",

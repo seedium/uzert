@@ -11,13 +11,12 @@
     "type": "git",
     "url": "https://github.com/seedium/uzert"
   },
+  "peerDependencies": {
+    "reflect-metadata": "^0.1.12"
+  },
   "dependencies": {
     "@types/pino": "5.17.0",
-    "pino": "6.0.0"
-  },
-  "peerDependencies": {
-    "@uzert/config": ">1.0.0",
-    "@uzert/core": ">1.0.0",
-    "@uzert/helpers": ">2.0.1"
+    "pino": "6.0.0",
+    "tslib": "1.11.1"
   }
 }
