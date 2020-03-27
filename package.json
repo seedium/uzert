@@ -6,7 +6,7 @@
   "author": "Seedium",
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/kostyazgara/uzert"
+    "url": "https://github.com/seedium/uzert"
   },
   "scripts": {
     "build": "gulp build --dist node_modules/@uzert",
