@@ -24,12 +24,8 @@
     "lint:integration": "eslint 'integration/*/{,!(node_modules)/**/}/*.ts' -c '.eslintrc.spec.js' --fix",
     "lint:packages": "eslint 'packages/**/**.ts' --fix --ignore-pattern 'packages/**/*.spec.ts'",
     "lint:spec": "eslint 'packages/**/**.spec.ts' -c '.eslintrc.spec.js' --fix",
-    "prerelease": "gulp copy-misc && npm run build",
-    "publish": "npm run prerelease && npm run build:prod && ./node_modules/.bin/lerna publish --force-publish --access public --exact -m \"chore(@uzert) publish %s release\"",
-    "publish:beta": "npm run prerelease && npm run build:prod && ./node_modules/.bin/lerna publish --npm-tag=beta --access public -m \"chore(@uzert) publish %s release\"",
-    "publish:next": "npm run prerelease && npm run build:prod && ./node_modules/.bin/lerna publish --npm-tag=next --access public --skip-git -m \"chore(@uzert) publish %s release\"",
-    "publish:rc": "npm run prerelease && npm run build:prod && ./node_modules/.bin/lerna publish --npm-tag=rc --access public -m \"chore(@uzert) publish %s release\"",
-    "publish:test": "npm run prerelease && npm run build:prod && ./node_modules/.bin/lerna publish --force-publish --access public --npm-tag=test --skip-git -m \"chore(@uzert) publish %s release\""
+    "prerelease": "gulp copy-misc && npm run build && standard-version --dry-run && npm run build:prod",
+    "release": "lerna publish"
   },
   "dependencies": {
     "reflect-metadata": "0.1.13",
@@ -52,7 +48,6 @@
     "chai-as-promised": "7.1.1",
     "commitlint-circle": "1.0.0",
     "concurrently": "5.1.0",
-    "conventional-changelog": "3.1.18",
     "core-js": "3.6.4",
     "coveralls": "3.0.11",
     "delete-empty": "3.0.0",
@@ -79,6 +74,7 @@
     "prettier": "2.0.2",
     "sinon": "9.0.1",
     "sinon-chai": "3.5.0",
+    "standard-version": "^7.1.0",
     "swagger-ui-dist": "3.25.0",
     "ts-node": "8.8.1",
     "typescript": "3.8.3"
