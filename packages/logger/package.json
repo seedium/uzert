@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@types/pino": "5.17.0",
-    "pino": "5.17.0"
+    "pino": "6.0.0"
   },
   "peerDependencies": {
     "@uzert/config": ">1.0.0",
