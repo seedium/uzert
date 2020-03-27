@@ -4,7 +4,7 @@ import { samplePath } from '../config';
 import { getDirs } from '../util/task-helpers';
 
 /**
- * Moves the compiled nest files into the `samples/*` dirs.
+ * Moves the compiled uzert files into the `samples/*` dirs.
  */
 function move() {
   const samplesDirs = getDirs(samplePath);

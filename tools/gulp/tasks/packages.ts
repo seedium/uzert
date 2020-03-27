@@ -1,4 +1,4 @@
-import { source, packagePaths } from '../config';
+import { source } from '../config';
 import { task, watch, series, dest } from 'gulp';
 import { createProject } from 'gulp-typescript';
 import * as sourcemaps from 'gulp-sourcemaps';
@@ -6,17 +6,15 @@ import * as log from 'fancy-log';
 
 // Has to be a hardcoded object due to build order
 const packages = {
-  common: createProject('packages/common/tsconfig.json'),
+  app: createProject('packages/app/tsconfig.json'),
+  config: createProject('packages/config/tsconfig.json'),
   core: createProject('packages/core/tsconfig.json'),
-  microservices: createProject('packages/microservices/tsconfig.json'),
-  websockets: createProject('packages/websockets/tsconfig.json'),
-  testing: createProject('packages/testing/tsconfig.json'),
-  'platform-express': createProject('packages/platform-express/tsconfig.json'),
-  'platform-fastify': createProject('packages/platform-fastify/tsconfig.json'),
-  'platform-socket.io': createProject(
-    'packages/platform-socket.io/tsconfig.json',
-  ),
-  'platform-ws': createProject('packages/platform-ws/tsconfig.json'),
+  helpers: createProject('packages/helpers/tsconfig.json'),
+  http: createProject('packages/http/tsconfig.json'),
+  logger: createProject('packages/logger/tsconfig.json'),
+  mongo: createProject('packages/mongo/tsconfig.json'),
+  server: createProject('packages/server/tsconfig.json'),
+  validation: createProject('packages/validation/tsconfig.json'),
 };
 
 const modules = Object.keys(packages);

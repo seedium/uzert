@@ -32,15 +32,6 @@
     "publish:test": "npm run prerelease && npm run build:prod && ./node_modules/.bin/lerna publish --force-publish --access public --npm-tag=test --skip-git -m \"chore(@uzert) publish %s release\""
   },
   "dependencies": {
-    "@uzert/app": "file:packages/app",
-    "@uzert/config": "file:packages/config",
-    "@uzert/core": "file:packages/core",
-    "@uzert/helpers": "file:packages/helpers",
-    "@uzert/http": "file:packages/http",
-    "@uzert/logger": "file:packages/logger",
-    "@uzert/mongo": "file:packages/mongo",
-    "@uzert/server": "file:packages/server",
-    "@uzert/validation": "file:packages/validation",
     "reflect-metadata": "^0.1.13",
     "tslib": "^1.11.1"
   },
