@@ -12,15 +12,12 @@
     "url": "https://github.com/seedium/uzert"
   },
   "peerDependencies": {
-    "@uzert/config": ">1.0.0",
-    "@uzert/core": ">1.0.0",
-    "@uzert/logger": ">2.0.0",
-    "@uzert/validation": ">2.0.0",
-    "@uzert/helpers": ">2.0.1"
+    "reflect-metadata": "^0.1.12"
   },
   "dependencies": {
     "@types/mongodb": "3.5.4",
     "glob": "7.1.6",
-    "mongodb": "3.5.5"
+    "mongodb": "3.5.5",
+    "tslib": "1.11.1"
   }
 }
