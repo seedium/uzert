@@ -8,13 +8,13 @@ import * as log from 'fancy-log';
 const packages = {
   helpers: createProject('packages/helpers/tsconfig.json'),
   core: createProject('packages/core/tsconfig.json'),
-  config: createProject('packages/config/tsconfig.json'),
-  logger: createProject('packages/logger/tsconfig.json'),
-  validation: createProject('packages/validation/tsconfig.json'),
-  http: createProject('packages/http/tsconfig.json'),
-  app: createProject('packages/app/tsconfig.json'),
-  mongo: createProject('packages/mongo/tsconfig.json'),
-  server: createProject('packages/server/tsconfig.json'),
+  // config: createProject('packages/config/tsconfig.json'),
+  // logger: createProject('packages/logger/tsconfig.json'),
+  // validation: createProject('packages/validation/tsconfig.json'),
+  // http: createProject('packages/http/tsconfig.json'),
+  // app: createProject('packages/app/tsconfig.json'),
+  // mongo: createProject('packages/mongo/tsconfig.json'),
+  // server: createProject('packages/server/tsconfig.json'),
 };
 
 const modules = Object.keys(packages);
@@ -26,12 +26,15 @@ const dist = distId < 0 ? source : process.argv[distId + 1];
  * Watches the packages/* folder and
  * builds the package on file change
  */
-function defaultTask() {
+function developmentTask() {
   log.info('Watching files..');
   modules.forEach(packageName => {
     watch(
       [`${source}/${packageName}/**/*.ts`, `${source}/${packageName}/*.ts`],
-      series(packageName),
+      {
+        ignoreInitial: false,
+      },
+      series(`${packageName}:dev`),
     );
   });
 }
@@ -73,4 +76,5 @@ modules.forEach(packageName => {
 task('common:dev', series(modules.map(packageName => `${packageName}:dev`)));
 task('build', series(modules));
 task('build:dev', series('common:dev'));
-task('default', defaultTask);
+task('development', developmentTask);
+task('default', series('build'));

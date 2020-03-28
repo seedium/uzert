@@ -2,17 +2,18 @@ import * as fastify from 'fastify';
 import { v4 as uuidv4 } from 'uuid';
 import * as qs from 'qs';
 import { IncomingMessage } from 'http';
+import { merge } from '@uzert/helpers';
 // core providers
-import { IProvider } from '@uzert/core';
+import { HttpAdapter } from '../../core/adapters';
 import Logger from '@uzert/logger';
 import Config from '@uzert/config';
 import { Route, Middleware } from '@uzert/http';
 import { IPluginKernel } from '../interfaces';
-import { HttpKernel, DefaultHttpKernel } from '../kernel';
+import { HttpKernelAdapter, DefaultHttpKernel } from '../kernel';
 // errors
 import { AppBootError } from '../errors';
 
-class FastifyApplicationProvider implements IProvider {
+export class FastifyApplicationProvider extends HttpAdapter<fastify.FastifyInstance> {
   // Fastify instance
   protected _app?: fastify.FastifyInstance;
   protected _isReady: boolean = false;
@@ -37,25 +38,26 @@ class FastifyApplicationProvider implements IProvider {
     return this._isReady;
   }
 
-  public async boot(kernel?: HttpKernel) {
+  public async boot(options: fastify.ServerOptions) {
+    options = merge(
+      {
+        logger: Logger.pino,
+        ignoreTrailingSlash: Config.get('server:ignoreTrailingSlash', true),
+        maxParamLength: Config.get('server:maxParamLength', 100),
+        bodyLimit: Config.get('server:bodyLimit', 1048576),
+        caseSensitive: Config.get('server:caseSensitive', true),
+        trustProxy: Config.get('server:trustProxy', false),
+        pluginTimeout: Config.get('server:pluginTimeout', 0),
+        genReqId: () => uuidv4(),
+        querystringParser: (str) => qs.parse(str),
+      },
+      options,
+    );
+
     const startTime = new Date().getTime();
 
-    if (!kernel) {
-      kernel = new DefaultHttpKernel();
-    }
-
     // register logger and other settings from config in fastify application
-    this._app = fastify({
-      logger: Logger.pino,
-      ignoreTrailingSlash: Config.get('server:ignoreTrailingSlash', true),
-      maxParamLength: Config.get('server:maxParamLength', 100),
-      bodyLimit: Config.get('server:bodyLimit', 1048576),
-      caseSensitive: Config.get('server:caseSensitive', true),
-      trustProxy: Config.get('server:trustProxy', false),
-      pluginTimeout: Config.get('server:pluginTimeout', 0),
-      genReqId: () => uuidv4(),
-      querystringParser: (str) => qs.parse(str),
-    });
+    this._app = fastify(options);
 
     this._app.addContentTypeParser(Config.get('filesystems:supportMimes') || [], async (req: IncomingMessage) => {
       Logger.pino.debug(`Uploading binary data with size - ${req.headers['content-length']}`);
@@ -89,7 +91,7 @@ class FastifyApplicationProvider implements IProvider {
     return this._app;
   }
 
-  protected async bootKernel(kernel: HttpKernel) {
+  protected async bootKernel(kernel: HttpKernelAdapter) {
     const startTime = new Date().getTime();
 
     if (!this._app) {
@@ -138,5 +140,3 @@ class FastifyApplicationProvider implements IProvider {
     this._app.register(plugin.plugin, plugin.properties);
   }
 }
-
-export default new FastifyApplicationProvider();
