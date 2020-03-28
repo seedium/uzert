@@ -1,6 +1,6 @@
-import { HttpKernel } from './http-kernel';
+import { HttpKernelAdapter } from '@uzert/core';
 
-export class DefaultHttpKernel extends HttpKernel {
+export class DefaultHttpKernel extends HttpKernelAdapter {
   public plugins = [];
   public middlewares = [];
 }

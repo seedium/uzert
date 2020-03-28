@@ -1,6 +1,6 @@
 import getTag from '../internal/getTag';
 
-export default (value: any) => {
+const isString = (value: any): value is string => {
   const type = typeof value;
 
   return (
@@ -8,3 +8,5 @@ export default (value: any) => {
     (type === 'object' && value !== null && !Array.isArray(value) && getTag(value) === '[object String]')
   );
 };
+
+export default isString;

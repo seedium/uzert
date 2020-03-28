@@ -9,7 +9,9 @@ node_modules/
 
 # bundle
 packages/**/*.d.ts
+packages/**/*.d.ts.map
 packages/**/*.js
+packages/**/*.js.map
 
 # misc
 .DS_Store
