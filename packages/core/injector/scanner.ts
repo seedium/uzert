@@ -1,7 +1,9 @@
+import { isNil } from '@uzert/helpers';
 import { UzertContainer } from './uzert-container';
 import { Module } from './module';
-import { Type } from '../interfaces';
+import { Type, FactoryProvider, Provider } from '../interfaces';
 import { MODULE_KEYS } from '../constants';
+import { getRandomString } from '../utils/get-random-string';
 
 export class DependenciesScanner {
   constructor(private readonly container: UzertContainer) {}
@@ -48,11 +50,38 @@ export class DependenciesScanner {
     return this.container.addModule(module, scope);
   }
 
-  public insertProvider(provider: Type<any>, token: string) {
-    return this.container.addProvider(provider, token);
+  public insertProvider(provider: Provider, token: string) {
+    const isCustomProvider = this.isCustomProvider(provider);
+
+    if (!isCustomProvider) {
+      return this.container.addProvider(provider as Type<any>, token);
+    }
+    const applyProvidersMap = this.getApplyProvidersMap();
+    const providersKeys = Object.keys(applyProvidersMap);
+    const type = (provider as FactoryProvider).provide;
+
+    if (!providersKeys.includes(type as string)) {
+      return this.container.addProvider(provider as any, token);
+    }
+
+    const providerToken = `${type as string} (UUID: ${getRandomString()})`;
+    const newProvider = {
+      ...provider,
+      provide: providerToken,
+    } as Provider;
+
+    return this.container.addProvider(newProvider, token);
   }
 
   public insertController(controller: Type<any>, token: string) {
     return this.container.addController(controller, token);
+  }
+
+  public isCustomProvider(provider: Provider): provider is FactoryProvider {
+    return provider && !isNil((provider as any).provide);
+  }
+
+  public getApplyProvidersMap(): { [type: string]: Function } {
+    return {};
   }
 }

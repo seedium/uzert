@@ -1,5 +1,5 @@
 import { ModulesContainer } from './modules-container';
-import { Type } from '../interfaces';
+import { Type, Provider } from '../interfaces';
 import { CircularDependencyError, UnknownModuleError, InvalidModuleError } from '../errors';
 import { Module } from './module';
 import { ModuleTokenFactory } from './module-token-factory';
@@ -14,7 +14,7 @@ export class UzertContainer {
     return this.modules;
   }
 
-  public addProvider(provider: Type<any>, token: string): string {
+  public addProvider(provider: Provider, token: string): string {
     if (!provider) {
       throw new CircularDependencyError();
     }

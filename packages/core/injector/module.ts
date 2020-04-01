@@ -1,4 +1,5 @@
-import { Type, IInjectable, Controller } from '../interfaces';
+import { isNil, isFunction, isUndefined } from '@uzert/helpers';
+import { Type, IInjectable, Controller, Provider, FactoryProvider, ProviderName, Abstract } from '../interfaces';
 import { InstanceWrapper } from './instance-wrapper';
 import { getRandomString } from '../utils/get-random-string';
 import { CONTROLLER_ID_KEY } from './injector.constants';
@@ -24,19 +25,23 @@ export class Module {
     return this._controllers;
   }
 
-  public addProvider(provider: Type<IInjectable>): string {
+  public addProvider(provider: Provider): string {
+    if (this.isCustomProvider(provider)) {
+      return this.addCustomProvider(provider, this._providers);
+    }
+
     this._providers.set(
-      provider.name,
+      (provider as Type<IInjectable>).name,
       new InstanceWrapper({
-        name: provider.name,
-        metatype: provider,
+        name: (provider as Type<IInjectable>).name,
+        metatype: provider as Type<IInjectable>,
         instance: null,
         isResolved: false,
         host: this,
       }),
     );
 
-    return provider.name;
+    return (provider as Type<IInjectable>).name;
   }
 
   public addController(controller: Type<IInjectable>): string {
@@ -63,5 +68,48 @@ export class Module {
       configurable: true,
       value: getRandomString(),
     });
+  }
+
+  public isCustomProvider(provider: Provider): provider is FactoryProvider {
+    return !isNil((provider as FactoryProvider).provide);
+  }
+
+  public addCustomProvider(provider: FactoryProvider & ProviderName, collection: Map<string, any>): string {
+    const name = this.getProviderStaticToken(provider.provide) as string;
+
+    provider = {
+      ...provider,
+      name,
+    };
+
+    if (this.isCustomFactory(provider)) {
+      this.addCustomFactory(provider, collection);
+    }
+
+    return name;
+  }
+
+  public getProviderStaticToken(provider: string | symbol | Type<any> | Abstract<any>): string | symbol {
+    return isFunction(provider) ? (provider as Function).name : (provider as string | symbol);
+  }
+
+  public isCustomFactory(provider: any): provider is FactoryProvider {
+    return !isUndefined((provider as FactoryProvider).useFactory);
+  }
+
+  public addCustomFactory(provider: FactoryProvider & ProviderName, collection: Map<string, InstanceWrapper>) {
+    const { name, useFactory: factory, inject } = provider;
+
+    collection.set(
+      name as string,
+      new InstanceWrapper({
+        name,
+        metatype: factory as any,
+        instance: null,
+        isResolved: false,
+        inject: inject || [],
+        host: this,
+      }),
+    );
   }
 }
