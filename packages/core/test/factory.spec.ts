@@ -4,13 +4,35 @@ import { UzertFactory } from '../uzert-factory';
 import { Injectable } from '../decorators';
 import { Module } from '../decorators';
 import { UzertApplicationContext } from '../uzert-application-context';
+import { Provider } from '../interfaces';
+
+@Injectable()
+class TestProvider3 {
+  public foo(): string {
+    return 'bar';
+  }
+}
 
 @Injectable()
 class TestProvider2 {
-  static boot() {}
+  static boot(options?: any): Provider<TestProvider2> {
+    return {
+      provide: TestProvider2,
+      inject: [TestProvider3],
+      useFactory: async (testProvider3: TestProvider3) => {
+        return new TestProvider2(options, testProvider3);
+      },
+    };
+  }
+
+  private readonly _options: any;
+
+  constructor(options: any, public readonly testProvider3: TestProvider3) {
+    this._options = options;
+  }
 
   public hello(): string {
-    return 'world';
+    return this._options;
   }
 }
 
@@ -18,11 +40,15 @@ class TestProvider2 {
 class TestProvider {
   static boot() {}
 
-  constructor(public testProvider: TestProvider2) {}
+  constructor(public testProvider2: TestProvider2) {}
 }
 
+let customOptions = {
+  customOption: true,
+};
+
 @Module({
-  providers: [TestProvider, TestProvider2],
+  providers: [TestProvider, TestProvider2.boot(customOptions), TestProvider3],
 })
 class AppModule {
   constructor() {}
@@ -90,4 +116,13 @@ describe('Factory', () => {
   it('should not resolve if @Injectable decorator was not specified');
 
   it('should not resolve if @Injectable decorator was specified but not added to module providers');
+
+  it('should use factory for creating providers', async () => {
+    const ctx = await UzertFactory.createApplicationContext(AppModule);
+    const testProvider = await ctx.get<TestProvider>(TestProvider);
+    expect(testProvider).instanceOf(TestProvider);
+    expect(testProvider).haveOwnProperty('testProvider2').instanceOf(TestProvider2);
+    expect(testProvider.testProvider2.hello()).deep.eq(customOptions);
+    expect(testProvider.testProvider2).haveOwnProperty('testProvider3').instanceOf(TestProvider3);
+  });
 });

@@ -1,3 +1,4 @@
+import { isNil } from '@uzert/helpers';
 import { INSTANCE_ID_SYMBOL, INSTANCE_METADATA_SYMBOL } from '../constants';
 import { getRandomString } from '../utils/get-random-string';
 import { ContextId, InstancePerContext, Type, InstanceMetadataStore, PropertyMetadata } from '../interfaces';
@@ -13,6 +14,7 @@ export class InstanceWrapper<T = any> {
   private readonly [INSTANCE_METADATA_SYMBOL]: InstanceMetadataStore = {};
 
   public metatype: Type<T> | Function;
+  public inject?: (string | symbol | Function | Type<any>)[];
 
   constructor(metadata: Partial<InstanceWrapper<T>> & Partial<InstancePerContext<T>> = {}) {
     this[INSTANCE_ID_SYMBOL] = getRandomString();
@@ -48,7 +50,7 @@ export class InstanceWrapper<T = any> {
     return Object.create(this.metatype.prototype);
   }
 
-  public getInstanceByContextId(contextId: ContextId): InstancePerContext<T> {
+  public getInstanceByContextId(contextId: ContextId, inquirerId?: string): InstancePerContext<T> {
     const instancePerContext = this.values.get(contextId);
     return instancePerContext ? instancePerContext : this.cloneStaticInstance(contextId);
   }
@@ -78,10 +80,10 @@ export class InstanceWrapper<T = any> {
   }
 
   private isNewable(): boolean {
-    return this.metatype && this.metatype.prototype;
+    return isNil(this.inject) && this.metatype && this.metatype.prototype;
   }
 
-  public setInstanceByContextId(contextId: ContextId, value: InstancePerContext<T>) {
+  public setInstanceByContextId(contextId: ContextId, value: InstancePerContext<T>, inquirerId?: string) {
     this.values.set(contextId, value);
   }
 

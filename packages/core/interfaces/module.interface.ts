@@ -1,6 +1,10 @@
-import { IProvider } from './provider.interface';
+import { Provider } from './provider.interface';
 
 export interface ModuleOptions {
-  providers?: IProvider<any>[];
+  providers?: Provider[];
   controllers?: Function[];
+}
+
+export interface ProviderName {
+  name?: string | symbol;
 }
