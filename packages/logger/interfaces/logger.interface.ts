@@ -1,9 +1,14 @@
 import { LoggerOptions as PinoLoggerOptions } from 'pino';
 
-export interface ILoggerOptions {
-  pino?: PinoLoggerOptions;
+interface ExtreameModePinoOptions {
+  enabled?: boolean;
+  tick?: number;
 }
 
-export interface ILoggerMetadata {
-  [key: string]: string;
+export interface ExtendedPinoOptions extends PinoLoggerOptions {
+  extremeMode?: ExtreameModePinoOptions;
+}
+
+export interface ILoggerOptions {
+  pino?: ExtendedPinoOptions;
 }

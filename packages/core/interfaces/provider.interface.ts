@@ -2,6 +2,10 @@ import { Abstract } from './abstract.interface';
 
 export type Provider<T = any> = Type<T> | FactoryProvider<T>;
 
+export abstract class ProviderInstance {
+  public dispose?(): Promise<void> | void;
+}
+
 export interface Type<T> extends Function {
   new (...args: any[]): T;
 }

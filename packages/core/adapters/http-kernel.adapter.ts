@@ -1,24 +1,15 @@
 import { IncomingMessage, ServerResponse } from 'http';
 
 export abstract class HttpKernelAdapter<Request = IncomingMessage, Response = ServerResponse> {
-  public abstract middlewares: string[] = [];
+  public abstract validateRequest(req: Request, res: Response): Promise<void> | void;
 
-  public async validateRequest() {}
+  public abstract validateResponse<Payload = any>(
+    req: Request,
+    res: Response,
+    payload: Payload,
+  ): Promise<Payload> | Payload;
 
-  public async validateResponse() {}
+  public abstract notFoundHandler(req: Request, res: Response): Promise<any> | any;
 
-  public async notFoundHandler(req: Request, res: Response) {
-    return {
-      message: 'Route not found',
-    };
-  }
-
-  public async errorHandler(err: Error, req: Request, res: Response) {
-    // TODO inject logger
-    // Logger.pino.error(err);
-
-    return {
-      message: err.message,
-    };
-  }
+  public abstract errorHandler(err: Error, req: Request, res: Response): Promise<any> | any;
 }

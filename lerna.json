@@ -7,5 +7,9 @@
     "publish": {
       "registry": "https://package.registry.seedium.io"
     }
-  }
+  },
+  "npmClient": "yarn",
+  "npmClientArgs": [
+    "--pure-lockfile"
+  ]
 }

@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { merge } from '../src';
+import { merge } from '../object';
 
 describe('object', () => {
   it('should merge first level', () => {

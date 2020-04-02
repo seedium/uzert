@@ -1,31 +1,27 @@
 import * as path from 'path';
 import * as glob from 'glob';
-import { IProvider } from '@uzert/core';
+import { ProviderInstance } from '@uzert/core';
 import { prop } from '@uzert/helpers';
 import { IStore, IConfigBootSpec, IConfigOptions } from '../interfaces';
 
-export class ConfigProvider implements IProvider {
-  public stores: IStore = {};
+export class Config extends ProviderInstance {
+  private stores: IStore = {};
 
-  public async boot({
-    basePath = path.resolve('src', 'app', 'Config'),
-    pattern = '*.ts',
-    useAbsolute = true,
-  }: IConfigOptions = {}) {
-    const configs = await this.loadConfigs(basePath, pattern, useAbsolute);
-
-    await Promise.all(
-      Object.keys(configs).map(async (configKey) => {
-        const config = await configs[configKey];
-        this.stores[configKey] = config.default;
-      }),
-    );
+  static boot(options: IConfigOptions) {
+    return {
+      provide: Config,
+      useFactory: async () => {
+        const config = new Config(options);
+        await config.loadConfigs();
+      },
+    };
   }
-
-  public unBoot() {
+  constructor(private readonly _options: IConfigOptions) {
+    super();
+  }
+  public dispose() {
     this.stores = {};
   }
-
   public get(key: string, defaultValue?: any): any {
     let valueToReturn: any = prop(key)(this.stores) || defaultValue;
 
@@ -41,10 +37,18 @@ export class ConfigProvider implements IProvider {
   public env(key: string, defaultValue?: any): any {
     return process.env[key] || defaultValue;
   }
-
-  protected async loadConfigs(basePath: string, pattern: string, useAbsolute?: boolean): Promise<IConfigBootSpec> {
+  protected async loadConfigs(): Promise<any> {
+    const configs = await this.importConfigs();
+    await Promise.all(
+      Object.keys(configs).map(async (configKey) => {
+        const config = await configs[configKey];
+        this.stores[configKey] = config.default;
+      }),
+    );
+  }
+  protected importConfigs(): Promise<IConfigBootSpec> {
     return new Promise((resolve, reject) => {
-      glob(path.resolve(basePath, pattern), (err, configFiles) => {
+      glob(path.resolve(this._options.basePath, this._options.pattern), (err, configFiles) => {
         if (err) {
           return reject(err);
         }
@@ -54,7 +58,7 @@ export class ConfigProvider implements IProvider {
 
           acc = {
             ...acc,
-            [namespace]: useAbsolute ? import('app/Config/' + namespace) : import(path.join(basePath, namespace)),
+            [namespace]: import(path.join(this._options.basePath, namespace)),
           };
 
           return acc;
@@ -65,5 +69,3 @@ export class ConfigProvider implements IProvider {
     });
   }
 }
-
-export default new ConfigProvider();

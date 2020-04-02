@@ -8,31 +8,27 @@ import { UzertApplicationContext } from './uzert-application-context';
 import { ErrorsZone } from './errors/handlers/errors-zone';
 
 export class UzertFactoryStatic {
-  public async create<ApplicationInstance, ServerOptions = any>(
+  public async create<ApplicationAdapter extends HttpAdapter, ServerOptions = any>(
     module: any,
     httpServer: HttpAdapter,
-    serverOptions?: ServerOptions,
-  ): Promise<ApplicationInstance | any> {
+  ): Promise<ApplicationAdapter | any> {
     const container = new UzertContainer();
 
     await this.initialize(module, container);
-
-    const instance = new UzertApplication<ApplicationInstance, ServerOptions>(container, httpServer, serverOptions);
-
-    // return this.createUzertInstance<ApplicationInstance>(instance);
+    const target = this.createUzertInstance(
+      new UzertApplication<ApplicationAdapter, ServerOptions>(container, httpServer),
+    );
+    return this.createAdapterProxy(target, httpServer);
   }
 
   public async createApplicationContext(module: any) {
     const container = new UzertContainer();
 
     await this.initialize(module, container);
-
     const root = container.getModules().values().next().value;
-
     const applicationContext = this.createUzertInstance<UzertApplicationContext>(
       new UzertApplicationContext(container, root),
     );
-
     return applicationContext.init();
   }
 
@@ -76,6 +72,17 @@ export class UzertFactoryStatic {
 
       return receiver[prop];
     };
+  }
+
+  private createAdapterProxy<T>(app: UzertApplication, adapter: HttpAdapter): T {
+    return (new Proxy(app, {
+      get: (receiver: Record<string, any>, prop: string) => {
+        if (!(prop in receiver) && prop in adapter) {
+          return this.createErrorZone(adapter, prop);
+        }
+        return receiver[prop];
+      },
+    }) as unknown) as T;
   }
 
   private createErrorZone(receiver: Record<string, any>, prop: string): Function {

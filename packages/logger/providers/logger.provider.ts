@@ -1,11 +1,17 @@
-import { IProvider } from '@uzert/core';
+import { ProviderInstance } from '@uzert/core';
 import { Logger as PinoLogger } from 'pino';
-import { ILoggerMetadata, ILoggerOptions } from '../interfaces';
+import { ILoggerOptions } from '../interfaces';
 import { createPino } from '../loggers';
 
-export class Logger implements IProvider {
+export class Logger extends ProviderInstance {
   protected _pino?: PinoLogger;
 
+  static boot(options: ILoggerOptions) {
+    return {
+      provide: Logger,
+      useFactory: () => new Logger(options),
+    };
+  }
   get pino() {
     if (!this._pino) {
       throw new Error('Pino instance is not initialized yet. Did you include logger to boot service?');
@@ -13,20 +19,16 @@ export class Logger implements IProvider {
 
     return this._pino;
   }
-
-  set pino(instance) {
+  set pino(instance: PinoLogger) {
     this._pino = instance;
   }
-
-  public boot({ pino: pinoOptions }: ILoggerOptions = {}, metadata?: ILoggerMetadata) {
-    this.pino = createPino(pinoOptions, metadata);
+  constructor({ pino: pinoOptions }: ILoggerOptions) {
+    super();
+    this.pino = createPino(pinoOptions);
   }
-
-  public unBoot(): void {
+  public dispose(): void {
     if (this._pino) {
       this._pino = undefined;
     }
   }
 }
-
-export default new Logger();

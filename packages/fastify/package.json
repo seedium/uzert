@@ -1,6 +1,6 @@
 {
-  "name": "@uzert/config",
-  "version": "1.2.2",
+  "name": "@uzert/fastify",
+  "version": "2.0.0",
   "description": "",
   "author": "Seedium",
   "license": "ISC",
@@ -12,17 +12,24 @@
     "url": "https://github.com/seedium/uzert"
   },
   "peerDependencies": {
-    "reflect-metadata": "^0.1.12",
     "@uzert/core": "^1.0.4",
-    "@uzert/helpers": "^2.0.1"
+    "@uzert/helpers": "^2.0.1",
+    "@uzert/config": "^1.2.2",
+    "@uzert/logger": "^2.3.0",
+    "reflect-metadata": "^0.1.12"
   },
   "dependencies": {
-    "@types/glob": "7.1.2",
-    "glob": "7.1.6",
+    "@types/qs": "6.9.1",
+    "@types/uuid": "7.0.4",
+    "fastify": "2.14.1",
+    "qs": "6.9.3",
+    "uuid": "7.0.3",
     "tslib": "1.13.0"
   },
   "devDependencies": {
     "@uzert/core": "^1.0.4",
-    "@uzert/helpers": "^2.0.1"
+    "@uzert/helpers": "^2.0.1",
+    "@uzert/config": "^1.2.2",
+    "@uzert/logger": "^2.3.0"
   }
 }

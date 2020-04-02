@@ -10,7 +10,6 @@ describe('Boot module', () => {
       controllers: [],
     })
     class AppModule {}
-
     expect(AppModule).instanceOf(Function);
     const metadataKeys = Reflect.getMetadataKeys(AppModule);
     expect(metadataKeys).length(2);
@@ -29,7 +28,6 @@ describe('Boot module', () => {
       expect(err).instanceOf(ModuleValidationError);
       return;
     }
-
     throw new Error('Expected do not allow further code execution');
   });
 
@@ -39,7 +37,6 @@ describe('Boot module', () => {
         return new TestProvider();
       }
     }
-
     @Module({
       providers: [TestProvider],
       controllers: [],
@@ -52,20 +49,15 @@ describe('Boot module', () => {
   });
 
   it('should inject controllers to AppModule', () => {
-    class TestService {
-      public someMethod(): boolean {
-        return true;
-      }
-    }
-
+    class TestController {}
     @Module({
       providers: [],
-      controllers: [TestService],
+      controllers: [TestController],
     })
     class AppModule {}
     const metadataControllers = Reflect.getMetadata(MODULE_KEYS.CONTROLLERS, AppModule);
     expect(metadataControllers).length(1);
     const [TestControllerMeta] = metadataControllers;
-    expect(TestControllerMeta).eq(TestService);
+    expect(TestControllerMeta).eq(TestController);
   });
 });

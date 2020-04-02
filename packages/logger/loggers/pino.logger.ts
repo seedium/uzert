@@ -1,37 +1,17 @@
 import * as pino from 'pino';
-import { merge } from '@uzert/helpers';
-import Config from '@uzert/config';
-import * as serializers from '../serializers/http-serializers';
-import { ILoggerMetadata } from '../interfaces';
+import { ExtendedPinoOptions } from '../interfaces';
 
-export const createPino = (options: pino.LoggerOptions = {}, metadata: ILoggerMetadata = {}): pino.Logger => {
-  const defaultOptions = merge(
-    {
-      enabled: Config.get('logger:pino:enabled'),
-      prettyPrint: Config.get('logger:pino:prettyPrint'),
-      redact: {
-        paths: ['req.headers.authorization'],
-        remove: true,
-      },
-      level: Config.get('logger:pino:level', 'debug'),
-      serializers: {
-        req: serializers.request,
-        res: serializers.response,
-      },
-      mixin: () => metadata,
-    },
-    options,
-  );
-
+export const createPino = (options: ExtendedPinoOptions): pino.Logger => {
   let logger: pino.Logger;
 
-  if (Config.get('logger:pino:extremeMode:enabled')) {
-    logger = pino(defaultOptions, pino.extreme());
+  if (options.extremeMode.enabled) {
+    const extremeModeTick = options.extremeMode.tick ?? 10000;
+    logger = pino(options, pino.extreme());
     logger.info('Pino extreme mode is enabled');
 
     setInterval(function () {
       logger.flush();
-    }, Config.get('logger:pino:extremeMode:tick', 10000)).unref();
+    }, extremeModeTick).unref();
 
     const handler = pino.final(logger, (err, finalLogger, evt) => {
       finalLogger.info(`${evt} caught`);
@@ -50,7 +30,7 @@ export const createPino = (options: pino.LoggerOptions = {}, metadata: ILoggerMe
     process.on('SIGQUIT', () => handler(null, 'SIGQUIT'));
     process.on('SIGTERM', () => handler(null, 'SIGTERM'));
   } else {
-    logger = pino(defaultOptions);
+    logger = pino(options);
   }
 
   return logger;
