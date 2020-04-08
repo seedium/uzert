@@ -69,7 +69,7 @@
     "lerna": "3.20.2",
     "lint-staged": "10.1.1",
     "mocha": "7.1.1",
-    "nodemon": "2.0.2",
+    "nodemon": "2.0.3",
     "nyc": "15.0.0",
     "object-hash": "2.0.3",
     "pino": "6.0.0",
