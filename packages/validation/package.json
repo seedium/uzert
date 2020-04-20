@@ -22,7 +22,7 @@
     "fastify-plugin": "1.6.1",
     "fastify-static": "2.6.0",
     "swagger-ui-dist": "3.25.0",
-    "yaml": "1.8.3",
+    "yaml": "1.9.2",
     "tslib": "1.11.1"
   },
   "devDependencies": {
