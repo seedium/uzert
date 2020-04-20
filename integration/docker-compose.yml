@@ -4,21 +4,21 @@ services:
   mongo0:
     hostname: mongo0
     container_name: test-mongo0
-    image: mongo:4.2.5
+    image: mongo:4.2.6
     ports:
       - 27017:27017
     entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0" ]
   mongo1:
     hostname: mongo1
     container_name: test-mongo1
-    image: mongo:4.2.5
+    image: mongo:4.2.6
     ports:
       - 27018:27017
     entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0" ]
   mongo2:
     hostname: mongo2
     container_name: test-mongo2
-    image: mongo:4.2.5
+    image: mongo:4.2.6
     ports:
       - 27019:27017
     entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0" ]
