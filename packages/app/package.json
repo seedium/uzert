@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@types/qs": "6.9.1",
-    "@types/uuid": "7.0.2",
+    "@types/uuid": "7.0.4",
     "fastify": "2.13.1",
     "qs": "6.9.3",
     "uuid": "7.0.3",
