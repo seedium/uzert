@@ -79,7 +79,7 @@
     "standard-version": "7.1.0",
     "swagger-ui-dist": "3.25.0",
     "ts-node": "8.9.0",
-    "typescript": "3.8.3"
+    "typescript": "3.9.5"
   },
   "engines": {
     "node": ">= 10.13.0"
