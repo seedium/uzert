@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "reflect-metadata": "0.1.13",
-    "tslib": "1.11.1"
+    "tslib": "1.13.0"
   },
   "devDependencies": {
     "@commitlint/cli": "8.3.5",

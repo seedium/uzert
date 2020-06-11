@@ -12,6 +12,6 @@
     "reflect-metadata": "^0.1.12"
   },
   "dependencies": {
-    "tslib": "1.11.1"
+    "tslib": "1.13.0"
   }
 }

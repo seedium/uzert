@@ -23,7 +23,7 @@
     "fastify-static": "2.7.0",
     "swagger-ui-dist": "3.25.0",
     "yaml": "1.9.2",
-    "tslib": "1.11.1"
+    "tslib": "1.13.0"
   },
   "devDependencies": {
     "bson": "4.0.4",
