@@ -19,10 +19,10 @@
     "reflect-metadata": "^0.1.12"
   },
   "dependencies": {
-    "@types/qs": "6.9.1",
+    "@types/qs": "6.9.3",
     "@types/uuid": "7.0.4",
     "fastify": "2.14.1",
-    "qs": "6.9.3",
+    "qs": "6.9.4",
     "uuid": "7.0.3",
     "tslib": "1.13.0"
   },
