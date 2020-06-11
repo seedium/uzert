@@ -21,7 +21,7 @@
     "ajv-merge-patch": "4.1.0",
     "fastify-plugin": "1.6.1",
     "fastify-static": "2.7.0",
-    "swagger-ui-dist": "3.25.0",
+    "swagger-ui-dist": "3.26.0",
     "yaml": "1.9.2",
     "tslib": "1.11.1"
   },
