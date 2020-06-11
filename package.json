@@ -78,7 +78,7 @@
     "sinon-chai": "3.5.0",
     "standard-version": "7.1.0",
     "swagger-ui-dist": "3.25.0",
-    "ts-node": "8.9.0",
+    "ts-node": "8.10.2",
     "typescript": "3.8.3"
   },
   "engines": {
