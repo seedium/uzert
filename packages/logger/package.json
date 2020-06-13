@@ -16,7 +16,7 @@
     "@uzert/core": "^1.0.4"
   },
   "dependencies": {
-    "@types/pino": "6.0.1",
+    "@types/pino": "6.3.0",
     "pino": "6.3.2",
     "tslib": "1.13.0"
   },
