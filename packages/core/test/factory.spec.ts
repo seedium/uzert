@@ -1,9 +1,10 @@
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { UzertFactory } from '../uzert-factory';
-import { Injectable } from '../decorators';
-import { Module } from '../decorators';
+import { Injectable, Module } from '../decorators';
 import { UzertApplicationContext } from '../uzert-application-context';
+import { HttpAdapter } from '../adapters';
+import { UzertApplication } from '../uzert-application';
 
 describe('Factory', () => {
   @Injectable()
@@ -17,12 +18,28 @@ describe('Factory', () => {
     sinon.restore();
   });
 
-  it('should return application context', async () => {
+  it('should create application context', async () => {
     const ctx = await UzertFactory.createApplicationContext(AppModule);
     expect(ctx).not.undefined;
     expect(ctx).instanceOf(UzertApplicationContext);
   });
-
+  it('should create uzert application', async () => {
+    class TestHttpAdapter extends HttpAdapter {
+      get app() {
+        return null;
+      }
+      get isReady() {
+        return true;
+      }
+      public run(): Promise<any> | any {}
+      public bootKernel(): any {}
+      public bootRouter(): any {}
+      public listen(): any {}
+    }
+    const app = await UzertFactory.create(AppModule, new TestHttpAdapter());
+    expect(app).not.undefined;
+    expect(app).instanceOf(UzertApplication);
+  });
   describe('When working with two context', () => {
     let ctx1: UzertApplicationContext;
     let ctx2: UzertApplicationContext;

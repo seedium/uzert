@@ -1,8 +1,7 @@
-const isInteger =
-  Number.isInteger ||
-  // tslint:disable-next-line
-  function isInteger(n) {
-    return n << 0 === n;
-  };
+export const uzertIsInteger = function isInteger(n: any) {
+  return n << 0 === n;
+};
+
+const isInteger = Number.isInteger || uzertIsInteger;
 
 export default isInteger;

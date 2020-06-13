@@ -2,27 +2,27 @@ import * as chalk from 'chalk';
 
 interface TraceMethodTimeOptions {
   logger?: (message?: any, ...optionalParams: any[]) => void;
-  startMessage?: string;
-  finishMessage?: string;
+  printStartMessage?: (propertyName: string) => string;
+  printFinishMessage?: (propertyName: string, time: number) => string;
 }
 
 export function TraceMethodTime({
   logger = console.log,
-  startMessage = `Start "%s" method`,
-  finishMessage = `Finish method in time: %s`,
+  printStartMessage = (propertyName: string) => `Start "${propertyName}" method`,
+  printFinishMessage = (propertyName: string, time: number) => `Finish "${propertyName}" in time: ${time}ms`,
 }: TraceMethodTimeOptions = {}) {
-  console.log();
   return (target: object, propertyName: string, descriptor: TypedPropertyDescriptor<any>) => {
-    if (!descriptor.value) {
+    if (!descriptor?.value) {
       throw new Error(`Decorator "@TraceMethodTime" can trace time only on method`);
     }
-    const originalMethod = descriptor.value;
-    descriptor.value = function (this: any, ...args: any[]) {
+    let originalMethod = descriptor.value;
+    descriptor.value = async function (this: any, ...args: any[]) {
+      originalMethod = originalMethod.bind(this);
       const startTime = new Date().getTime();
-      logger(chalk.blue(startMessage), propertyName);
-      const result = originalMethod.apply(this, args);
+      logger(chalk.blue(printStartMessage(propertyName)));
+      const result = await originalMethod(...args);
       const finishTime = new Date().getTime();
-      logger(chalk.green(finishMessage), finishTime - startTime);
+      logger(chalk.green(printFinishMessage(propertyName, finishTime - startTime)));
       return result;
     };
     return descriptor;
