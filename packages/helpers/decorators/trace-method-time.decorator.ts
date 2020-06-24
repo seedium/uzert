@@ -1,15 +1,20 @@
 import * as chalk from 'chalk';
 
+interface MessageOptions {
+  propertyName: string;
+  time: number;
+}
+
 interface TraceMethodTimeOptions {
   logger?: (message?: any, ...optionalParams: any[]) => void;
-  printStartMessage?: (propertyName: string) => string;
-  printFinishMessage?: (propertyName: string, time: number) => string;
+  printStartMessage?: (options: MessageOptions) => string;
+  printFinishMessage?: (options: MessageOptions) => string;
 }
 
 export function TraceMethodTime({
   logger = console.log,
-  printStartMessage = (propertyName: string) => `Start "${propertyName}" method`,
-  printFinishMessage = (propertyName: string, time: number) => `Finish "${propertyName}" in time: ${time}ms`,
+  printStartMessage = ({ propertyName }: MessageOptions) => `Start "${propertyName}" method`,
+  printFinishMessage = ({ propertyName, time }: MessageOptions) => `Finish "${propertyName}" in time: ${time}ms`,
 }: TraceMethodTimeOptions = {}) {
   return (target: object, propertyName: string, descriptor: TypedPropertyDescriptor<any>) => {
     if (!descriptor?.value) {
@@ -19,10 +24,24 @@ export function TraceMethodTime({
     descriptor.value = async function (this: any, ...args: any[]) {
       originalMethod = originalMethod.bind(this);
       const startTime = new Date().getTime();
-      logger(chalk.blue(printStartMessage(propertyName)));
+      logger(
+        chalk.blue(
+          printStartMessage({
+            propertyName,
+            time: startTime,
+          }),
+        ),
+      );
       const result = await originalMethod(...args);
       const finishTime = new Date().getTime();
-      logger(chalk.green(printFinishMessage(propertyName, finishTime - startTime)));
+      logger(
+        chalk.green(
+          printFinishMessage({
+            propertyName,
+            time: finishTime - startTime,
+          }),
+        ),
+      );
       return result;
     };
     return descriptor;
