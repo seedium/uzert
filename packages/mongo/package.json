@@ -15,9 +15,9 @@
     "reflect-metadata": "^0.1.12"
   },
   "dependencies": {
-    "@types/mongodb": "3.5.20",
+    "@types/mongodb": "3.5.25",
     "glob": "7.1.6",
-    "mongodb": "3.5.8",
+    "mongodb": "3.5.9",
     "tslib": "1.13.0"
   }
 }
