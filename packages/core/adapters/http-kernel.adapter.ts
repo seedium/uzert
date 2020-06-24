@@ -6,7 +6,7 @@ export abstract class HttpKernelAdapter<Request = IncomingMessage, Response = Se
   public abstract validateResponse<Payload = any>(
     req: Request,
     res: Response,
-    payload: Payload,
+    payload?: Payload,
   ): Promise<Payload> | Payload;
 
   public abstract notFoundHandler(req: Request, res: Response): Promise<any> | any;

@@ -38,32 +38,31 @@ export class FastifyAdapter extends HttpAdapter<fastify.FastifyInstance> {
     return this._isReady;
   }
 
-  constructor(private readonly _logger: Logger, private readonly _config: Config) {
+  constructor(options: fastify.ServerOptions, private readonly _logger: AbstractLogger) {
     super();
-    const optionsFromConfig = this._config.get('server', {});
 
-    const options = merge(
+    options = merge(
       {
-        logger: this._logger.pino,
+        logger: this._logger,
         genReqId: () => uuidv4(),
         querystringParser: (str) => qs.parse(str),
       },
-      optionsFromConfig,
+      options,
     );
 
     this._app = fastify(options);
   }
 
-  public async listen() {
-    return this.app.listen(this._config.get('server:port'), this._config.get('server:address'));
+  public async listen(port: number, address: string) {
+    return this.app.listen(port, address);
   }
   public async dispose() {
     await this.app.close();
   }
 
   @TraceMethodTime({
-    startMessage: `Start initialization fastify adapter...`,
-    finishMessage: `Successfully initialization fastify adapter: %s ms`,
+    printStartMessage: () => `Start initialization fastify adapter...`,
+    printFinishMessage: ({ time }) => `Successfully initialization fastify adapter: ${time}ms`,
   })
   public async run(): Promise<fastify.FastifyInstance> {
     if (!this._app) {
@@ -83,8 +82,8 @@ export class FastifyAdapter extends HttpAdapter<fastify.FastifyInstance> {
   }
 
   @TraceMethodTime({
-    startMessage: `Start initialization Kernel...`,
-    finishMessage: `Successfully initialization Kernel: %s ms`,
+    printStartMessage: () => `Start initialization Kernel...`,
+    printFinishMessage: ({ time }) => `Successfully initialization Kernel: ${time}ms`,
   })
   public bootKernel() {
     if (!this._app) {
@@ -98,8 +97,8 @@ export class FastifyAdapter extends HttpAdapter<fastify.FastifyInstance> {
   }
 
   @TraceMethodTime({
-    startMessage: `Start initialization Router...`,
-    finishMessage: `Successfully initialization Router: %s ms`,
+    printStartMessage: () => `Start initialization Router...`,
+    printFinishMessage: ({ time }) => `Successfully initialization Router: ${time}ms`,
   })
   public bootRouter() {
     if (!this._app) {

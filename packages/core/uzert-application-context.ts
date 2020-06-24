@@ -2,7 +2,7 @@ import { UzertContainer } from './injector/uzert-container';
 import { Type, Abstract, IUzertApplicationContext, ContextId } from './interfaces';
 import { ContainerScanner } from './injector/container-scanner';
 import { Module } from './injector/module';
-import { UnknownElementError } from './errors/unknown-element.error';
+import { UnknownElementError } from './errors';
 import { Injector } from './injector/injector';
 import { createContextId } from './utils/context-id-factory';
 

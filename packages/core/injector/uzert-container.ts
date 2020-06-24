@@ -56,4 +56,14 @@ export class UzertContainer {
 
     return moduleRef;
   }
+  public async getModuleToken(metatype: Type<any>): Promise<string> {
+    if (!metatype) {
+      throw new InvalidModuleError([]);
+    }
+    const { token } = await this.moduleCompiler.compile(metatype);
+    return token;
+  }
+  public getModuleByToken(token: string): Module {
+    return this.modules.get(token);
+  }
 }
