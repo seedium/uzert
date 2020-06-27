@@ -50,7 +50,7 @@ export class InstanceWrapper<T = any> {
     return Object.create(this.metatype.prototype);
   }
 
-  public getInstanceByContextId(contextId: ContextId, inquirerId?: string): InstancePerContext<T> {
+  public getInstanceByContextId(contextId: ContextId): InstancePerContext<T> {
     const instancePerContext = this.values.get(contextId);
     return instancePerContext ? instancePerContext : this.cloneStaticInstance(contextId);
   }
@@ -83,7 +83,7 @@ export class InstanceWrapper<T = any> {
     return isNil(this.inject) && this.metatype && this.metatype.prototype;
   }
 
-  public setInstanceByContextId(contextId: ContextId, value: InstancePerContext<T>, inquirerId?: string) {
+  public setInstanceByContextId(contextId: ContextId, value: InstancePerContext<T>) {
     this.values.set(contextId, value);
   }
 

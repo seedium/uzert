@@ -17,5 +17,4 @@ export {
 } from 'fastify';
 
 export * from './adapters';
-export * from './errors';
 export * from './interfaces';

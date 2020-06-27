@@ -14,7 +14,6 @@
   "peerDependencies": {
     "@uzert/core": "^1.0.4",
     "@uzert/helpers": "^2.0.1",
-    "@uzert/config": "^1.2.2",
     "@uzert/logger": "^2.3.0",
     "reflect-metadata": "^0.1.12"
   },
@@ -23,13 +22,13 @@
     "@types/uuid": "7.0.4",
     "fastify": "2.14.1",
     "qs": "6.9.4",
-    "uuid": "7.0.3",
-    "tslib": "1.13.0"
+    "tslib": "1.13.0",
+    "uuid": "7.0.3"
   },
   "devDependencies": {
     "@uzert/core": "^1.0.4",
     "@uzert/helpers": "^2.0.1",
-    "@uzert/config": "^1.2.2",
-    "@uzert/logger": "^2.3.0"
+    "@uzert/logger": "^2.3.0",
+    "reflect-metadata": "^0.1.13"
   }
 }

@@ -3,7 +3,7 @@ import { Abstract } from './abstract.interface';
 export type Provider<T = any> = Type<T> | FactoryProvider<T>;
 
 export abstract class ProviderInstance {
-  public dispose?(): Promise<void> | void;
+  public dispose?(event: string, err?: Error | null): Promise<void> | void;
 }
 
 export interface Type<T> extends Function {

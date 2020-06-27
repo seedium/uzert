@@ -21,6 +21,7 @@ yarn-error.log
 /**/npm-debug.log
 /packages/**/.npmignore
 /packages/**/LICENSE
+packages/**/package-lock.json
 
 # example
 /quick-start

@@ -3,11 +3,10 @@ export interface IStore {
 }
 
 export interface IConfigBootSpec {
-  [namespace: string]: Promise<any>;
+  [namespace: string]: string;
 }
 
 export interface IConfigOptions {
-  basePath?: string;
+  path: string;
   pattern?: string;
-  useAbsolute?: boolean;
 }
