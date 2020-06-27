@@ -29,6 +29,6 @@
     "@uzert/core": "^1.0.4",
     "@uzert/helpers": "^2.0.1",
     "@uzert/logger": "^2.3.0",
-    "reflect-metadata": "^0.1.13"
+    "reflect-metadata": "0.1.13"
   }
 }
