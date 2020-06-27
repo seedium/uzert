@@ -4,53 +4,31 @@ import * as qs from 'qs';
 import { merge, TraceMethodTime } from '@uzert/helpers';
 import { HttpAdapter } from '@uzert/core';
 // core providers
-import { Logger } from '@uzert/logger';
-import { Config } from '@uzert/config';
-import { IPluginKernel } from '../interfaces';
+import { AbstractLogger } from '@uzert/logger';
+import { DefaultLogger } from '@uzert/logger/loggers';
+import { IPluginKernel, Request, Response } from '../interfaces';
 import { FastifyHttpKernelAdapter } from './fastify-http-kernel.adapter';
 // errors
-import { AppBootError } from '../errors';
 import { FastifyHttpRouterAdapter } from './fastify-http-router.adapter';
 
-export class FastifyAdapter extends HttpAdapter<fastify.FastifyInstance> {
+const defaultLogger = new DefaultLogger();
+
+export class FastifyAdapter extends HttpAdapter<fastify.FastifyInstance, Request, Response> {
   protected _router = new FastifyHttpRouterAdapter();
   protected _kernel = new FastifyHttpKernelAdapter();
   protected _app?: fastify.FastifyInstance;
   protected _isReady: boolean = false;
 
   get app(): fastify.FastifyInstance {
-    if (!this._app) {
-      throw new AppBootError();
-    }
-
     return this._app;
   }
-
-  set isReady(value: boolean) {
-    this._isReady = value;
-  }
-
   get isReady(): boolean {
-    if (!this._app) {
-      throw new AppBootError();
-    }
-
     return this._isReady;
   }
-
-  constructor(options: fastify.ServerOptions, private readonly _logger: AbstractLogger) {
+  constructor(options: fastify.ServerOptions = {}, private readonly _logger: AbstractLogger = defaultLogger) {
     super();
 
-    options = merge(
-      {
-        logger: this._logger,
-        genReqId: () => uuidv4(),
-        querystringParser: (str) => qs.parse(str),
-      },
-      options,
-    );
-
-    this._app = fastify(options);
+    this._app = fastify(this.buildOptions(options));
   }
 
   public async listen(port: number, address: string) {
@@ -61,14 +39,11 @@ export class FastifyAdapter extends HttpAdapter<fastify.FastifyInstance> {
   }
 
   @TraceMethodTime({
-    printStartMessage: () => `Start initialization fastify adapter...`,
-    printFinishMessage: ({ time }) => `Successfully initialization fastify adapter: ${time}ms`,
+    logger: defaultLogger.info.bind(defaultLogger),
+    printStartMessage: () => `Start application...`,
+    printFinishMessage: ({ time }) => `Application successfully initialized: ${time}ms`,
   })
   public async run(): Promise<fastify.FastifyInstance> {
-    if (!this._app) {
-      throw new AppBootError();
-    }
-
     if (this.isReady) {
       return this._app;
     }
@@ -76,19 +51,17 @@ export class FastifyAdapter extends HttpAdapter<fastify.FastifyInstance> {
     this.bootKernel();
     this.bootRouter();
     await this._app.ready();
-    this.isReady = true;
+    this._isReady = true;
 
     return this._app;
   }
 
   @TraceMethodTime({
+    logger: defaultLogger.info.bind(defaultLogger),
     printStartMessage: () => `Start initialization Kernel...`,
     printFinishMessage: ({ time }) => `Successfully initialization Kernel: ${time}ms`,
   })
-  public bootKernel() {
-    if (!this._app) {
-      throw new AppBootError();
-    }
+  protected bootKernel() {
     // init users plugins
     this._kernel.plugins.forEach((plugin: IPluginKernel) => this.applyPlugin(plugin));
     // set handlers
@@ -97,21 +70,30 @@ export class FastifyAdapter extends HttpAdapter<fastify.FastifyInstance> {
   }
 
   @TraceMethodTime({
+    logger: defaultLogger.info.bind(defaultLogger),
     printStartMessage: () => `Start initialization Router...`,
     printFinishMessage: ({ time }) => `Successfully initialization Router: ${time}ms`,
   })
-  public bootRouter() {
-    if (!this._app) {
-      throw new AppBootError();
-    }
+  protected bootRouter() {
     // await Route.initRoutes(this._app);
   }
-
   protected applyPlugin(plugin: IPluginKernel) {
-    if (!this._app) {
-      throw new AppBootError();
-    }
-
     this._app.register(plugin.plugin, plugin.options);
+  }
+  protected buildOptions(options: fastify.ServerOptions) {
+    return merge(
+      {
+        logger: this._logger,
+        genReqId: this.generateRequestId,
+        querystringParser: this.parseQueryString,
+      },
+      options,
+    );
+  }
+  protected generateRequestId() {
+    return uuidv4();
+  }
+  protected parseQueryString(str: string) {
+    return qs.parse(str);
   }
 }

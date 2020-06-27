@@ -7,7 +7,6 @@ export interface IConfigBootSpec {
 }
 
 export interface IConfigOptions {
-  basePath?: string;
+  path: string;
   pattern?: string;
-  useAbsolute?: boolean;
 }

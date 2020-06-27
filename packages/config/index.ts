@@ -1,4 +1,4 @@
 import 'reflect-metadata';
 
-export * from './providers';
 export * from './interfaces';
+export * from './config';

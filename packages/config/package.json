@@ -1,5 +1,6 @@
 {
   "name": "@uzert/config",
+  "main": "config.ts",
   "version": "1.2.2",
   "description": "",
   "author": "Seedium",

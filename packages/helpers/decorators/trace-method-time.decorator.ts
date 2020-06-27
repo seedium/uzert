@@ -16,13 +16,12 @@ export function TraceMethodTime({
   printStartMessage = ({ propertyName }: MessageOptions) => `Start "${propertyName}" method`,
   printFinishMessage = ({ propertyName, time }: MessageOptions) => `Finish "${propertyName}" in time: ${time}ms`,
 }: TraceMethodTimeOptions = {}) {
-  return (target: object, propertyName: string, descriptor: TypedPropertyDescriptor<any>) => {
+  return function (target: object, propertyName: string, descriptor: TypedPropertyDescriptor<any>, ...args) {
     if (!descriptor?.value) {
       throw new Error(`Decorator "@TraceMethodTime" can trace time only on method`);
     }
     let originalMethod = descriptor.value;
     descriptor.value = async function (this: any, ...args: any[]) {
-      originalMethod = originalMethod.bind(this);
       const startTime = new Date().getTime();
       logger(
         chalk.blue(
@@ -32,7 +31,7 @@ export function TraceMethodTime({
           }),
         ),
       );
-      const result = await originalMethod(...args);
+      const result = await originalMethod.apply(this, ...args);
       const finishTime = new Date().getTime();
       logger(
         chalk.green(

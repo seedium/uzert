@@ -15,8 +15,6 @@ export class UzertApplication<ApplicationInstance extends HttpAdapter> extends U
     }
 
     await this.httpAdapter.run();
-    await this.httpAdapter.bootKernel();
-    await this.httpAdapter.bootRouter();
     this.isInitialized = true;
 
     return this;
