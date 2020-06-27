@@ -16,7 +16,7 @@
     "@uzert/helpers": "^2.0.1"
   },
   "dependencies": {
-    "tslib": "1.13.0"
+    "tslib": "2.0.0"
   },
   "devDependencies": {
     "@uzert/helpers": "^2.0.1"
