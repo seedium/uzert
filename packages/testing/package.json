@@ -1,0 +1,22 @@
+{
+  "name": "@uzert/testing",
+  "version": "1.0.0",
+  "description": "",
+  "author": "Seedium",
+  "license": "ISC",
+  "publishConfig": {
+    "@uzert:registry": "https://package.registry.seedium.io"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/seedium/uzert"
+  },
+  "peerDependencies": {
+    "reflect-metadata": "^0.1.12",
+    "@uzert/core": "^1.0.4"
+  },
+  "devDependencies": {
+    "@uzert/core": "^1.0.4",
+    "tslib": "1.13.0"
+  }
+}
