@@ -9,27 +9,21 @@ export class InstanceWrapper<T = any> {
   public readonly name: any;
   public readonly async?: boolean;
   public readonly host?: Module;
-
   private readonly values = new WeakMap<ContextId, InstancePerContext<T>>();
   private readonly [INSTANCE_METADATA_SYMBOL]: InstanceMetadataStore = {};
-
   public metatype: Type<T> | Function;
   public inject?: (string | symbol | Function | Type<any>)[];
-
   constructor(metadata: Partial<InstanceWrapper<T>> & Partial<InstancePerContext<T>> = {}) {
     this[INSTANCE_ID_SYMBOL] = getRandomString();
     this.initialize(metadata);
   }
-
   get id(): string {
     return this[INSTANCE_ID_SYMBOL];
   }
-
   get instance(): T {
     const instancePerContext = this.getInstanceByContextId(STATIC_CONTEXT);
     return instancePerContext.instance;
   }
-
   private initialize(metadata: Partial<InstanceWrapper<T>> & Partial<InstancePerContext<T>>) {
     const { instance, isResolved, ...wrapperPartial } = metadata;
     Object.assign(this, wrapperPartial);
@@ -39,7 +33,6 @@ export class InstanceWrapper<T = any> {
       isResolved,
     });
   }
-
   public createPrototype(contextId: ContextId) {
     const host = this.getInstanceByContextId(contextId);
 
@@ -49,12 +42,10 @@ export class InstanceWrapper<T = any> {
 
     return Object.create(this.metatype.prototype);
   }
-
   public getInstanceByContextId(contextId: ContextId): InstancePerContext<T> {
     const instancePerContext = this.values.get(contextId);
     return instancePerContext ? instancePerContext : this.cloneStaticInstance(contextId);
   }
-
   public cloneStaticInstance(contextId: ContextId): InstancePerContext<T> {
     const staticInstance = this.getInstanceByContextId(STATIC_CONTEXT);
 
@@ -74,23 +65,18 @@ export class InstanceWrapper<T = any> {
     this.setInstanceByContextId(contextId, instancePerContext);
     return instancePerContext;
   }
-
   public isDependencyTreeStatic(): boolean {
     return true;
   }
-
   private isNewable(): boolean {
     return isNil(this.inject) && this.metatype && this.metatype.prototype;
   }
-
   public setInstanceByContextId(contextId: ContextId, value: InstancePerContext<T>) {
     this.values.set(contextId, value);
   }
-
   public getPropertiesMetadata(): PropertyMetadata[] {
     return this[INSTANCE_METADATA_SYMBOL].properties;
   }
-
   public addPropertiesMetadata(key: string, wrapper: InstanceWrapper) {
     if (!this[INSTANCE_METADATA_SYMBOL].properties) {
       this[INSTANCE_METADATA_SYMBOL].properties = [];
@@ -100,11 +86,16 @@ export class InstanceWrapper<T = any> {
       wrapper,
     });
   }
-
   public addCtorMetadata(index: number, wrapper: InstanceWrapper) {
     if (!this[INSTANCE_METADATA_SYMBOL].dependencies) {
       this[INSTANCE_METADATA_SYMBOL].dependencies = [];
     }
     this[INSTANCE_METADATA_SYMBOL].dependencies[index] = wrapper;
+  }
+  public addEnhancerMetadata(wrapper: InstanceWrapper) {
+    if (!this[INSTANCE_METADATA_SYMBOL].enhancers) {
+      this[INSTANCE_METADATA_SYMBOL].enhancers = [];
+    }
+    this[INSTANCE_METADATA_SYMBOL].enhancers.push(wrapper);
   }
 }

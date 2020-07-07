@@ -12,10 +12,11 @@
     "url": "https://github.com/seedium/uzert"
   },
   "peerDependencies": {
-    "reflect-metadata": "^0.1.12",
-    "@uzert/helpers": "^2.0.1"
+    "@uzert/helpers": "^2.0.1",
+    "reflect-metadata": "^0.1.12"
   },
   "dependencies": {
+    "iterare": "^1.2.1",
     "tslib": "1.13.0"
   },
   "devDependencies": {

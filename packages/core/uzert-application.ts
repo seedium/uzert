@@ -1,22 +1,35 @@
-import { UzertContainer } from './injector/uzert-container';
+import { UzertContainer } from './injector';
 import { HttpAdapter } from './adapters';
 import { UzertApplicationContext } from './uzert-application-context';
+import { RouterResolver } from './router/router-resolver';
 
 export class UzertApplication<ApplicationInstance extends HttpAdapter> extends UzertApplicationContext {
+  private readonly _routerResolver: RouterResolver;
   get httpAdapter(): ApplicationInstance {
     return this._httpAdapter;
   }
   constructor(container: UzertContainer, private readonly _httpAdapter: ApplicationInstance) {
     super(container);
+    this._routerResolver = new RouterResolver(container, _httpAdapter);
   }
   public async init(): Promise<this> {
     if (this.isInitialized) {
       return this;
     }
 
+    await this._routerResolver.registerRoutes();
     await this.httpAdapter.run();
     this.isInitialized = true;
 
+    return this;
+  }
+  public async listen(...args: any[]): Promise<UzertApplication<ApplicationInstance>> {
+    if (this.isInitialized) {
+      return this;
+    }
+    await this.init();
+    await this.httpAdapter.listen(...args);
+    this.isInitialized = true;
     return this;
   }
 }

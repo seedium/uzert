@@ -3,6 +3,8 @@ import { UzertFactory } from '../uzert-factory';
 import { Injectable, Module } from '../decorators';
 import { UzertApplicationContext } from '../uzert-application-context';
 import { UnknownElementError } from '../errors';
+import { InstanceLoader, UzertContainer } from '../injector';
+import { ContainerScanner } from '../injector/container-scanner';
 
 describe('Injection', () => {
   @Injectable()
@@ -24,27 +26,27 @@ describe('Injection', () => {
     ctx = await UzertFactory.createApplicationContext(AppModule);
   });
   it('providers should be singleton', async () => {
-    const testProvider = await ctx.get<TestProvider>(TestProvider);
-    const testProvider2 = await ctx.get<TestProvider>(TestProvider);
+    const testProvider = ctx.get<TestProvider>(TestProvider);
+    const testProvider2 = ctx.get<TestProvider>(TestProvider);
     expect(testProvider).eq(testProvider2);
   });
   it('should resolve TestProvider on first level dependencies by token', async () => {
-    const testProvider = await ctx.get<TestProvider>('TestProvider');
+    const testProvider = ctx.get<TestProvider>('TestProvider');
     expect(testProvider).not.undefined;
     expect(testProvider).instanceOf(TestProvider);
   });
   it('should resolve TestProvider on first level dependencies by type', async () => {
-    const testProvider = await ctx.get<TestProvider>(TestProvider);
+    const testProvider = ctx.get<TestProvider>(TestProvider);
     expect(testProvider).not.undefined;
     expect(testProvider).instanceOf(TestProvider);
   });
   it('should resolve TestProvider2 on second level dependencies by token', async () => {
-    const testProvider2 = await ctx.get<TestProvider2>('TestProvider2');
+    const testProvider2 = ctx.get<TestProvider2>('TestProvider2');
     expect(testProvider2).not.undefined;
     expect(testProvider2).instanceOf(TestProvider2);
   });
   it('should resolve TestProvider2 on second level dependencies by type', async () => {
-    const testProvider2 = await ctx.get<TestProvider2>(TestProvider2);
+    const testProvider2 = ctx.get<TestProvider2>(TestProvider2);
     expect(testProvider2).not.undefined;
     expect(testProvider2).instanceOf(TestProvider2);
   });
@@ -70,7 +72,7 @@ describe('Injection', () => {
     })
     class AsyncAppModule {}
     const asyncContext = await UzertFactory.createApplicationContext(AsyncAppModule);
-    const asyncTestProvider = await asyncContext.get<AsyncTestProvider>(AsyncTestProvider);
+    const asyncTestProvider = asyncContext.get<AsyncTestProvider>(AsyncTestProvider);
     expect(asyncTestProvider).instanceOf(AsyncTestProvider);
     expect(asyncTestProvider).haveOwnProperty('_testProvider').instanceOf(TestProvider);
     expect(asyncTestProvider).haveOwnProperty('_options').deep.eq(testOptions);
@@ -86,11 +88,26 @@ describe('Injection', () => {
 
     const brokenContext = await UzertFactory.createApplicationContext(BrokenAppModule);
     try {
-      await brokenContext.get(BrokenTestProvider);
+      brokenContext.get(BrokenTestProvider);
     } catch (e) {
       expect(e).instanceOf(UnknownElementError);
       return;
     }
     throw new Error('Should not resolve provider');
+  });
+  it('should return instance from injectables', async () => {
+    @Injectable()
+    class InjectableTest {}
+    @Module({})
+    class AppModule {}
+    const container = new UzertContainer();
+    await container.addModule(AppModule, []);
+    const instanceLoader = new InstanceLoader(container);
+    const containerScanner = new ContainerScanner(container);
+    const moduleToken = await container.getModuleToken(AppModule);
+    container.addInjectable(InjectableTest, moduleToken);
+    await instanceLoader.createInstancesOfDependencies();
+    const resolvedInjectable = containerScanner.find(InjectableTest);
+    expect(resolvedInjectable).instanceOf(InjectableTest);
   });
 });

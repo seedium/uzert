@@ -12,17 +12,18 @@ export class UzertApplicationContext implements IUzertApplicationContext {
   protected readonly injector = new Injector();
   private readonly containerScanner: ContainerScanner;
 
-  constructor(private readonly container: UzertContainer, private contextModule: Module = null) {
-    this.containerScanner = new ContainerScanner(container);
+  get container() {
+    return this._container;
   }
-
+  constructor(private readonly _container: UzertContainer, private contextModule: Module = null) {
+    this.containerScanner = new ContainerScanner(_container);
+  }
   public get<TInput = any, TResult = TInput>(
     typeOrToken: Type<TInput> | Abstract<TInput> | string | symbol,
     options: { strict: boolean } = { strict: false },
   ): TResult {
     return this.find<TInput, TResult>(typeOrToken);
   }
-
   public async resolve<TInput = any, TResult = TInput>(
     typeOrToken: Type<TInput> | string | symbol,
     contextId = createContextId(),
@@ -30,11 +31,9 @@ export class UzertApplicationContext implements IUzertApplicationContext {
   ): Promise<TResult> {
     return this.resolvePerContext(typeOrToken, this.contextModule, contextId);
   }
-
   public async close(): Promise<void> {
     await this.dispose();
   }
-
   public async init(): Promise<this> {
     if (this.isInitialized) {
       return this;
@@ -44,13 +43,11 @@ export class UzertApplicationContext implements IUzertApplicationContext {
 
     return this;
   }
-
   protected find<TInput = any, TResult = TInput>(
     typeOrToken: Type<TInput> | Abstract<TInput> | string | symbol,
   ): TResult {
     return this.containerScanner.find<TInput, TResult>(typeOrToken);
   }
-
   protected async resolvePerContext<TInput = any, TResult = TInput>(
     typeOrToken: Type<TInput> | string | symbol,
     contextModule: Module,
@@ -66,7 +63,6 @@ export class UzertApplicationContext implements IUzertApplicationContext {
 
     return instance;
   }
-
   protected async dispose(): Promise<void> {
     // Uzert application context has no server
     // to dispose, therefore just call a noop

@@ -6,3 +6,6 @@ export * from './instance-wrapper.interface';
 export * from './module.interface';
 export * from './provider.interface';
 export * from './uzert-application-context.interface';
+export * from './router.interface';
+export * from './container-scanner.interface';
+export * from './scanner.interface';

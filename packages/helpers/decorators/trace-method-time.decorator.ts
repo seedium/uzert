@@ -16,7 +16,7 @@ export function TraceMethodTime({
   printStartMessage = ({ propertyName }: MessageOptions) => `Start "${propertyName}" method`,
   printFinishMessage = ({ propertyName, time }: MessageOptions) => `Finish "${propertyName}" in time: ${time}ms`,
 }: TraceMethodTimeOptions = {}) {
-  return function (target: object, propertyName: string, descriptor: TypedPropertyDescriptor<any>, ...args) {
+  return function (target: object, propertyName: string, descriptor: TypedPropertyDescriptor<any>) {
     if (!descriptor?.value) {
       throw new Error(`Decorator "@TraceMethodTime" can trace time only on method`);
     }

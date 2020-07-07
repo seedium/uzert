@@ -65,27 +65,21 @@ describe('Fastify', () => {
   describe('when call `run` method', () => {
     let adapter: FastifyAdapter;
     let stubBootKernel: sinon.SinonStub;
-    let stubBootRouter: sinon.SinonStub;
     let spyFastifyReady: sinon.SinonSpy;
     beforeEach(() => {
       adapter = new FastifyAdapter();
       stubBootKernel = sinon.stub(adapter, <any>'bootKernel');
-      stubBootRouter = sinon.stub(adapter, <any>'bootRouter');
       spyFastifyReady = sinon.stub(adapter.app, 'ready').resolves(true);
     });
     it('should boot kernel, boot router and wait when instance will be ready', async () => {
       await adapter.run();
       expect(stubBootKernel.calledOnce).to.be.true;
-      expect(stubBootRouter.calledOnce).to.be.true;
       expect(spyFastifyReady.calledOnce).to.be.true;
-      expect(stubBootRouter.calledAfter(stubBootKernel)).to.be.true;
       expect(spyFastifyReady.calledAfter(stubBootKernel)).to.be.true;
-      expect(spyFastifyReady.calledAfter(stubBootRouter)).to.be.true;
     });
     it('when app is already run, should not boot kernel,router and return fastify instance', async () => {
       await adapter.run();
       await adapter.run();
-      expect(stubBootRouter.calledOnce).to.be.true;
       expect(stubBootKernel.calledOnce).to.be.true;
       expect(spyFastifyReady.calledOnce).to.be.true;
     });
@@ -116,7 +110,6 @@ describe('Fastify', () => {
           protected _kernel = customKernel;
         }
         adapter = new Test();
-        sinon.stub(adapter, <any>'bootRouter');
       });
       it('should register kernel plugins', async () => {
         const spyFastifyRegister = sinon.spy(adapter.app, 'register');
@@ -147,7 +140,6 @@ describe('Fastify', () => {
         adapter = new FastifyAdapter({
           logger: { enabled: false },
         });
-        sinon.stub(adapter, <any>'bootRouter');
       });
       it('should use default not found handler', async () => {
         await adapter.run();

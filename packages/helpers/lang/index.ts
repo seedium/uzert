@@ -6,3 +6,4 @@ export { default as nth } from './nth';
 export { default as isNil } from './isNil';
 export { default as isUndefined } from './isUndefined';
 export { default as isFunction } from './isFunction';
+export { default as isConstructor } from './isConstructor';

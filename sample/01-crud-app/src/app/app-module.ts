@@ -26,6 +26,7 @@ import { Database } from './providers/database.provider';
     RouteProvider.boot(),
   ],
   controllers: [],
+  routes: [],
 })
 export class AppModule {
 

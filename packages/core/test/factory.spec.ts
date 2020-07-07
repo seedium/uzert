@@ -36,9 +36,9 @@ describe('Factory', () => {
       public bootKernel(): any {}
       public bootRouter(): any {}
       public listen(): any {}
+      public registerRouter(...args): any {}
 
       protected _kernel;
-      protected _router;
     }
     it('should create uzert application with default', async () => {
       const app = await UzertFactory.create(AppModule, new TestHttpAdapter());

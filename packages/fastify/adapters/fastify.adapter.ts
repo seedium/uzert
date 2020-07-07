@@ -1,20 +1,18 @@
 import * as fastify from 'fastify';
 import { v4 as uuidv4 } from 'uuid';
 import * as qs from 'qs';
-import { merge, TraceMethodTime } from '@uzert/helpers';
-import { HttpAdapter } from '@uzert/core';
+import { isFunction, merge, TraceMethodTime } from '@uzert/helpers';
+import { HttpAdapter, UzertContainer } from '@uzert/core';
 // core providers
 import { AbstractLogger } from '@uzert/logger';
 import { DefaultLogger } from '@uzert/logger/loggers';
 import { IPluginKernel, Request, Response } from '../interfaces';
 import { FastifyHttpKernelAdapter } from './fastify-http-kernel.adapter';
-// errors
-import { FastifyHttpRouterAdapter } from './fastify-http-router.adapter';
+import { Router } from '../router';
 
 const defaultLogger = new DefaultLogger();
 
 export class FastifyAdapter extends HttpAdapter<fastify.FastifyInstance, Request, Response> {
-  protected _router = new FastifyHttpRouterAdapter();
   protected _kernel = new FastifyHttpKernelAdapter();
   protected _app?: fastify.FastifyInstance;
   protected _isReady: boolean = false;
@@ -49,13 +47,25 @@ export class FastifyAdapter extends HttpAdapter<fastify.FastifyInstance, Request
     }
 
     this.bootKernel();
-    this.bootRouter();
     await this._app.ready();
     this._isReady = true;
 
     return this._app;
   }
-
+  public async registerRouter(
+    container: UzertContainer,
+    cb: (router: Router, app: fastify.FastifyInstance) => Promise<void> | void,
+    options: fastify.RegisterOptions<fastify.FastifyInstance, Request, Response>,
+  ) {
+    if (!isFunction(cb)) {
+      throw new Error('Your register router method should return callback for registering in fastify');
+    }
+    this._app.register(async (app, options, done) => {
+      const router = new Router(container, app);
+      await cb(router, app);
+      done();
+    }, options);
+  }
   @TraceMethodTime({
     logger: defaultLogger.info.bind(defaultLogger),
     printStartMessage: () => `Start initialization Kernel...`,
@@ -69,14 +79,6 @@ export class FastifyAdapter extends HttpAdapter<fastify.FastifyInstance, Request
     this._app.setErrorHandler(this._kernel.errorHandler);
   }
 
-  @TraceMethodTime({
-    logger: defaultLogger.info.bind(defaultLogger),
-    printStartMessage: () => `Start initialization Router...`,
-    printFinishMessage: ({ time }) => `Successfully initialization Router: ${time}ms`,
-  })
-  protected bootRouter() {
-    // await Route.initRoutes(this._app);
-  }
   protected applyPlugin(plugin: IPluginKernel) {
     this._app.register(plugin.plugin, plugin.options);
   }
