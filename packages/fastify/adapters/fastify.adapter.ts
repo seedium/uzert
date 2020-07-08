@@ -1,4 +1,4 @@
-import * as fastify from 'fastify';
+import fastify, { FastifyServerOptions, FastifyInstance, RegisterOptions, RawServerDefault } from 'fastify';
 import { v4 as uuidv4 } from 'uuid';
 import * as qs from 'qs';
 import { isFunction, merge, TraceMethodTime } from '@uzert/helpers';
@@ -6,27 +6,27 @@ import { HttpAdapter, UzertContainer } from '@uzert/core';
 // core providers
 import { AbstractLogger } from '@uzert/logger';
 import { DefaultLogger } from '@uzert/logger/loggers';
-import { IPluginKernel, Request, Response } from '../interfaces';
+import { IPluginKernel, Request, Response, PluginFastifyInstance } from '../interfaces';
 import { FastifyHttpKernelAdapter } from './fastify-http-kernel.adapter';
 import { Router } from '../router';
 
 const defaultLogger = new DefaultLogger();
 
-export class FastifyAdapter extends HttpAdapter<fastify.FastifyInstance, Request, Response> {
+export class FastifyAdapter extends HttpAdapter<FastifyInstance, Request, Response> {
   protected _kernel = new FastifyHttpKernelAdapter();
-  protected _app?: fastify.FastifyInstance;
+  protected _app?: FastifyInstance;
   protected _isReady: boolean = false;
 
-  get app(): fastify.FastifyInstance {
+  get app(): FastifyInstance {
     return this._app;
   }
   get isReady(): boolean {
     return this._isReady;
   }
-  constructor(options: fastify.ServerOptions = {}, private readonly _logger: AbstractLogger = defaultLogger) {
+  constructor(options: FastifyServerOptions = {}, private readonly _logger: AbstractLogger = defaultLogger) {
     super();
 
-    this._app = fastify(this.buildOptions(options));
+    this._app = fastify<RawServerDefault>(this.buildOptions(options));
   }
 
   public async listen(port: number, address: string) {
@@ -41,7 +41,7 @@ export class FastifyAdapter extends HttpAdapter<fastify.FastifyInstance, Request
     printStartMessage: () => `Start application...`,
     printFinishMessage: ({ time }) => `Application successfully initialized: ${time}ms`,
   })
-  public async run(): Promise<fastify.FastifyInstance> {
+  public async run(): Promise<FastifyInstance> {
     if (this.isReady) {
       return this._app;
     }
@@ -54,16 +54,20 @@ export class FastifyAdapter extends HttpAdapter<fastify.FastifyInstance, Request
   }
   public async registerRouter(
     container: UzertContainer,
-    cb: (router: Router, app: fastify.FastifyInstance) => Promise<void> | void,
-    options: fastify.RegisterOptions<fastify.FastifyInstance, Request, Response>,
+    cb: (router: Router, app: PluginFastifyInstance) => Promise<void> | void,
+    options: RegisterOptions,
   ) {
     if (!isFunction(cb)) {
       throw new Error('Your register router method should return callback for registering in fastify');
     }
-    this._app.register(async (app, options, done) => {
+    this._app.register(async (app, options, next) => {
       const router = new Router(container, app);
-      await cb(router, app);
-      done();
+      try {
+        await cb(router, app);
+      } catch (e) {
+        return next(e);
+      }
+      next();
     }, options);
   }
   @TraceMethodTime({
@@ -82,7 +86,7 @@ export class FastifyAdapter extends HttpAdapter<fastify.FastifyInstance, Request
   protected applyPlugin(plugin: IPluginKernel) {
     this._app.register(plugin.plugin, plugin.options);
   }
-  protected buildOptions(options: fastify.ServerOptions) {
+  protected buildOptions(options: FastifyServerOptions) {
     return merge(
       {
         logger: this._logger,

@@ -1,11 +1,18 @@
-import { IncomingMessage, ServerResponse } from 'http';
-import { FastifyReply, FastifyRequest, DefaultQuery, DefaultParams, DefaultHeaders, DefaultBody } from 'fastify';
+import {
+  FastifyInstance,
+  FastifyReply,
+  FastifyRequest,
+  RawReplyDefaultExpression,
+  RawRequestDefaultExpression,
+  RawServerBase,
+  RouteHandlerMethod,
+} from 'fastify';
 
-export type Response = FastifyReply<ServerResponse>;
-export type Request<T = DefaultQuery, U = DefaultParams, Z = DefaultHeaders, Y = DefaultBody> = FastifyRequest<
-  IncomingMessage,
-  T,
-  U,
-  Z,
-  Y
+export type Response = FastifyReply;
+export type Request = FastifyRequest;
+export type PluginFastifyInstance = FastifyInstance<
+  RawServerBase,
+  RawRequestDefaultExpression<RawServerBase>,
+  RawReplyDefaultExpression<RawServerBase>
 >;
+export type RouteHandler = RouteHandlerMethod<RawServerBase>;

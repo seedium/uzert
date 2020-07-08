@@ -33,7 +33,7 @@ describe('Fastify', () => {
   it('should use generate request id', async () => {
     const spyGenerateRequestId = sinon.spy(FastifyAdapter.prototype, <any>'generateRequestId');
     const adapter = new FastifyAdapter({
-      logger: { enabled: false },
+      logger: false,
     });
     await adapter.app.inject({
       url: '/test',
@@ -43,7 +43,7 @@ describe('Fastify', () => {
   it('should use parse query string', async () => {
     const spyParseQueryString = sinon.spy(FastifyAdapter.prototype, <any>'parseQueryString');
     const adapter = new FastifyAdapter({
-      logger: { enabled: false },
+      logger: false,
     });
     await adapter.app.inject({
       url: '/test?foo=bar',
@@ -138,7 +138,7 @@ describe('Fastify', () => {
         spyNotFoundHandler = sinon.spy(FastifyHttpKernelAdapter.prototype, 'notFoundHandler');
         spyErrorHandler = sinon.spy(FastifyHttpKernelAdapter.prototype, 'errorHandler');
         adapter = new FastifyAdapter({
-          logger: { enabled: false },
+          logger: false,
         });
       });
       it('should use default not found handler', async () => {

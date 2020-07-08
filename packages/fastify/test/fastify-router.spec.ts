@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import * as fastify from 'fastify';
+import fastify from 'fastify';
 import {
   UzertFactory,
   UzertContainer,

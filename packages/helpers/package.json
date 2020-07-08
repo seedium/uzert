@@ -9,10 +9,10 @@
     "url": "https://github.com/seedium/uzert"
   },
   "peerDependencies": {
-    "reflect-metadata": "^0.1.12"
+    "reflect-metadata": "0.1.13"
   },
   "dependencies": {
-    "chalk": "^4.1.0",
-    "tslib": "1.13.0"
+    "chalk": "4.1.0",
+    "tslib": "2.0.0"
   }
 }
