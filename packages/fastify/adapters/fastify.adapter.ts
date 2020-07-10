@@ -1,4 +1,4 @@
-import fastify, { FastifyServerOptions, FastifyInstance, RegisterOptions, RawServerDefault } from 'fastify';
+import fastify, { FastifyServerOptions, RegisterOptions, RawServerDefault } from 'fastify';
 import { v4 as uuidv4 } from 'uuid';
 import * as qs from 'qs';
 import { isFunction, merge, TraceMethodTime } from '@uzert/helpers';
@@ -6,7 +6,16 @@ import { HttpAdapter, UzertContainer } from '@uzert/core';
 // core providers
 import { AbstractLogger } from '@uzert/logger';
 import { DefaultLogger } from '@uzert/logger/loggers';
-import { IPluginKernel, Request, Response, PluginFastifyInstance } from '../interfaces';
+import {
+  IPluginKernel,
+  Request,
+  Response,
+  PluginFastifyInstance,
+  FastifyInstance,
+  Http2Server,
+  FastifyHttp2Options,
+  RegisterRouterCallback,
+} from '../interfaces';
 import { FastifyHttpKernelAdapter } from './fastify-http-kernel.adapter';
 import { Router } from '../router';
 
@@ -23,10 +32,13 @@ export class FastifyAdapter extends HttpAdapter<FastifyInstance, Request, Respon
   get isReady(): boolean {
     return this._isReady;
   }
-  constructor(options: FastifyServerOptions = {}, private readonly _logger: AbstractLogger = defaultLogger) {
+  constructor(
+    options: FastifyHttp2Options = { http2: true },
+    private readonly _logger: AbstractLogger = defaultLogger,
+  ) {
     super();
 
-    this._app = fastify<RawServerDefault>(this.buildOptions(options));
+    this._app = fastify<Http2Server>(this.buildOptions(options));
   }
 
   public async listen(port: number, address: string) {
@@ -52,11 +64,7 @@ export class FastifyAdapter extends HttpAdapter<FastifyInstance, Request, Respon
 
     return this._app;
   }
-  public async registerRouter(
-    container: UzertContainer,
-    cb: (router: Router, app: PluginFastifyInstance) => Promise<void> | void,
-    options: RegisterOptions,
-  ) {
+  public async registerRouter(container: UzertContainer, cb: RegisterRouterCallback, options: RegisterOptions) {
     if (!isFunction(cb)) {
       throw new Error('Your register router method should return callback for registering in fastify');
     }
@@ -86,12 +94,13 @@ export class FastifyAdapter extends HttpAdapter<FastifyInstance, Request, Respon
   protected applyPlugin(plugin: IPluginKernel) {
     this._app.register(plugin.plugin, plugin.options);
   }
-  protected buildOptions(options: FastifyServerOptions) {
-    return merge(
+  protected buildOptions(options: FastifyHttp2Options): FastifyHttp2Options {
+    return merge<FastifyHttp2Options>(
       {
         logger: this._logger,
         genReqId: this.generateRequestId,
         querystringParser: this.parseQueryString,
+        http2: true,
       },
       options,
     );
@@ -99,7 +108,7 @@ export class FastifyAdapter extends HttpAdapter<FastifyInstance, Request, Respon
   protected generateRequestId() {
     return uuidv4();
   }
-  protected parseQueryString(str: string) {
+  protected parseQueryString(str: string): Record<string, any> {
     return qs.parse(str);
   }
 }

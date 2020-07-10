@@ -1,7 +1,7 @@
 import isPlainObject from '../lang/isPlainObject';
 import copy from './copy';
 
-export const merge = <T = any>(target: any, source: any): T => {
+export const merge = <T = any>(target: Partial<T>, source: Partial<T>): T => {
   if (isPlainObject(source)) {
     source = copy(source);
   }
@@ -22,3 +22,9 @@ export const merge = <T = any>(target: any, source: any): T => {
 };
 
 export default merge;
+
+function getProperty<T, K extends keyof T>(o: T, propertyName: K): T[K] {
+  return o[propertyName]; // o[propertyName] is of type T[K]
+}
+
+const test = getProperty({ test: 'foo' }, 'test');

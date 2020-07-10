@@ -56,6 +56,9 @@ export class PinoLogger extends ProviderInstance implements AbstractLogger {
   public trace(msgOrObject: any, ...args: any[]): void {
     this._logger.trace(msgOrObject, ...args);
   }
+  public child(bindings: pino.Bindings): AbstractLogger {
+    return this._logger.child(bindings);
+  }
   protected flushLogger(tick: number): void {
     setInterval(() => {
       this._logger.flush();

@@ -30,6 +30,9 @@ export class DefaultLogger implements AbstractLogger {
   public trace(...args): void {
     this.call(console.trace, ...args);
   }
+  public child(options?: LoggerOptionsBase): AbstractLogger {
+    return new DefaultLogger(options);
+  }
   private call(fn: (...args: any) => void, ...args) {
     if (this._isEnabled) {
       fn(...args);

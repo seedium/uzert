@@ -26,14 +26,18 @@ describe('Fastify', () => {
       info(...args): void {}
       debug(...args): void {}
       trace(...args): void {}
+      child(...args): AbstractLogger {
+        return this;
+      }
     }
-    const adapter = new FastifyAdapter({}, new CustomLogger());
+    const adapter = new FastifyAdapter({ http2: true }, new CustomLogger());
     expect(adapter).property('_logger').instanceOf(CustomLogger);
   });
   it('should use generate request id', async () => {
     const spyGenerateRequestId = sinon.spy(FastifyAdapter.prototype, <any>'generateRequestId');
     const adapter = new FastifyAdapter({
       logger: false,
+      http2: true,
     });
     await adapter.app.inject({
       url: '/test',
@@ -44,6 +48,7 @@ describe('Fastify', () => {
     const spyParseQueryString = sinon.spy(FastifyAdapter.prototype, <any>'parseQueryString');
     const adapter = new FastifyAdapter({
       logger: false,
+      http2: true,
     });
     await adapter.app.inject({
       url: '/test?foo=bar',
@@ -139,6 +144,7 @@ describe('Fastify', () => {
         spyErrorHandler = sinon.spy(FastifyHttpKernelAdapter.prototype, 'errorHandler');
         adapter = new FastifyAdapter({
           logger: false,
+          http2: true,
         });
       });
       it('should use default not found handler', async () => {
