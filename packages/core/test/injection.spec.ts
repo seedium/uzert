@@ -3,8 +3,7 @@ import { UzertFactory } from '../uzert-factory';
 import { Injectable, Module } from '../decorators';
 import { UzertApplicationContext } from '../uzert-application-context';
 import { UnknownElementError } from '../errors';
-import { InstanceLoader, UzertContainer } from '../injector';
-import { ContainerScanner } from '../injector/container-scanner';
+import { InstanceLoader, UzertContainer, ContainerScanner } from '../injector';
 
 describe('Injection', () => {
   @Injectable()
@@ -109,5 +108,23 @@ describe('Injection', () => {
     await instanceLoader.createInstancesOfDependencies();
     const resolvedInjectable = containerScanner.find(InjectableTest);
     expect(resolvedInjectable).instanceOf(InjectableTest);
+  });
+  it('should inject controllers and providers to router module', async () => {
+    @Injectable()
+    class TestController {}
+    @Injectable()
+    class TestRoute {
+      constructor(private readonly _testProvider: TestProvider, private readonly _testController: TestController) {}
+    }
+    @Module({
+      providers: [TestProvider],
+      controllers: [TestController],
+      routes: [TestRoute],
+    })
+    class RouterAppModule {}
+    const context = await UzertFactory.createApplicationContext(RouterAppModule);
+    const routeModuleInstance = await context.get(TestRoute);
+    expect(routeModuleInstance).property('_testProvider').instanceOf(TestProvider);
+    expect(routeModuleInstance).property('_testController').instanceOf(TestController);
   });
 });

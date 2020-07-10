@@ -16,11 +16,10 @@ describe('Boot module', () => {
     expect(metadataKeys).contains(MODULE_KEYS.CONTROLLERS);
     expect(metadataKeys).contains(MODULE_KEYS.PROVIDERS);
   });
-
   it('should throw error if one of key provided to @Module is wrong', () => {
     try {
       @Module({
-        // @ts-ignore
+        // @ts-expect-error
         wrong: [],
       })
       class AppModule {}
@@ -30,16 +29,10 @@ describe('Boot module', () => {
     }
     throw new Error('Expected do not allow further code execution');
   });
-
   it('should inject providers to AppModule', () => {
-    class TestProvider {
-      static boot(): TestProvider {
-        return new TestProvider();
-      }
-    }
+    class TestProvider {}
     @Module({
       providers: [TestProvider],
-      controllers: [],
     })
     class AppModule {}
     const metadataProviders = Reflect.getMetadata(MODULE_KEYS.PROVIDERS, AppModule);
@@ -47,11 +40,9 @@ describe('Boot module', () => {
     const [TestProviderMeta] = metadataProviders;
     expect(TestProviderMeta).eq(TestProvider);
   });
-
   it('should inject controllers to AppModule', () => {
     class TestController {}
     @Module({
-      providers: [],
       controllers: [TestController],
     })
     class AppModule {}
@@ -59,5 +50,16 @@ describe('Boot module', () => {
     expect(metadataControllers).length(1);
     const [TestControllerMeta] = metadataControllers;
     expect(TestControllerMeta).eq(TestController);
+  });
+  it('should inject routers to AppModule', () => {
+    class TestRouter {}
+    @Module({
+      routes: [TestRouter],
+    })
+    class AppModule {}
+    const metadataRouters = Reflect.getMetadata(MODULE_KEYS.ROUTES, AppModule);
+    expect(metadataRouters).length(1);
+    const [TestRouterMeta] = metadataRouters;
+    expect(TestRouterMeta).eq(TestRouter);
   });
 });
