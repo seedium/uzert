@@ -12,16 +12,6 @@ export interface IUzertApplicationContext {
   ): TResult;
 
   /**
-   * Resolves transient or request-scoped instance of either injectable or controller, otherwise, throws exception.
-   * @returns {Promise<TResult>}
-   */
-  resolve<TInput = any, TResult = TInput>(
-    typeOrToken: Type<TInput> | Abstract<TInput> | string | symbol,
-    contextId?: { id: number },
-    options?: { strict: boolean },
-  ): Promise<TResult>;
-
-  /**
    * Terminates the application
    * @returns {Promise<void>}
    */

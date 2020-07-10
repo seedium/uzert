@@ -1,9 +1,17 @@
-import { expect } from 'chai';
+import * as chai from 'chai';
+import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
-import { isFunction, isNil, isObjectLike, isPlainObject, isString, isUndefined, nth } from '../lang';
-import { uzertIsInteger as isInteger } from '../lang/isInteger';
+import * as proxyquire from 'proxyquire';
+import { isFunction, isNil, isObjectLike, isPlainObject, isString, isUndefined, nth, isInteger } from '../lang';
+import { uzertIsInteger } from '../lang/isInteger';
+
+chai.use(sinonChai);
+const expect = chai.expect;
 
 describe('Lang helpers', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
   describe('isFunction', () => {
     it('should return true if is function', () => {
       const result = isFunction(() => {});
@@ -15,13 +23,39 @@ describe('Lang helpers', () => {
     });
   });
   describe('isInteger', () => {
-    it('should return true if integer use native implementation', () => {
+    it('should work default behaviour', () => {
       const result = isInteger(5);
       expect(result).to.be.true;
     });
+    it('should return true if integer using custom implementation', () => {
+      const result = uzertIsInteger(5);
+      expect(result).to.be.true;
+    });
     it('should return false if float', () => {
-      const result = isInteger(5.04);
+      const result = uzertIsInteger(5.04);
       expect(result).to.be.false;
+    });
+    describe('stubbing', () => {
+      let originIsInteger: any;
+      beforeEach(() => {
+        originIsInteger = Number.isInteger;
+        Number.isInteger = undefined;
+      });
+      afterEach(() => {
+        Number.isInteger = originIsInteger;
+      });
+      it('should use native implementation if is available', () => {
+        const stubIsInteger = sinon.stub();
+        Number.isInteger = stubIsInteger;
+        const { default: isInteger } = proxyquire('../lang/isInteger', {});
+        isInteger(5);
+        expect(stubIsInteger.calledOnce).to.be.true;
+      });
+      it('should use custom implementation if native is not available', () => {
+        const { default: isInteger } = proxyquire('../lang/isInteger', {});
+        const result = isInteger(5);
+        expect(result).to.be.true;
+      });
     });
   });
   describe('isUndefined', () => {
@@ -67,9 +101,6 @@ describe('Lang helpers', () => {
     });
   });
   describe('isPlainObject', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
     class Test {}
     it('should return true when plain object', () => {
       const result = isPlainObject({});

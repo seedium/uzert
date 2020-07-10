@@ -1,6 +1,10 @@
-import { expect } from 'chai';
+import * as chai from 'chai';
+import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
 import { PinoLogger } from '../../loggers';
+
+chai.use(sinonChai);
+const expect = chai.expect;
 
 describe('Pino logger', () => {
   const levels = ['fatal', 'error', 'warn', 'info', 'debug', 'trace'];
@@ -19,6 +23,12 @@ describe('Pino logger', () => {
     levels.forEach((level) => {
       pino[level](level);
     });
+  });
+  it('should create child logger', () => {
+    const pino = new PinoLogger({ enabled: false });
+    const stubChildLogger = sinon.stub((pino as any)._logger, 'child');
+    pino.child();
+    expect(stubChildLogger).calledOnce;
   });
   describe('extreme mode', () => {
     it('should create pino in extreme mode', () => {
@@ -57,7 +67,7 @@ describe('Pino logger', () => {
           enabled: true,
         },
       });
-      const stubFinalLogger = sinon.stub(pino, <any>'_finalLogger');
+      const stubFinalLogger = sinon.spy(pino, <any>'_finalLogger');
       await pino.dispose('SIGINT');
       expect(stubFinalLogger.calledOnce).to.be.true;
     });

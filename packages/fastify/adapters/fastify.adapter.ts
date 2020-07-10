@@ -64,7 +64,7 @@ export class FastifyAdapter extends HttpAdapter<FastifyInstance, Request, Respon
 
     return this._app;
   }
-  public async registerRouter(container: UzertContainer, cb: RegisterRouterCallback, options: RegisterOptions) {
+  public async registerRouter(container: UzertContainer, cb: RegisterRouterCallback, options?: RegisterOptions) {
     if (!isFunction(cb)) {
       throw new Error('Your register router method should return callback for registering in fastify');
     }

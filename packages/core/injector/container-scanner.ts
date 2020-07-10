@@ -25,7 +25,7 @@ export class ContainerScanner {
     contextMethod: Function,
   ): TResult {
     let token = this.getStaticTypeToken(typeOrToken);
-    if (isString(token) && contextMethod) {
+    if (isString(token)) {
       token = token + capitalize(contextMethod.name);
     }
     try {

@@ -18,8 +18,9 @@ import {
   SELF_DECLARED_DEPS_METADATA,
   PROPERTY_DEPS_METADATA,
   OPTIONAL_PROPERTY_DEPS_METADATA,
+  OPTIONAL_DEPS_METADATA,
 } from '../constants';
-import { UndefinedDependencyError, UnknownDependencyError } from '../errors';
+import { UnknownDependencyError } from '../errors';
 
 export class Injector {
   public loadPrototype<T>(
@@ -43,24 +44,6 @@ export class Injector {
       collection.set(name, wrapper);
     }
   }
-  public async loadPerContext<T = any>(
-    instance: T,
-    moduleRef: Module,
-    collection: Map<string, InstanceWrapper>,
-    ctx: ContextId,
-    wrapper?: InstanceWrapper,
-  ): Promise<T> {
-    if (!wrapper) {
-      const ctor = instance.constructor;
-      wrapper = collection.get(ctor && ctor.name);
-    }
-
-    await this.loadInstance(wrapper, collection, moduleRef, ctx);
-
-    const host = wrapper.getInstanceByContextId(ctx);
-
-    return host && (host.instance as T);
-  }
   public async loadProvider(wrapper: InstanceWrapper<IInjectable>, moduleRef: Module, contextId = STATIC_CONTEXT) {
     const providers = moduleRef.providers;
     await this.loadInstance<IInjectable>(wrapper, providers, moduleRef, contextId);
@@ -81,7 +64,7 @@ export class Injector {
     wrapper: InstanceWrapper<T>,
     collection: Map<string, InstanceWrapper>,
     moduleRef: Module,
-    contextId = STATIC_CONTEXT,
+    contextId: ContextId,
     lookupInCollections: HostCollection[] = ['providers'],
   ) {
     const instanceHost = wrapper.getInstanceByContextId(contextId);
@@ -126,20 +109,10 @@ export class Injector {
     wrapper: InstanceWrapper<T>,
     moduleRef: Module,
     inject?: InjectorDependency[],
-    contextId = STATIC_CONTEXT,
+    contextId?: ContextId,
   ): Promise<PropertyDependency[]> {
     if (!isNil(inject)) {
       return [];
-    }
-
-    const metadata = wrapper.getPropertiesMetadata();
-
-    if (metadata && contextId !== STATIC_CONTEXT) {
-      return this.loadPropertiesMetadata(metadata, contextId);
-    }
-
-    if (metadata && contextId !== STATIC_CONTEXT) {
-      return;
     }
 
     const properties = this.reflectProperties(wrapper.metatype as Type<any>);
@@ -160,17 +133,12 @@ export class Injector {
             item.key,
           );
 
-          if (!paramWrapper) {
-            return undefined;
-          }
-
           const instanceHost = paramWrapper.getInstanceByContextId(contextId);
           return instanceHost.instance;
         } catch (err) {
           if (!item.isOptional) {
             throw err;
           }
-
           return undefined;
         }
       }),
@@ -182,17 +150,13 @@ export class Injector {
     }));
   }
   public applyProperties<T = any>(instance: T, properties: PropertyDependency[]): void {
-    if (!isObjectLike(instance)) {
-      return undefined;
-    }
-
     properties.filter((item) => !isNil(item.instance)).forEach((item) => (instance[item.key] = item.instance));
   }
   public async instantiateClass<T = any>(
     instances: any[],
     wrapper: InstanceWrapper,
     targetMetatype: InstanceWrapper,
-    contextId = STATIC_CONTEXT,
+    contextId: ContextId,
   ): Promise<T> {
     const { metatype, inject } = wrapper;
     const instanceHost = targetMetatype.getInstanceByContextId(contextId);
@@ -212,12 +176,11 @@ export class Injector {
     moduleRef: Module,
     inject: InjectorDependency[],
     callback: (args: unknown[]) => void,
-    contextId = STATIC_CONTEXT,
+    contextId: ContextId,
     lookupInCollections: HostCollection[],
   ) {
     const dependencies = isNil(inject) ? this.reflectConstructorParams(wrapper.metatype as Type<any>) : inject;
-
-    let isResolved = true;
+    const optionalDependenciesIds = isNil(inject) ? this.reflectOptionalParams(wrapper.metatype as Type<any>) : [];
 
     const resolveParam = async (param: unknown, index: number) => {
       try {
@@ -233,18 +196,18 @@ export class Injector {
 
         const instanceHost = paramWrapper.getInstanceByContextId(contextId);
 
-        if (!instanceHost.isResolved) {
-          isResolved = false;
-        }
-
         return instanceHost && instanceHost.instance;
       } catch (err) {
+        const isOptional = optionalDependenciesIds.includes(index);
+        if (!isOptional) {
+          throw err;
+        }
         return undefined;
       }
     };
 
     const instances = await Promise.all(dependencies.map(resolveParam));
-    isResolved && (await callback(instances));
+    await callback(instances);
   }
   public reflectConstructorParams<T>(type: Type<T>): any[] {
     const paramtypes = Reflect.getMetadata(METADATA_PARAMTYPES, type) || [];
@@ -266,24 +229,25 @@ export class Injector {
   public reflectSelfParams<T>(type: Type<T>): any[] {
     return Reflect.getMetadata(SELF_DECLARED_DEPS_METADATA, type) || [];
   }
+  public reflectOptionalParams<T>(type: Type<T>): any[] {
+    return Reflect.getMetadata(OPTIONAL_DEPS_METADATA, type) || [];
+  }
   public async resolveSingleParam<T>(
     wrapper: InstanceWrapper<T>,
     param: Type<any> | string | symbol | any,
     dependencyContext: InjectorDependencyContext,
     moduleRef: Module,
-    contextId = STATIC_CONTEXT,
+    contextId: ContextId,
     keyOrIndex?: string | number,
     lookupInCollections: HostCollection[] = ['providers'],
   ) {
     if (isUndefined(param)) {
-      throw new UndefinedDependencyError(wrapper.name, dependencyContext, moduleRef);
+      throw new UnknownDependencyError(wrapper.name, dependencyContext, moduleRef);
     }
-
-    const token = this.resolveParamToken(wrapper, param);
 
     return this.resolveComponentInstance<T>(
       moduleRef,
-      isFunction(token) ? (token as Type<any>).name : token,
+      isFunction(param) ? (param as Type<any>).name : param,
       dependencyContext,
       wrapper,
       contextId,
@@ -291,19 +255,12 @@ export class Injector {
       lookupInCollections,
     );
   }
-  public resolveParamToken<T>(wrapper: InstanceWrapper<T>, param: Type<any> | string | symbol | any) {
-    if (!param.forwardRef) {
-      return param;
-    } else {
-      throw new Error('Resolve param token error');
-    }
-  }
   public async resolveComponentInstance<T>(
     moduleRef: Module,
     name: any,
     dependencyContext: InjectorDependencyContext,
     wrapper: InstanceWrapper<T>,
-    contextId = STATIC_CONTEXT,
+    contextId: ContextId,
     keyOrIndex?: string | number,
     lookupInCollections: HostCollection[] = ['providers'],
   ): Promise<InstanceWrapper> {
@@ -325,18 +282,12 @@ export class Injector {
   public async resolveComponentHost<T>(
     moduleRef: Module,
     instanceWrapper: InstanceWrapper<T>,
-    contextId = STATIC_CONTEXT,
+    contextId: ContextId,
   ): Promise<InstanceWrapper> {
     const instanceHost = instanceWrapper.getInstanceByContextId(contextId);
 
     if (!instanceHost.isResolved) {
       await this.loadProvider(instanceWrapper, moduleRef, contextId);
-    }
-
-    if (instanceWrapper.async) {
-      const host = instanceWrapper.getInstanceByContextId(contextId);
-      host.instance = await host.instance;
-      instanceWrapper.setInstanceByContextId(contextId, host);
     }
 
     return instanceWrapper;
@@ -346,36 +297,16 @@ export class Injector {
     moduleRef: Module,
     dependencyContext: InjectorDependencyContext,
     wrapper: InstanceWrapper<T>,
-    contextId = STATIC_CONTEXT,
+    contextId: ContextId,
     keyOrIndex?: string | number,
   ): Promise<InstanceWrapper<T>> {
     const { name } = dependencyContext;
-
-    if (wrapper && wrapper.name === name) {
-      throw new UnknownDependencyError(wrapper.name, dependencyContext, moduleRef);
-    }
 
     if (providers.has(name)) {
       const instanceWrapper = providers.get(name);
       this.addDependencyMetadata(keyOrIndex, wrapper, instanceWrapper);
       return instanceWrapper;
     }
-  }
-  public async loadPropertiesMetadata(
-    metadata: PropertyMetadata[],
-    contextId: ContextId,
-  ): Promise<PropertyDependency[]> {
-    const dependenciesHosts = await Promise.all(
-      metadata.map(async ({ wrapper: item, key }) => ({
-        key,
-        host: await this.resolveComponentHost(item.host, item, contextId),
-      })),
-    );
-    return dependenciesHosts.map(({ key, host }) => ({
-      key,
-      name: key,
-      instance: host.getInstanceByContextId(contextId).instance,
-    }));
   }
   private addDependencyMetadata(
     keyOrIndex: number | string,

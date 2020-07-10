@@ -1,9 +1,13 @@
 import { expect } from 'chai';
+import * as sinon from 'sinon';
 import { Module } from '../';
 import { MODULE_KEYS } from '../constants';
 import { ModuleValidationError } from '../errors';
 
 describe('Boot module', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
   it('should validate all allowed keys in @Module and ', () => {
     @Module({
       providers: [],
@@ -61,5 +65,13 @@ describe('Boot module', () => {
     expect(metadataRouters).length(1);
     const [TestRouterMeta] = metadataRouters;
     expect(TestRouterMeta).eq(TestRouter);
+  });
+  it('should miss if metadata does not have own property', () => {
+    const metadata = { controllers: [] };
+    sinon.stub(metadata, <any>'hasOwnProperty').returns(false);
+    @Module(metadata)
+    class AppModule {}
+    const modules = Reflect.getMetadataKeys(AppModule);
+    expect(modules).length(0);
   });
 });

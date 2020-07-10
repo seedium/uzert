@@ -12,7 +12,6 @@ export class RouterResolver {
     const routers = this.getRoutersFromModules(modules);
     await Promise.all(routers.map(this.callRouterRegister.bind(this)));
   }
-  protected async registerControllersEnhancers() {}
   protected getRoutersFromModules(modules: ModulesContainer): InstanceWrapper<RouteModule>[] {
     return [...modules.values()].reduce<InstanceWrapper<RouteModule>[]>((acc, module) => {
       acc.push(...this.getRoutersInModule(module));

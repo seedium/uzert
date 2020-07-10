@@ -7,7 +7,6 @@ import { Module } from './module';
 
 export class InstanceWrapper<T = any> {
   public readonly name: any;
-  public readonly async?: boolean;
   public readonly host?: Module;
   private readonly values = new WeakMap<ContextId, InstancePerContext<T>>();
   private readonly [INSTANCE_METADATA_SYMBOL]: InstanceMetadataStore = {};
@@ -44,29 +43,10 @@ export class InstanceWrapper<T = any> {
   }
   public getInstanceByContextId(contextId: ContextId): InstancePerContext<T> {
     const instancePerContext = this.values.get(contextId);
-    return instancePerContext ? instancePerContext : this.cloneStaticInstance(contextId);
-  }
-  public cloneStaticInstance(contextId: ContextId): InstancePerContext<T> {
-    const staticInstance = this.getInstanceByContextId(STATIC_CONTEXT);
-
-    if (this.isDependencyTreeStatic()) {
-      return staticInstance;
+    if (!instancePerContext) {
+      throw new Error('Instance per context was not found, need implement cloning static instance');
     }
-
-    const instancePerContext: InstancePerContext<T> = {
-      ...staticInstance,
-      instance: undefined,
-      isResolved: false,
-      isPending: false,
-    };
-    if (this.isNewable()) {
-      instancePerContext.instance = Object.create(this.metatype.prototype);
-    }
-    this.setInstanceByContextId(contextId, instancePerContext);
     return instancePerContext;
-  }
-  public isDependencyTreeStatic(): boolean {
-    return true;
   }
   private isNewable(): boolean {
     return isNil(this.inject) && this.metatype && this.metatype.prototype;
@@ -76,6 +56,9 @@ export class InstanceWrapper<T = any> {
   }
   public getPropertiesMetadata(): PropertyMetadata[] {
     return this[INSTANCE_METADATA_SYMBOL].properties;
+  }
+  public getEnhancerMetadata(): InstanceWrapper[] {
+    return this[INSTANCE_METADATA_SYMBOL].enhancers;
   }
   public addPropertiesMetadata(key: string, wrapper: InstanceWrapper) {
     if (!this[INSTANCE_METADATA_SYMBOL].properties) {

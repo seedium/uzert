@@ -1,5 +1,7 @@
-import { expect } from 'chai';
+import * as chai from 'chai';
 import * as sinon from 'sinon';
+import * as sinonChai from 'sinon-chai';
+import * as chaiAsPromised from 'chai-as-promised';
 import fastify from 'fastify';
 import {
   UzertFactory,
@@ -12,10 +14,14 @@ import {
   InstanceLoader,
   ContainerScanner,
 } from '@uzert/core';
+import { ROUTER_INSTANCE } from '@uzert/core/constants';
 import { FastifyAdapter } from '../adapters';
 import { Router } from '../router';
 import { Controller } from '../decorators';
-import { ROUTER_INSTANCE } from '@uzert/core/constants';
+
+chai.use(sinonChai);
+chai.use(chaiAsPromised);
+const expect = chai.expect;
 
 describe('Fastify Router', () => {
   @Injectable()
@@ -53,6 +59,10 @@ describe('Fastify Router', () => {
     });
   });
   describe('Router', () => {
+    let container: UzertContainer;
+    beforeEach(() => {
+      container = new UzertContainer();
+    });
     it('should register all methods', async () => {
       const methods = ['post', 'get', 'put', 'delete', 'patch', 'head'];
       const router = new Router(new UzertContainer(), fastify());
@@ -72,15 +82,31 @@ describe('Fastify Router', () => {
       });
       expect(stubFastifyRoute.callCount).eq(methods.length);
     });
+    it('register router should receive only callbacks', async () => {
+      const fastifyAdapter = new FastifyAdapter();
+      const stubRegister = sinon.stub(fastifyAdapter.app, 'register');
+      // @ts-expect-error
+      expect(fastifyAdapter.registerRouter(container, {})).eventually.rejected;
+      expect(stubRegister).not.called;
+    });
+    it('if error occurred in register should call pass error to fastify', async () => {
+      const stubNextFunc = sinon.stub();
+      const testError = new Error('test');
+      const router = () => Promise.reject(testError);
+      const fastifyAdapter = new FastifyAdapter();
+      sinon.stub(fastifyAdapter.app, 'register').callsFake((cb: any): any => {
+        cb(null, null, stubNextFunc);
+      });
+      await fastifyAdapter.registerRouter(container, router);
+      expect(stubNextFunc).calledOnceWith(testError);
+    });
     describe('metadata injection', () => {
-      let container: UzertContainer;
       let moduleToken: string;
       let instanceLoader: InstanceLoader;
       let containerScanner: ContainerScanner;
       @Module({})
       class AppModule {}
       beforeEach(async () => {
-        container = new UzertContainer();
         instanceLoader = new InstanceLoader(container);
         containerScanner = new ContainerScanner(container);
         await container.addModule(AppModule, []);
@@ -104,6 +130,25 @@ describe('Fastify Router', () => {
         expect(routeArgs).property('preHandler').an('array').length(1);
         const testPipe = containerScanner.find(TestPipe);
         expect(routeArgs.preHandler[0]).eq(testPipe.use);
+      });
+      it('should extend pipes with router pre handler', async () => {
+        const stubPreHandler = sinon.stub();
+        class TestController {
+          @UsePipe(TestPipe)
+          @Controller({
+            preHandler: stubPreHandler,
+          })
+          public test() {}
+        }
+        container.addController(TestController, moduleToken);
+        container.addInjectable(TestPipe, moduleToken);
+        await instanceLoader.createInstancesOfDependencies();
+        const testController = containerScanner.find(TestController);
+        const router = new Router(container, fastify());
+        const stubFastifyRoute = sinon.stub((router as any)._app, 'route');
+        router.get('/', testController.test);
+        const [routeArgs] = stubFastifyRoute.firstCall.args;
+        expect(routeArgs).property('preHandler').an('array').length(2);
       });
       it('should throw an error if "@Controller" decorator was not specified', async () => {
         @Injectable()

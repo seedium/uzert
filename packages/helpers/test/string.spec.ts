@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { eraseExtension, isEmail, isJson, trimFields, validatePassword } from '../string';
+import { eraseExtension, isEmail, isJson, trimFields, validatePassword, capitalize } from '../string';
 
 describe('String', () => {
   describe('eraseExtension', () => {
@@ -64,6 +64,18 @@ describe('String', () => {
         const trimmed = trimFields(sourceWithSpaces);
         expect(trimmed).not.eq(sourceWithSpaces);
       });
+      it('when source contains keys with not string value should miss', () => {
+        const extended = {
+          ...sourceWithSpaces,
+          obj: {},
+        };
+        const trimmed = trimFields(extended);
+        expect(trimmed).deep.eq({
+          firstField,
+          secondField,
+          obj: {},
+        });
+      });
     });
   });
   describe('validatePassword', () => {
@@ -124,6 +136,18 @@ describe('String', () => {
         expect(resultInvalidPassword).to.be.false;
         expect(resultValidPassword).to.be.true;
       });
+    });
+  });
+  describe('capitalize', () => {
+    it('should capitalize first word', () => {
+      const phrase = 'somePhrase';
+      const capitalizedPhrase = capitalize(phrase);
+      expect(capitalizedPhrase).eq('SomePhrase');
+    });
+    it('if arg not not string then return empty string', () => {
+      // @ts-ignore
+      const result = capitalize({});
+      expect(result).eq('');
     });
   });
 });

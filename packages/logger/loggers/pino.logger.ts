@@ -8,7 +8,7 @@ export class PinoLogger extends ProviderInstance implements AbstractLogger {
   constructor(options?: ExtendedPinoOptions) {
     super();
     if (options?.extremeMode?.enabled) {
-      const extremeModeTick = options?.extremeMode?.tick || 10000;
+      const extremeModeTick = options.extremeMode.tick || 10000;
       this._logger = pino(
         options,
         pino.destination({
@@ -56,7 +56,7 @@ export class PinoLogger extends ProviderInstance implements AbstractLogger {
   public trace(msgOrObject: any, ...args: any[]): void {
     this._logger.trace(msgOrObject, ...args);
   }
-  public child(bindings: pino.Bindings): AbstractLogger {
+  public child(bindings?: pino.Bindings): AbstractLogger {
     return this._logger.child(bindings);
   }
   protected flushLogger(tick: number): void {

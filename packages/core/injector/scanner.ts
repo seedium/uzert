@@ -3,7 +3,6 @@ import { UzertContainer } from './uzert-container';
 import { Module } from './module';
 import { Type, FactoryProvider, Provider, RouteModule, IInjectable, InjectablesSchema } from '../interfaces';
 import { MODULE_KEYS, PIPES_METADATA } from '../constants';
-import { getRandomString } from '../utils/get-random-string';
 import { MetadataScanner } from '../metadata-scanner';
 
 export class DependenciesScanner {
@@ -52,26 +51,7 @@ export class DependenciesScanner {
     return this.container.addModule(module, scope);
   }
   public insertProvider(provider: Provider, token: string) {
-    const isCustomProvider = this.isCustomProvider(provider);
-
-    if (!isCustomProvider) {
-      return this.container.addProvider(provider as Type<any>, token);
-    }
-    const applyProvidersMap = this.getApplyProvidersMap();
-    const providersKeys = Object.keys(applyProvidersMap);
-    const type = (provider as FactoryProvider).provide;
-
-    if (!providersKeys.includes(type as string)) {
-      return this.container.addProvider(provider as any, token);
-    }
-
-    const providerToken = `${type as string} (UUID: ${getRandomString()})`;
-    const newProvider = {
-      ...provider,
-      provide: providerToken,
-    } as Provider;
-
-    return this.container.addProvider(newProvider, token);
+    return this.container.addProvider(provider as Type<any>, token);
   }
   public insertController(controller: Type<any>, token: string) {
     return this.container.addController(controller, token);
@@ -90,9 +70,6 @@ export class DependenciesScanner {
   public isCustomProvider(provider: Provider): provider is FactoryProvider {
     return provider && !isNil((provider as any).provide);
   }
-  public getApplyProvidersMap(): { [type: string]: Function } {
-    return {};
-  }
   public reflectDynamicMetadata(obj: Type<IInjectable>, token: string) {
     if (!obj || !obj.prototype) {
       return;
@@ -106,7 +83,6 @@ export class DependenciesScanner {
       },
     ];
     const methodsInjectables: InjectablesSchema[] = MetadataScanner.scanFromPrototype(
-      null,
       component.prototype,
       (methodName) => ({
         hostMethodName: methodName,
@@ -133,7 +109,7 @@ export class DependenciesScanner {
         continue;
       }
       return Reflect.getMetadata(key, descriptor.value);
-    } while ((prototype = Reflect.getPrototypeOf(prototype)) && prototype !== Object.prototype && prototype);
+    } while ((prototype = Reflect.getPrototypeOf(prototype)) && prototype && prototype !== Object.prototype);
     return undefined;
   }
   private filterInvalidInjectablesSchemas(injectableSchema: InjectablesSchema): InjectablesSchema {

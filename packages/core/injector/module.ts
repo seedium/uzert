@@ -1,4 +1,4 @@
-import { isNil, isFunction, isUndefined, isString, capitalize } from '@uzert/helpers';
+import { isNil, isFunction, isString, capitalize } from '@uzert/helpers';
 import {
   Type,
   IInjectable,
@@ -142,9 +142,7 @@ export class Module {
       name,
     };
 
-    if (this.isCustomFactory(provider)) {
-      this.addCustomFactory(provider, collection);
-    }
+    this.addCustomFactory(provider, collection);
 
     return name;
   }
@@ -159,10 +157,6 @@ export class Module {
     } else {
       return name;
     }
-  }
-
-  public isCustomFactory(provider: any): provider is FactoryProvider {
-    return !isUndefined((provider as FactoryProvider).useFactory);
   }
 
   public addCustomFactory(provider: FactoryProvider & ProviderName, collection: Map<string, InstanceWrapper>) {

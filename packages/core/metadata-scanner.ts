@@ -4,7 +4,6 @@ import iterate from 'iterare';
 
 export class MetadataScanner {
   public static scanFromPrototype<T extends IInjectable, R = any>(
-    instance: T,
     prototype: object,
     callback: (name: string) => R,
   ): R[] {

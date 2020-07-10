@@ -12,6 +12,14 @@ export class UzertApplication<ApplicationInstance extends HttpAdapter> extends U
     super(container);
     this._routerResolver = new RouterResolver(container, _httpAdapter);
   }
+  public async listen(...args: any[]): Promise<UzertApplication<ApplicationInstance>> {
+    if (this.isInitialized) {
+      return this;
+    }
+    await this.init();
+    await this.httpAdapter.listen(...args);
+    return this;
+  }
   public async init(): Promise<this> {
     if (this.isInitialized) {
       return this;
@@ -21,15 +29,6 @@ export class UzertApplication<ApplicationInstance extends HttpAdapter> extends U
     await this.httpAdapter.run();
     this.isInitialized = true;
 
-    return this;
-  }
-  public async listen(...args: any[]): Promise<UzertApplication<ApplicationInstance>> {
-    if (this.isInitialized) {
-      return this;
-    }
-    await this.init();
-    await this.httpAdapter.listen(...args);
-    this.isInitialized = true;
     return this;
   }
 }

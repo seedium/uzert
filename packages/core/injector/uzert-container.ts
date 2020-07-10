@@ -16,11 +16,9 @@ export class UzertContainer {
     if (!provider) {
       throw new CircularDependencyError();
     }
-
     if (!this.modules.has(token)) {
       throw new UnknownModuleError(token);
     }
-
     const moduleRef = this.modules.get(token);
     return moduleRef.addProvider(provider);
   }
@@ -28,11 +26,9 @@ export class UzertContainer {
     if (!controller) {
       throw new CircularDependencyError();
     }
-
     if (!this.modules.has(token)) {
       throw new UnknownModuleError(token);
     }
-
     const moduleRef = this.modules.get(token);
     return moduleRef.addController(controller);
   }
@@ -55,7 +51,7 @@ export class UzertContainer {
   }
   public async addModule(metatype: Type<any>, scope: Type<any>[]): Promise<Module> {
     if (!metatype) {
-      throw new InvalidModuleError(scope);
+      throw new InvalidModuleError();
     }
 
     const { type, token } = await this.moduleCompiler.compile(metatype);
@@ -71,7 +67,7 @@ export class UzertContainer {
   }
   public async getModuleToken(metatype: Type<any>): Promise<string> {
     if (!metatype) {
-      throw new InvalidModuleError([]);
+      throw new InvalidModuleError();
     }
     const { token } = await this.moduleCompiler.compile(metatype);
     return token;

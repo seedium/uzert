@@ -17,11 +17,16 @@ describe('Router', () => {
   class TestService {}
   @Injectable()
   class TestPipe implements Pipe {
+    constructor(public readonly _testService: TestService) {}
+    public use(req: any, res: any, next?: () => void): void {}
+  }
+  @Injectable()
+  class TestPipeOptions implements Pipe {
     static boot(options: object) {
       return {
-        provide: TestPipe,
+        provide: TestPipeOptions,
         useFactory: (testService: TestService) => {
-          return new TestPipe(testService, options);
+          return new TestPipeOptions(testService, options);
         },
       };
     }
@@ -32,14 +37,13 @@ describe('Router', () => {
   class TestController {
     @UsePipe(TestPipe)
     public test() {}
-    @UsePipe(TestPipe.boot(testOptions))
+    @UsePipe(TestPipeOptions.boot(testOptions))
     public testWithCustomPipe() {}
   }
 
   @Injectable()
   class TestRoute implements RouteModule {
     public options = testOptions;
-    constructor() {}
     public register(): any {
       return testRouterFunc;
     }
@@ -92,10 +96,20 @@ describe('Router', () => {
       expect(module.injectables.has(TestPipe.name)).to.be.true;
       expect(module.injectables.get(TestPipe.name).instance).instanceOf(TestPipe);
     });
+    it('should throw an error if decorator used on the class', () => {
+      try {
+        /* @ts-expect-error */
+        @UsePipe(TestPipe)
+        class TestController {}
+      } catch {
+        return;
+      }
+      throw new Error('UsePipe should throw an error on the class');
+    });
     it('should load custom pipe with options only for controller method', async () => {
       await app.listen();
-      const testCustomPipe = app.get(`TestPipeTestWithCustomPipe`);
-      expect(testCustomPipe).instanceOf(TestPipe);
+      const testCustomPipe = app.get(`TestPipeOptionsTestWithCustomPipe`);
+      expect(testCustomPipe).instanceOf(TestPipeOptions);
       expect(testCustomPipe).property('options').deep.eq(testOptions);
     });
     it('injection should work in pipes', async () => {

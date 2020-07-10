@@ -30,9 +30,8 @@ export class UzertFactoryStatic {
     const container = new UzertContainer();
 
     await this.initialize(module, container);
-    const root = container.getModules().values().next().value;
     const applicationContext = this.createUzertInstance<UzertApplicationContext>(
-      new UzertApplicationContext(container, root),
+      new UzertApplicationContext(container),
     );
     return applicationContext.init();
   }

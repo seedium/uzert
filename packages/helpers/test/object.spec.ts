@@ -39,7 +39,6 @@ describe('Object', () => {
       expect(merged).property('hello').eq(source.hello);
       expect(merged).property('extra').eq(source.extra);
     });
-
     it('should deep merge', () => {
       const target = {
         foo: 'bar',

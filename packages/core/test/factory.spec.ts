@@ -5,6 +5,9 @@ import { Injectable, Module } from '../decorators';
 import { UzertApplicationContext } from '../uzert-application-context';
 import { UzertApplication } from '../uzert-application';
 import { MockedHttpAdapter } from './utils';
+import { FactoryProvider } from '../interfaces';
+import { InstanceLoader } from '../injector';
+import { ErrorsZone } from '../errors/handlers/errors-zone';
 
 describe('Factory', () => {
   afterEach(() => {
@@ -52,5 +55,40 @@ describe('Factory', () => {
       const testProvider2 = await ctx2.get(TestService);
       expect(testProvider1).not.eq(testProvider2);
     });
+  });
+  describe('initialization', () => {
+    @Module({})
+    class AppModule {}
+    it('should abort process if injection falls', async () => {
+      const stubProcessAbort = sinon.stub(process, 'abort');
+      sinon.stub(InstanceLoader.prototype, 'createInstancesOfDependencies').rejects(new Error('test'));
+      sinon.stub(ErrorsZone, 'asyncRun').callsFake(async (cb) => await cb());
+      await UzertFactory.create(AppModule, new MockedHttpAdapter());
+      expect(stubProcessAbort.calledOnce).to.be.true;
+    });
+    it('should create error zone for prop in adapter', async () => {
+      const app = await UzertFactory.create(AppModule, new MockedHttpAdapter());
+      const stubCreateErrorZone = sinon.spy(UzertFactory, <any>'createErrorZone');
+      /* @ts-expect-error */
+      await app.run();
+      expect(stubCreateErrorZone.calledOnce).to.be.true;
+    });
+  });
+  it('should use factory http adapter', async () => {
+    class CustomHttpAdapter extends MockedHttpAdapter {
+      static boot(): FactoryProvider {
+        return {
+          provide: CustomHttpAdapter,
+          useFactory: () => {
+            return new CustomHttpAdapter();
+          },
+        };
+      }
+    }
+    @Module({})
+    class AppModule {}
+    const app = await UzertFactory.create(AppModule, CustomHttpAdapter.boot());
+    expect(app).instanceOf(UzertApplication);
+    expect(app.httpAdapter).instanceOf(CustomHttpAdapter);
   });
 });
