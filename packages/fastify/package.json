@@ -20,7 +20,7 @@
   "dependencies": {
     "@types/qs": "6.9.3",
     "@types/uuid": "8.0.0",
-    "fastify": "3.0.0",
+    "fastify": "3.0.2",
     "qs": "6.9.4",
     "tslib": "2.0.0",
     "uuid": "8.2.0"
