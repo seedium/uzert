@@ -21,7 +21,7 @@ describe('Pino default', function () {
           enabled: true,
         },
       });
-      logger.dispose();
+      logger.onDispose();
       expect(logger).property('_default').is.undefined;
     });
     it('all loggers should be disposed', () => {
@@ -33,9 +33,34 @@ describe('Pino default', function () {
           enabled: true,
         },
       });
-      logger.dispose();
+      logger.onDispose();
       expect(logger).property('_default').is.undefined;
       expect(logger).property('_pino').is.undefined;
+    });
+  });
+  describe('when app is shutdowning', () => {
+    let logger: Logger;
+    beforeEach(() => {
+      logger = new Logger({
+        default: { enabled: false },
+        pino: {
+          enabled: true,
+          extremeMode: {
+            enabled: true,
+          },
+        },
+      });
+    });
+    it('should call final logger in pino when logger on shutdown is called', async () => {
+      const stubFinalLogger = sinon.spy(logger.pino, <any>'_finalLogger');
+      await logger.onAppShutdown(null, 'SIGINT');
+      expect(stubFinalLogger.calledOnce).to.be.true;
+    });
+    it('should log if error occurred', async () => {
+      const stubFinalLogger = sinon.spy(logger.pino, <any>'_finalLogger');
+      const testError = new Error('test error');
+      await logger.onAppShutdown(testError, 'uncaughtException');
+      expect(stubFinalLogger.calledOnceWith(testError)).to.be.true;
     });
   });
   it('default logger should be created by default', () => {

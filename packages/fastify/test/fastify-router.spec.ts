@@ -89,17 +89,6 @@ describe('Fastify Router', () => {
       expect(fastifyAdapter.registerRouter(container, {})).eventually.rejected;
       expect(stubRegister).not.called;
     });
-    it('if error occurred in register should call pass error to fastify', async () => {
-      const stubNextFunc = sinon.stub();
-      const testError = new Error('test');
-      const router = () => Promise.reject(testError);
-      const fastifyAdapter = new FastifyAdapter();
-      sinon.stub(fastifyAdapter.app, 'register').callsFake((cb: any): any => {
-        cb(null, null, stubNextFunc);
-      });
-      await fastifyAdapter.registerRouter(container, router);
-      expect(stubNextFunc).calledOnceWith(testError);
-    });
     describe('metadata injection', () => {
       let moduleToken: string;
       let instanceLoader: InstanceLoader;

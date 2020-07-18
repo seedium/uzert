@@ -1,10 +1,10 @@
 import { resolve as resolvePath } from 'path';
 import * as glob from 'glob';
-import { ProviderInstance } from '@uzert/core';
+import { OnDispose } from '@uzert/core';
 import { isFunction, isUndefined, prop, isPlainObject } from '@uzert/helpers';
 import { IStore, IConfigBootSpec, IConfigOptions } from './interfaces';
 
-export class Config extends ProviderInstance {
+export class Config implements OnDispose {
   private _stores: IStore = {};
 
   static boot(options: IConfigOptions) {
@@ -17,10 +17,8 @@ export class Config extends ProviderInstance {
       },
     };
   }
-  constructor(private readonly _options: IConfigOptions) {
-    super();
-  }
-  public dispose() {
+  constructor(private readonly _options: IConfigOptions) {}
+  public onDispose() {
     this._stores = {};
   }
   public get(key: string, defaultValue?: any): any {

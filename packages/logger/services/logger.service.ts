@@ -1,8 +1,8 @@
-import { ProviderInstance } from '@uzert/core';
+import { OnDispose, OnAppShutdown } from '@uzert/core';
 import { ILoggerOptions } from '../interfaces';
 import { PinoLogger, DefaultLogger } from '../loggers';
 
-export class Logger extends ProviderInstance {
+export class Logger implements OnDispose, OnAppShutdown {
   protected _default?: DefaultLogger;
   protected _pino?: PinoLogger;
 
@@ -22,13 +22,15 @@ export class Logger extends ProviderInstance {
     return this._pino;
   }
   constructor(options?: ILoggerOptions) {
-    super();
     this._default = new DefaultLogger(options?.default);
     if (options?.pino?.enabled) {
       this._pino = new PinoLogger(options.pino);
     }
   }
-  public dispose(): void {
+  public onAppShutdown(err: Error | null, signal?: string): any {
+    this.pino._finalLogger(err, signal);
+  }
+  public onDispose(): void {
     this._default = undefined;
     if (this._pino) {
       this._pino = undefined;

@@ -1,7 +1,7 @@
 import { UzertContainer } from './injector';
 import { HttpAdapter } from './adapters';
 import { UzertApplicationContext } from './uzert-application-context';
-import { RouterResolver } from './router/router-resolver';
+import { RouterResolver } from './router';
 
 export class UzertApplication<ApplicationInstance extends HttpAdapter> extends UzertApplicationContext {
   private readonly _routerResolver: RouterResolver;
@@ -25,10 +25,14 @@ export class UzertApplication<ApplicationInstance extends HttpAdapter> extends U
       return this;
     }
 
+    await this.callInitHook();
     await this._routerResolver.registerRoutes();
     await this.httpAdapter.run();
     this.isInitialized = true;
 
     return this;
+  }
+  protected async dispose(): Promise<void> {
+    await this._httpAdapter.onDispose();
   }
 }

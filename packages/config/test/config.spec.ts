@@ -10,7 +10,7 @@ describe('Config', async () => {
   let config: Config;
   afterEach(() => {
     if (config) {
-      config.dispose();
+      config.onDispose();
     }
   });
   describe('Load default configs', () => {
