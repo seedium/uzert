@@ -4,9 +4,6 @@ import {
   FastifyReply,
   FastifyRequest,
   FastifyServerOptions,
-  RawReplyDefaultExpression,
-  RawRequestDefaultExpression,
-  RawServerBase,
   RouteHandlerMethod,
 } from 'fastify';
 import { FastifyLoggerInstance } from 'fastify/types/logger';
@@ -26,11 +23,7 @@ export type FastifyHttp2Options<
 export type FastifyInstance = FastifyInstanceBase<Http2Server>;
 export type Response = FastifyReply<Http2Server>;
 export type Request = FastifyRequest<undefined, Http2Server>;
-export type PluginFastifyInstance = FastifyInstanceBase<
-  RawServerBase,
-  RawRequestDefaultExpression<RawServerBase>,
-  RawReplyDefaultExpression<RawServerBase>
->;
-export type RouteHandler = RouteHandlerMethod<RawServerBase>;
+export type PluginFastifyInstance = FastifyInstanceBase;
+export type RouteHandler = RouteHandlerMethod;
 
 export type RegisterRouterCallback = (router: Router, app: PluginFastifyInstance) => Promise<void> | void;

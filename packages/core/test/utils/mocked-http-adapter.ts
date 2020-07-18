@@ -13,4 +13,5 @@ export class MockedHttpAdapter extends HttpAdapter {
   public bootRouter(): any {}
   public listen(): any {}
   public registerRouter(...args): any {}
+  public onDispose(): any {}
 }

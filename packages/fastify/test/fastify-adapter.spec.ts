@@ -64,7 +64,7 @@ describe('Fastify', () => {
   it('when service instance is disposed should call fastify close method', async () => {
     const adapter = new FastifyAdapter();
     const stubFastifyClose = sinon.stub(adapter.app, 'close');
-    await adapter.dispose();
+    await adapter.onDispose();
     expect(stubFastifyClose.calledOnce).to.be.true;
   });
   describe('when call `run` method', () => {

@@ -1,4 +1,4 @@
-import fastify, { FastifyServerOptions, RegisterOptions, RawServerDefault } from 'fastify';
+import fastify, { RegisterOptions } from 'fastify';
 import { v4 as uuidv4 } from 'uuid';
 import * as qs from 'qs';
 import { isFunction, merge, TraceMethodTime } from '@uzert/helpers';
@@ -10,7 +10,6 @@ import {
   IPluginKernel,
   Request,
   Response,
-  PluginFastifyInstance,
   FastifyInstance,
   Http2Server,
   FastifyHttp2Options,
@@ -44,7 +43,7 @@ export class FastifyAdapter extends HttpAdapter<FastifyInstance, Request, Respon
   public async listen(port: number, address: string) {
     return this.app.listen(port, address);
   }
-  public async dispose() {
+  public async onDispose() {
     await this.app.close();
   }
 
@@ -68,14 +67,9 @@ export class FastifyAdapter extends HttpAdapter<FastifyInstance, Request, Respon
     if (!isFunction(cb)) {
       throw new Error('Your register router method should return callback for registering in fastify');
     }
-    this._app.register(async (app, options, next) => {
+    this._app.register(async (app) => {
       const router = new Router(container, app);
-      try {
-        await cb(router, app);
-      } catch (e) {
-        return next(e);
-      }
-      next();
+      await cb(router, app);
     }, options);
   }
   @TraceMethodTime({

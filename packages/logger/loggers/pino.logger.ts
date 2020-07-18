@@ -1,12 +1,10 @@
 import * as pino from 'pino';
-import { ProviderInstance } from '@uzert/core';
 import { ExtendedPinoOptions, AbstractLogger, PinoEventHandler } from '../interfaces';
 
-export class PinoLogger extends ProviderInstance implements AbstractLogger {
+export class PinoLogger implements AbstractLogger {
+  public readonly _finalLogger: PinoEventHandler;
   private readonly _logger: pino.Logger;
-  private readonly _finalLogger: PinoEventHandler;
   constructor(options?: ExtendedPinoOptions) {
-    super();
     if (options?.extremeMode?.enabled) {
       const extremeModeTick = options.extremeMode.tick || 10000;
       this._logger = pino(
@@ -22,9 +20,6 @@ export class PinoLogger extends ProviderInstance implements AbstractLogger {
     } else {
       this._logger = pino(options);
     }
-  }
-  public dispose(event: string, err?): Promise<void> | void {
-    this._finalLogger(err, event);
   }
   public fatal(obj: object, msg?: string, ...args: any[]): void;
   public fatal(msg: string, ...args: any[]): void;

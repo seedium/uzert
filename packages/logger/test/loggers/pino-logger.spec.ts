@@ -41,12 +41,15 @@ describe('Pino logger', () => {
       expect(pino).property('_finalLogger').is.not.undefined;
     });
     it('should set custom tick', () => {
-      const pino = new PinoLogger({
+      const stubFlushLogger = sinon.stub(PinoLogger.prototype, <any>'flushLogger');
+      const tick = 5000;
+      new PinoLogger({
         extremeMode: {
           enabled: true,
-          tick: 5000,
+          tick,
         },
       });
+      expect(stubFlushLogger).calledOnceWith(tick);
     });
     it('should flush logs by tick', () => {
       const clock = sinon.useFakeTimers();
@@ -60,27 +63,6 @@ describe('Pino logger', () => {
       const stubLoggerFlush = sinon.stub((pino as any)._logger, 'flush');
       clock.tick(tick);
       expect(stubLoggerFlush.calledOnce).to.be.true;
-    });
-    it('should call final logger when dispose is called', async () => {
-      const pino = new PinoLogger({
-        extremeMode: {
-          enabled: true,
-        },
-      });
-      const stubFinalLogger = sinon.spy(pino, <any>'_finalLogger');
-      await pino.dispose('SIGINT');
-      expect(stubFinalLogger.calledOnce).to.be.true;
-    });
-    it('should log if error occurred', async () => {
-      const pino = new PinoLogger({
-        extremeMode: {
-          enabled: true,
-        },
-      });
-      const stubFinalLogger = sinon.spy(pino, <any>'_finalLogger');
-      const testError = new Error('test error');
-      await pino.dispose('uncaughtException', testError);
-      expect(stubFinalLogger.calledOnceWith(testError)).to.be.true;
     });
   });
 });

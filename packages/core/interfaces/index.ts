@@ -9,3 +9,4 @@ export * from './uzert-application-context.interface';
 export * from './router.interface';
 export * from './container-scanner.interface';
 export * from './scanner.interface';
+export * from './hooks';

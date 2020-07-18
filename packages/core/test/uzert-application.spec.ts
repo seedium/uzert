@@ -1,8 +1,12 @@
-import { expect } from 'chai';
+import * as chai from 'chai';
+import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
 import { MockedHttpAdapter } from './utils';
 import { UzertApplication } from '../uzert-application';
 import { UzertContainer } from '../injector';
+
+chai.use(sinonChai);
+const expect = chai.expect;
 
 describe('UzertApplication', () => {
   let app: UzertApplication<MockedHttpAdapter>;
@@ -49,6 +53,13 @@ describe('UzertApplication', () => {
       const result = await app.listen();
       expect(result).eq(app);
       expect(stubHttpAdapterListen.calledOnce).to.be.true;
+    });
+  });
+  describe('closing', () => {
+    it('when context is closing should call application dispose', async () => {
+      const stubHttpAdapterOnDispose = sinon.stub(app.httpAdapter, 'onDispose');
+      await app.close();
+      expect(stubHttpAdapterOnDispose).calledOnce;
     });
   });
 });
