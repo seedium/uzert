@@ -16,7 +16,7 @@
     "@uzert/core": "1.0.4"
   },
   "optionalDependencies": {
-    "pino": "6.4.0"
+    "pino": "6.4.1"
   },
   "dependencies": {
     "@types/pino": "6.3.0",
@@ -24,6 +24,6 @@
   },
   "devDependencies": {
     "@uzert/core": "1.0.4",
-    "pino": "6.4.0"
+    "pino": "6.4.1"
   }
 }
