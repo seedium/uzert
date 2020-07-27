@@ -23,7 +23,7 @@
     "fastify": "3.0.3",
     "qs": "6.9.4",
     "tslib": "2.0.0",
-    "uuid": "8.2.0"
+    "uuid": "8.3.0"
   },
   "devDependencies": {
     "@uzert/core": "1.0.4",
