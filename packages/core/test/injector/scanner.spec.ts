@@ -7,7 +7,9 @@ chai.use(sinonChai);
 const expect = chai.expect;
 
 describe('Scanner', () => {
-  class TestProvider {}
+  class TestProvider {
+    public testMethod() {}
+  }
   let testProvider: TestProvider;
   let scanner: DependenciesScanner;
   beforeEach(() => {
@@ -15,14 +17,22 @@ describe('Scanner', () => {
     testProvider = new TestProvider();
     scanner = new DependenciesScanner(container);
   });
-  it('should miss in reflecting dynamic metadata if obj undefined', () => {
-    const stubReflectInjectables = sinon.stub(scanner, 'reflectInjectables');
-    scanner.reflectDynamicMetadata(undefined, 'test');
-    expect(stubReflectInjectables).to.have.been.not.called;
+  describe('reflect injectables', () => {
+    it('should miss in reflecting dynamic metadata if obj undefined', () => {
+      const stubReflectInjectables = sinon.stub(scanner, 'reflectInjectables');
+      scanner.reflectDynamicMetadata(undefined, 'test');
+      expect(stubReflectInjectables).to.have.been.not.called;
+    });
+    it('should miss undefined injectables when filtering', () => {
+      sinon.stub(scanner, 'reflectKeyMetadata').returns(undefined);
+      const stubInsertInjectables = sinon.stub(scanner, 'insertInjectable');
+      scanner.reflectDynamicMetadata(TestProvider, 'testToken');
+      expect(stubInsertInjectables).not.called;
+    });
   });
   describe('reflecting key metadata', () => {
     it('if method not found should return undefined', () => {
-      const metadataKeys = scanner.reflectKeyMetadata(TestProvider, 'testKey', 'testMethod');
+      const metadataKeys = scanner.reflectKeyMetadata(TestProvider, 'testKey', 'unknownMethod');
       expect(metadataKeys).is.undefined;
     });
   });

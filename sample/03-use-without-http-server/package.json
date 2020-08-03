@@ -1,15 +1,14 @@
 {
-  "name": "uzert-crud-app",
+  "name": "uzert-custom-provider",
   "version": "1.0.0",
-  "description": "Uzert TypeScript CRUD app",
+  "description": "Uzert TypeScript Custom Provider",
   "license": "MIT",
   "scripts": {
     "build": "",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "",
     "start:dev": "",
-    "lint": "eslint '{src,apps,libs,test}/**/*.ts' --fix",
-    "test": ""
+    "lint": "eslint '{src,apps,libs,test}/**/*.ts' --fix"
   },
   "dependencies": {
     "reflect-metadata": "0.1.13"
@@ -23,6 +22,6 @@
     "eslint": "6.8.0",
     "eslint-config-prettier": "6.10.1",
     "eslint-plugin-import": "2.22.0",
-    "typescript": "3.8.3"
+    "typescript": "3.9.7"
   }
 }

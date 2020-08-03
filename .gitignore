@@ -36,3 +36,6 @@ packages/**/package-lock.json
 /packages/graphql
 /benchmarks/memory
 build/config\.gypi
+
+# samples
+sample/**/build

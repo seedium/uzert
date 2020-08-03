@@ -64,12 +64,17 @@ describe('Fastify Router', () => {
       container = new UzertContainer();
     });
     it('should register all methods', async () => {
+      class TestController {
+        public test() {}
+      }
+      const testController = new TestController();
       const methods = ['post', 'get', 'put', 'delete', 'patch', 'head'];
-      const router = new Router(new UzertContainer(), fastify());
+      const router = new Router(container, fastify());
+      sinon.stub((router as any)._containerScanner, 'find').returns(testController);
       const stubFastifyRoute = sinon.stub((router as any)._app, 'route');
       methods.forEach((method) => {
-        const stubMethodHandler = sinon.stub();
-        Reflect.defineMetadata(ROUTER_INSTANCE, {}, stubMethodHandler);
+        const stubMethodHandler = sinon.stub(testController, 'test');
+        Reflect.defineMetadata(ROUTER_INSTANCE, testController, stubMethodHandler);
         router[method]('/', stubMethodHandler);
         expect(
           stubFastifyRoute.calledWithExactly({
@@ -79,6 +84,7 @@ describe('Fastify Router', () => {
             preHandler: [],
           }),
         ).to.be.true;
+        stubMethodHandler.restore();
       });
       expect(stubFastifyRoute.callCount).eq(methods.length);
     });

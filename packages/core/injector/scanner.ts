@@ -86,7 +86,7 @@ export class DependenciesScanner {
       component.prototype,
       (methodName) => ({
         hostMethodName: methodName,
-        injectables: this.reflectKeyMetadata(component, metadataKey, methodName),
+        injectables: this.reflectKeyMetadata(component, metadataKey, methodName) || [],
       }),
     );
 
