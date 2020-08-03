@@ -55,7 +55,7 @@ export class Router {
     if (!instance) {
       throw new Error('Invalid controller method. Did you set decorator "@Controller" to the class method?');
     }
-    return instance;
+    return this._containerScanner.find(instance.constructor.name);
   }
   protected reflectPipes(handler: RouteHandler): Type<Pipe>[] {
     return Reflect.getMetadata(PIPES_METADATA, handler) || [];

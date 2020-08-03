@@ -40,7 +40,7 @@ export class FastifyAdapter extends HttpAdapter<FastifyInstance, Request, Respon
     this._app = fastify<Http2Server>(this.buildOptions(options));
   }
 
-  public async listen(port: number, address: string) {
+  public async listen(port: number = 3000, address: string = '0.0.0.0') {
     return this.app.listen(port, address);
   }
   public async onDispose() {
