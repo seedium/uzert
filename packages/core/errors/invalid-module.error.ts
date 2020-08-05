@@ -1,7 +1,9 @@
 export class InvalidModuleError extends Error {
-  constructor() {
+  constructor(parentModule: any, index?: number) {
+    const parentModuleName = parentModule?.name || 'module';
     super(
-      `Uzert cannot create the module instance. Often, this is because of a circular dependency between modules. Please, for now avoid it.`,
+      `Uzert cannot create the ${parentModuleName} instance.
+Received an unexpected value at index [${index}] of the ${parentModuleName} "imports" array. `,
     );
   }
 }

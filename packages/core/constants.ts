@@ -2,6 +2,8 @@ export const MODULE_KEYS = {
   PROVIDERS: 'providers',
   CONTROLLERS: 'controllers',
   ROUTES: 'routes',
+  IMPORTS: 'imports',
+  EXPORTS: 'exports',
 };
 export const METADATA_PARAMTYPES = 'design:paramtypes';
 export const SELF_DECLARED_DEPS_METADATA = 'self:paramtypes';

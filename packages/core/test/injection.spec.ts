@@ -7,6 +7,7 @@ import { InstanceLoader, UzertContainer, ContainerScanner } from '../injector';
 import { PROPERTY_DEPS_METADATA, SELF_DECLARED_DEPS_METADATA } from '../constants';
 import * as sinon from 'sinon';
 import { ErrorsZone } from '../errors/handlers/errors-zone';
+import { RouteModule } from '../interfaces';
 
 describe('Injection', () => {
   afterEach(() => {
@@ -120,8 +121,9 @@ describe('Injection', () => {
       @Injectable()
       class TestController {}
       @Injectable()
-      class TestRoute {
+      class TestRoute implements RouteModule {
         constructor(private readonly _testProvider: TestProvider, private readonly _testController: TestController) {}
+        public register(): any {}
       }
       @Module({
         providers: [TestProvider, TestProvider2],

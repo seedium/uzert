@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import { Module } from '../';
+import { Module, RouteModule } from '../';
 import { MODULE_KEYS } from '../constants';
 import { ModuleValidationError } from '../errors';
 
@@ -56,7 +56,9 @@ describe('Boot module', () => {
     expect(TestControllerMeta).eq(TestController);
   });
   it('should inject routers to AppModule', () => {
-    class TestRouter {}
+    class TestRouter implements RouteModule {
+      public register(): any {}
+    }
     @Module({
       routes: [TestRouter],
     })

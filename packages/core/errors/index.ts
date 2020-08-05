@@ -4,3 +4,5 @@ export * from './module-validation.error';
 export * from './unknown-dependency.error';
 export * from './unknown-element.error';
 export * from './unknown-module.error';
+export * from './undefined-module.error';
+export * from './unknown-export.error';

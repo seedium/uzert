@@ -7,3 +7,4 @@ export { default as isNil } from './isNil';
 export { default as isUndefined } from './isUndefined';
 export { default as isFunction } from './isFunction';
 export { default as isConstructor } from './isConstructor';
+export { default as isSymbol } from './isSymbol';

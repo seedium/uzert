@@ -1,4 +1,5 @@
-import { isNil, isFunction, isString, capitalize } from '@uzert/helpers';
+import iterate from 'iterare';
+import { isNil, isFunction, isString, capitalize, isSymbol } from '@uzert/helpers';
 import {
   Type,
   IInjectable,
@@ -8,23 +9,33 @@ import {
   ProviderName,
   Abstract,
   RouteModule,
+  DynamicModule,
 } from '../interfaces';
 import { InstanceWrapper } from './instance-wrapper';
 import { getRandomString } from '../utils/get-random-string';
 import { CONTROLLER_ID_KEY } from './injector.constants';
+import { UnknownExportError } from '../errors';
 
 export class Module {
   private readonly _id: string;
+  private readonly _imports = new Set<Module>();
   private readonly _providers = new Map<any, InstanceWrapper<IInjectable>>();
   private readonly _controllers = new Map<any, InstanceWrapper<IInjectable>>();
   private readonly _routes = new Map<any, InstanceWrapper<RouteModule>>();
   private readonly _injectables = new Map<any, InstanceWrapper<IInjectable>>();
+  private readonly _exports = new Set<string | symbol>();
 
   constructor(private readonly _metatype: Type<any>, private readonly _scope: Type<any>[]) {
     this._id = getRandomString();
   }
+  get id(): string {
+    return this._id;
+  }
   get metatype(): Type<any> {
     return this._metatype;
+  }
+  get imports(): Set<Module> {
+    return this._imports;
   }
   get providers(): Map<any, InstanceWrapper<IInjectable>> {
     return this._providers;
@@ -37,6 +48,9 @@ export class Module {
   }
   get injectables(): Map<string, InstanceWrapper<IInjectable>> {
     return this._injectables;
+  }
+  get exports(): Set<string | symbol> {
+    return this._exports;
   }
   public addProvider(provider: Provider): string {
     if (this.isCustomProvider(provider)) {
@@ -79,6 +93,9 @@ export class Module {
 
     return controller.name;
   }
+  public addRelatedModule(module: Module) {
+    this._imports.add(module);
+  }
   public addRoute(route: Type<IInjectable>): string {
     this._routes.set(
       route.name,
@@ -117,6 +134,44 @@ export class Module {
       hostWrapper && hostWrapper.addEnhancerMetadata(instanceWrapper);
     }
   }
+  public addExportedProvider(provider: (Provider & ProviderName) | string | symbol | DynamicModule) {
+    const addExportedUnit = (token: string | symbol) => this._exports.add(this.validateExportedProvider(token));
+
+    if (this.isCustomProvider(provider as any)) {
+      return this.addCustomExportedProvider(provider as any);
+    } else if (isString(provider) || isSymbol(provider)) {
+      return addExportedUnit(provider);
+    } else if (this.isDynamicModule(provider)) {
+      const { module } = provider;
+      return addExportedUnit(module.name);
+    }
+    addExportedUnit(provider.name);
+  }
+  public addCustomExportedProvider(provider: FactoryProvider) {
+    const provide = provider.provide;
+    if (isString(provide) || isSymbol(provide)) {
+      return this._exports.add(this.validateExportedProvider(provide));
+    }
+    this._exports.add(this.validateExportedProvider(provide.name));
+  }
+  public validateExportedProvider(token: string | symbol) {
+    if (this._providers.has(token)) {
+      return token;
+    }
+    const importsArray = [...this._imports.values()];
+    const importsNames = iterate(importsArray)
+      .filter((item) => !!item)
+      .map(({ metatype }) => metatype)
+      .filter((metatype) => !!metatype)
+      .map(({ name }) => name)
+      .toArray();
+
+    if (!importsNames.includes(token as string)) {
+      const { name } = this.metatype;
+      throw new UnknownExportError(token, name);
+    }
+    return token;
+  }
   public assignControllerUniqueId(controller: Type<Controller>) {
     Object.defineProperty(controller, CONTROLLER_ID_KEY, {
       enumerable: false,
@@ -125,11 +180,9 @@ export class Module {
       value: getRandomString(),
     });
   }
-
   public isCustomProvider(provider: Provider): provider is FactoryProvider {
     return !isNil((provider as FactoryProvider).provide);
   }
-
   public addCustomProvider(
     provider: FactoryProvider & ProviderName,
     collection: Map<string, any>,
@@ -146,7 +199,9 @@ export class Module {
 
     return name;
   }
-
+  public isDynamicModule(exported: any): exported is DynamicModule {
+    return exported && exported.module;
+  }
   public getProviderStaticToken(
     provider: string | symbol | Type<any> | Abstract<any>,
     suffix?: string,
@@ -158,7 +213,6 @@ export class Module {
       return name;
     }
   }
-
   public addCustomFactory(provider: FactoryProvider & ProviderName, collection: Map<string, InstanceWrapper>) {
     const { name, useFactory: factory, inject } = provider;
 
