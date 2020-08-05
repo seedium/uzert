@@ -2,7 +2,17 @@ import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
 import * as proxyquire from 'proxyquire';
-import { isFunction, isNil, isObjectLike, isPlainObject, isString, isUndefined, nth, isInteger } from '../lang';
+import {
+  isFunction,
+  isNil,
+  isObjectLike,
+  isPlainObject,
+  isString,
+  isUndefined,
+  nth,
+  isInteger,
+  isSymbol,
+} from '../lang';
 import { uzertIsInteger } from '../lang/isInteger';
 
 chai.use(sinonChai);
@@ -143,6 +153,16 @@ describe('Lang helpers', () => {
       const str = '12345';
       const result = nth(3, str);
       expect(result).eq('4');
+    });
+  });
+  describe('isSymbol', () => {
+    it('should return true if symbol', () => {
+      const testSymbol = Symbol.for('test');
+      const result = isSymbol(testSymbol);
+      expect(result).to.be.true;
+    });
+    it('should return false if any other', () => {
+      ['', null, undefined, {}, [], 2, false, () => {}].forEach((primitive) => expect(isSymbol(primitive)).to.be.false);
     });
   });
 });

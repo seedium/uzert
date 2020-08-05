@@ -1,10 +1,12 @@
 import * as chai from 'chai';
+import * as sinonChai from 'sinon-chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
 import { UzertContainer } from '../../injector';
 import { CircularDependencyError, InvalidModuleError, UnknownModuleError } from '../../errors';
 import { RouteModule } from '../../interfaces';
 
+chai.use(sinonChai);
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
@@ -62,7 +64,39 @@ describe('UzertContainer', () => {
   });
   describe('get module', () => {
     it('if undefined passed to get module token should throw an error', async () => {
-      expect(container.getModuleToken(undefined)).eventually.rejectedWith(InvalidModuleError);
+      await expect(container.getModuleToken(undefined)).eventually.rejectedWith(InvalidModuleError);
+    });
+  });
+  describe('add importing modules to container', () => {
+    it('should call `addRelatedModule` on host module', async () => {
+      class RelatedModule {}
+      class TestModule {}
+      await container.addModule(TestModule, []);
+      const moduleToken = await container.getModuleToken(TestModule);
+      const hostModule = container.getModuleByToken(moduleToken);
+      const stubAddRelatedModule = sinon.stub(hostModule, 'addRelatedModule');
+      await container.addImport(RelatedModule, moduleToken);
+      expect(stubAddRelatedModule).calledOnce;
+    });
+    it('if token was not found just miss import', async () => {
+      class TestModule {}
+      await container.addImport(TestModule, 'test');
+    });
+  });
+  describe('add exported provider', () => {
+    it('should throw an unknown module error', () => {
+      class TestService {}
+      expect(() => container.addExportedProvider(TestService, 'test')).throws(UnknownModuleError);
+    });
+    it('should call `addExportedProvider` on host module', async () => {
+      class TestService {}
+      class TestModule {}
+      await container.addModule(TestModule, []);
+      const moduleToken = await container.getModuleToken(TestModule);
+      const hostModule = container.getModuleByToken(moduleToken);
+      const stubAddExportedProvider = sinon.stub(hostModule, 'addExportedProvider');
+      container.addExportedProvider(TestService, moduleToken);
+      expect(stubAddExportedProvider).calledOnceWithExactly(TestService);
     });
   });
 });

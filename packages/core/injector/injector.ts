@@ -307,6 +307,78 @@ export class Injector {
       this.addDependencyMetadata(keyOrIndex, wrapper, instanceWrapper);
       return instanceWrapper;
     }
+    return this.lookupComponentInParentModules(dependencyContext, moduleRef, wrapper, contextId, keyOrIndex);
+  }
+  public async lookupComponentInParentModules<T = any>(
+    dependencyContext: InjectorDependencyContext,
+    moduleRef: Module,
+    wrapper: InstanceWrapper<T>,
+    contextId = STATIC_CONTEXT,
+    keyOrIndex?: string | number,
+  ): Promise<InstanceWrapper<T>> {
+    const instanceWrapper = await this.lookupComponentInImports(
+      moduleRef,
+      dependencyContext.name,
+      wrapper,
+      [],
+      contextId,
+      keyOrIndex,
+    );
+    if (isNil(instanceWrapper)) {
+      throw new UnknownDependencyError(wrapper.name, dependencyContext, moduleRef);
+    }
+    return instanceWrapper;
+  }
+  public async lookupComponentInImports(
+    moduleRef: Module,
+    name: any,
+    wrapper: InstanceWrapper,
+    moduleRegistry: any[] = [],
+    contextId = STATIC_CONTEXT,
+    keyOrIndex?: string | number,
+    isTraversing?: boolean,
+  ): Promise<any> {
+    let instanceWrapperRef: InstanceWrapper = null;
+    const imports = moduleRef.imports;
+    let children = [...imports.values()];
+
+    if (isTraversing) {
+      const contextModuleExports = moduleRef.exports;
+      children = children.filter((child) => contextModuleExports.has(child.metatype && child.metatype.name));
+    }
+
+    for (const relatedModule of children) {
+      if (moduleRegistry.includes(relatedModule.id)) {
+        continue;
+      }
+      moduleRegistry.push(relatedModule.id);
+      const { providers, exports } = relatedModule;
+      if (!exports.has(name) || !providers.has(name)) {
+        const instanceRef = await this.lookupComponentInImports(
+          relatedModule,
+          name,
+          wrapper,
+          moduleRegistry,
+          contextId,
+          keyOrIndex,
+          true,
+        );
+        if (instanceRef) {
+          this.addDependencyMetadata(keyOrIndex, wrapper, instanceRef);
+          return instanceRef;
+        }
+        continue;
+      }
+      instanceWrapperRef = providers.get(name);
+      this.addDependencyMetadata(keyOrIndex, wrapper, instanceWrapperRef);
+
+      const instanceHost = instanceWrapperRef.getInstanceByContextId(contextId);
+      if (!instanceHost.isResolved) {
+        await this.loadProvider(instanceWrapperRef, relatedModule, contextId);
+        break;
+      }
+    }
+    return instanceWrapperRef;
   }
   private addDependencyMetadata(
     keyOrIndex: number | string,

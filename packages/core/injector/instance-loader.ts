@@ -56,7 +56,6 @@ export class InstanceLoader {
   private async createInstancesOfProviders(module: Module) {
     const { providers } = module;
     const wrappers = [...providers.values()];
-
     await Promise.all(wrappers.map((item) => this.injector.loadProvider(item, module)));
   }
   private async createInstancesOfControllers(module: Module) {

@@ -1,7 +1,5 @@
 import { Abstract } from './abstract.interface';
 
-export type Provider<T = any> = Type<T> | FactoryProvider<T>;
-
 export interface Type<T> extends Function {
   new (...args: any[]): T;
 }
@@ -20,3 +18,5 @@ export interface FactoryProvider<T = any> {
    */
   inject?: Array<Type<any> | string | symbol | Abstract<any> | Function>;
 }
+
+export type Provider<T = any> = Type<T> | FactoryProvider<T>;

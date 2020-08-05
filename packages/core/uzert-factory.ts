@@ -37,8 +37,8 @@ export class UzertFactoryStatic {
   }
 
   private async initialize(module: any, container: UzertContainer) {
-    const dependenciesScanner = new DependenciesScanner(container);
     const instanceLoader = new InstanceLoader(container);
+    const dependenciesScanner = new DependenciesScanner(container);
 
     try {
       await ErrorsZone.asyncRun(async () => {
