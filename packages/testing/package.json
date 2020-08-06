@@ -17,6 +17,6 @@
   },
   "devDependencies": {
     "@uzert/core": "1.0.4",
-    "tslib": "2.0.0"
+    "tslib": "2.0.1"
   }
 }

@@ -20,7 +20,7 @@
   "dependencies": {
     "@types/glob": "7.1.3",
     "glob": "7.1.6",
-    "tslib": "2.0.0"
+    "tslib": "2.0.1"
   },
   "devDependencies": {
     "@uzert/core": "1.0.4",
