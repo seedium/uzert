@@ -9,7 +9,12 @@ describe('Serializers', () => {
       const socket = new Socket();
       const incomingMessage = new IncomingMessage(socket);
       const serializedMessage = request(incomingMessage);
-      expect(serializedMessage).to.have.all.keys('method', 'url', 'headers', 'remotePort');
+      expect(serializedMessage).to.have.all.keys(
+        'method',
+        'url',
+        'headers',
+        'remotePort',
+      );
     });
     it('should serialize server response', () => {
       const socket = new Socket();

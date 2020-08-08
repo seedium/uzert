@@ -8,7 +8,15 @@ export interface ModuleOptions {
   providers?: Provider[];
   controllers?: Type<any>[];
   routes?: Type<RouteModule>[];
-  exports?: Array<DynamicModule | Promise<DynamicModule> | string | symbol | Provider | Abstract<any> | Function>;
+  exports?: Array<
+    | DynamicModule
+    | Promise<DynamicModule>
+    | string
+    | symbol
+    | Provider
+    | Abstract<any>
+    | Function
+  >;
 }
 
 export interface ProviderName {

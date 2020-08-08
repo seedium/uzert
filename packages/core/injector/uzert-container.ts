@@ -1,6 +1,16 @@
 import { ModulesContainer } from './modules-container';
-import { Type, Provider, RouteModule, IInjectable, DynamicModule } from '../interfaces';
-import { CircularDependencyError, UnknownModuleError, InvalidModuleError } from '../errors';
+import {
+  Type,
+  Provider,
+  RouteModule,
+  IInjectable,
+  DynamicModule,
+} from '../interfaces';
+import {
+  CircularDependencyError,
+  UnknownModuleError,
+  InvalidModuleError,
+} from '../errors';
 import { Module } from './module';
 import { ModuleTokenFactory } from './module-token-factory';
 import { ModuleCompiler } from './module-compiler';
@@ -42,19 +52,29 @@ export class UzertContainer {
     const moduleRef = this.modules.get(token);
     return moduleRef.addRoute(route);
   }
-  public addInjectable(injectable: Provider, token: string, host?: Type<IInjectable>, hostMethodName?: string) {
+  public addInjectable(
+    injectable: Provider,
+    token: string,
+    host?: Type<IInjectable>,
+    hostMethodName?: string,
+  ) {
     if (!this.modules.has(token)) {
       throw new UnknownModuleError(token);
     }
     const moduleRef = this.modules.get(token);
     moduleRef.addInjectable(injectable, host, hostMethodName);
   }
-  public async addImport(relatedModule: Type<any> | DynamicModule, token: string) {
+  public async addImport(
+    relatedModule: Type<any> | DynamicModule,
+    token: string,
+  ) {
     if (!this.modules.has(token)) {
       return;
     }
     const moduleRef = this.modules.get(token);
-    const { token: relatedModuleToken } = await this.moduleCompiler.compile(relatedModule);
+    const { token: relatedModuleToken } = await this.moduleCompiler.compile(
+      relatedModule,
+    );
     const related = this.modules.get(relatedModuleToken);
     moduleRef.addRelatedModule(related);
   }
@@ -65,7 +85,10 @@ export class UzertContainer {
     const moduleRef = this.modules.get(token);
     moduleRef.addExportedProvider(provider);
   }
-  public async addModule(metatype: Type<any>, scope: Type<any>[]): Promise<Module> {
+  public async addModule(
+    metatype: Type<any>,
+    scope: Type<any>[],
+  ): Promise<Module> {
     if (!metatype) {
       throw new InvalidModuleError(metatype);
     }
@@ -81,7 +104,9 @@ export class UzertContainer {
 
     return moduleRef;
   }
-  public async getModuleToken(metatype: Type<any> | DynamicModule): Promise<string> {
+  public async getModuleToken(
+    metatype: Type<any> | DynamicModule,
+  ): Promise<string> {
     if (!metatype) {
       throw new InvalidModuleError(metatype);
     }

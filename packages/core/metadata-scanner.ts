@@ -14,7 +14,9 @@ export class MetadataScanner {
       .toArray();
   }
 
-  static *getAllFilteredMethodNames(prototype: object): IterableIterator<string> {
+  static *getAllFilteredMethodNames(
+    prototype: object,
+  ): IterableIterator<string> {
     const isMethod = (prop: string) => {
       const descriptor = Object.getOwnPropertyDescriptor(prototype, prop);
       if (descriptor.set || descriptor.get) {
@@ -23,7 +25,12 @@ export class MetadataScanner {
       return !isConstructor(prop) && isFunction(prototype[prop]);
     };
     do {
-      yield* iterate(Object.getOwnPropertyNames(prototype)).filter(isMethod).toArray();
-    } while ((prototype = Reflect.getPrototypeOf(prototype)) && prototype !== Object.prototype);
+      yield* iterate(Object.getOwnPropertyNames(prototype))
+        .filter(isMethod)
+        .toArray();
+    } while (
+      (prototype = Reflect.getPrototypeOf(prototype)) &&
+      prototype !== Object.prototype
+    );
   }
 }

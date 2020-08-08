@@ -4,11 +4,17 @@ import * as sinon from 'sinon';
 import { UzertApplicationContext } from '../uzert-application-context';
 import { InstanceLoader, UzertContainer } from '../injector';
 import { ShutdownSignal } from '../enums';
-import { OnAppShutdown, OnBeforeAppShutdown, OnDispose, OnInit } from '../interfaces/hooks';
+import {
+  OnAppShutdown,
+  OnBeforeAppShutdown,
+  OnDispose,
+  OnInit,
+} from '../interfaces/hooks';
 
 chai.use(sinonChai);
 const expect = chai.expect;
-const delay = (value: number) => new Promise((resolve) => setTimeout(resolve, value));
+const delay = (value: number) =>
+  new Promise((resolve) => setTimeout(resolve, value));
 
 class TestModule {}
 describe('Uzert application context', () => {
@@ -72,11 +78,17 @@ describe('Uzert application context', () => {
         ctx.enableShutdownHooks();
         await ctx.close();
         (ctx as any).activeShutdownSignals.forEach((signal) => {
-          expect(spyProcessRemoveListener).calledWithExactly(signal, (ctx as any).shutdownCleanupRef);
+          expect(spyProcessRemoveListener).calledWithExactly(
+            signal,
+            (ctx as any).shutdownCleanupRef,
+          );
         });
       });
       it('should miss unsubscribing', async () => {
-        const spyUnsubscribeFromProcessSignals = sinon.spy((ctx as any).activeShutdownSignals, <any>'forEach');
+        const spyUnsubscribeFromProcessSignals = sinon.spy(
+          (ctx as any).activeShutdownSignals,
+          <any>'forEach',
+        );
         await ctx.close();
         expect(spyUnsubscribeFromProcessSignals).not.called;
       });
@@ -85,10 +97,15 @@ describe('Uzert application context', () => {
       afterEach(() => {
         process.removeAllListeners();
       });
-      const defaultSignals = Object.keys(ShutdownSignal).filter((signal) => signal !== 'UNCAUGHT_EXCEPTION');
+      const defaultSignals = Object.keys(ShutdownSignal).filter(
+        (signal) => signal !== 'UNCAUGHT_EXCEPTION',
+      );
       defaultSignals.push(ShutdownSignal.UNCAUGHT_EXCEPTION);
       it('by default should be disabled', async () => {
-        const stubListenToShutdownSignals = sinon.stub(ctx, <any>'listenToShutdownSignals');
+        const stubListenToShutdownSignals = sinon.stub(
+          ctx,
+          <any>'listenToShutdownSignals',
+        );
         await ctx.init();
         expect(stubListenToShutdownSignals).not.called;
       });
@@ -107,7 +124,10 @@ describe('Uzert application context', () => {
         const stubProcessOn = sinon.stub(process, 'on');
         ctx.enableShutdownHooks();
         defaultSignals.forEach((signal) => {
-          expect(stubProcessOn).calledWithExactly(signal, (ctx as any).shutdownCleanupRef);
+          expect(stubProcessOn).calledWithExactly(
+            signal,
+            (ctx as any).shutdownCleanupRef,
+          );
         });
       });
       describe('cleanup function should', () => {
@@ -119,7 +139,10 @@ describe('Uzert application context', () => {
           const spyRemoveListener = sinon.spy(process, 'removeListener');
           process.emit('SIGINT', 'SIGINT');
           defaultSignals.forEach((signal) => {
-            expect(spyRemoveListener).calledWithExactly(signal, (ctx as any).shutdownCleanupRef);
+            expect(spyRemoveListener).calledWithExactly(
+              signal,
+              (ctx as any).shutdownCleanupRef,
+            );
           });
         });
         it('start shutdown cycle', () => {
@@ -142,7 +165,10 @@ describe('Uzert application context', () => {
             class TestProvider implements OnBeforeAppShutdown {
               public onBeforeAppShutdown(): any {}
             }
-            stubProviderOnBeforeAppShutdown = sinon.stub(TestProvider.prototype, 'onBeforeAppShutdown');
+            stubProviderOnBeforeAppShutdown = sinon.stub(
+              TestProvider.prototype,
+              'onBeforeAppShutdown',
+            );
             ctx.container.addProvider(TestProvider, testModuleToken);
             await instanceLoader.createInstancesOfDependencies();
           });
@@ -160,7 +186,10 @@ describe('Uzert application context', () => {
             }
             const testError = new Error('test');
             process.emit('uncaughtException', testError);
-            expect(stubProviderOnBeforeAppShutdown).calledOnceWithExactly(testError, undefined);
+            expect(stubProviderOnBeforeAppShutdown).calledOnceWithExactly(
+              testError,
+              undefined,
+            );
             if (mochaHandler) {
               process.listeners('uncaughtException').unshift(mochaHandler);
             }
@@ -171,7 +200,10 @@ describe('Uzert application context', () => {
             class TestProvider implements OnAppShutdown {
               public onAppShutdown(): any {}
             }
-            const stubProviderOnAppShutdown = sinon.stub(TestProvider.prototype, 'onAppShutdown');
+            const stubProviderOnAppShutdown = sinon.stub(
+              TestProvider.prototype,
+              'onAppShutdown',
+            );
             ctx.container.addProvider(TestProvider, testModuleToken);
             await instanceLoader.createInstancesOfDependencies();
             await ctx.close();
@@ -182,7 +214,10 @@ describe('Uzert application context', () => {
           class TestProvider implements OnDispose {
             public onDispose(): any {}
           }
-          const stubProviderOnDispose = sinon.stub(TestProvider.prototype, 'onDispose');
+          const stubProviderOnDispose = sinon.stub(
+            TestProvider.prototype,
+            'onDispose',
+          );
           ctx.container.addProvider(TestProvider, testModuleToken);
           await instanceLoader.createInstancesOfDependencies();
           await ctx.close();
@@ -190,7 +225,10 @@ describe('Uzert application context', () => {
         });
       });
       it('shutdown cycle should trigger hooks in right order', async () => {
-        const spyBeforeShutdownHook = sinon.spy(ctx, <any>'callBeforeShutdownHook');
+        const spyBeforeShutdownHook = sinon.spy(
+          ctx,
+          <any>'callBeforeShutdownHook',
+        );
         const spyDispose = sinon.spy(ctx, <any>'dispose');
         const spyCallShutdownHook = sinon.spy(ctx, <any>'callShutdownHook');
         const spyCallDisposeHook = sinon.spy(ctx, <any>'callDisposeHook');

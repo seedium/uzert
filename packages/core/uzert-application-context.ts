@@ -2,7 +2,12 @@ import iterate from 'iterare';
 import { ContainerScanner, UzertContainer } from './injector';
 import { Type, Abstract, IUzertApplicationContext } from './interfaces';
 import { ShutdownSignal } from './enums';
-import { callInitHook, callAppShutdownHook, callBeforeAppShutdownHook, callDisposeHook } from './hooks';
+import {
+  callInitHook,
+  callAppShutdownHook,
+  callBeforeAppShutdownHook,
+  callDisposeHook,
+} from './hooks';
 import { isString } from '@uzert/helpers';
 
 export class UzertApplicationContext implements IUzertApplicationContext {
@@ -17,7 +22,7 @@ export class UzertApplicationContext implements IUzertApplicationContext {
   constructor(private readonly _container: UzertContainer) {
     this.containerScanner = new ContainerScanner(_container);
   }
-  public get<TInput = any, TResult = TInput>(
+  public get<TInput = unknown, TResult = TInput>(
     typeOrToken: Type<TInput> | Abstract<TInput> | string | symbol,
     options: { strict: boolean } = { strict: false },
   ): TResult {
@@ -39,7 +44,9 @@ export class UzertApplicationContext implements IUzertApplicationContext {
   }
   public enableShutdownHooks(signals: (ShutdownSignal | string)[] = []): this {
     if (!signals.length) {
-      signals = Object.keys(ShutdownSignal).map((key: string) => ShutdownSignal[key]);
+      signals = Object.keys(ShutdownSignal).map(
+        (key: string) => ShutdownSignal[key],
+      );
     } else {
       signals = Array.from(new Set(signals));
     }
@@ -53,7 +60,7 @@ export class UzertApplicationContext implements IUzertApplicationContext {
     this.listenToShutdownSignals(signals);
     return this;
   }
-  protected find<TInput = any, TResult = TInput>(
+  protected find<TInput = unknown, TResult = TInput>(
     typeOrToken: Type<TInput> | Abstract<TInput> | string | symbol,
   ): TResult {
     return this.containerScanner.find<TInput, TResult>(typeOrToken);
@@ -89,7 +96,10 @@ export class UzertApplicationContext implements IUzertApplicationContext {
       process.on(signal, cleanup);
     });
   }
-  protected async startShutdownCycle(err: Error | null, signal?: ShutdownSignal | string) {
+  protected async startShutdownCycle(
+    err: Error | null,
+    signal?: ShutdownSignal | string,
+  ) {
     await this.callBeforeShutdownHook(err, signal);
     await this.dispose();
     await this.callShutdownHook(err, signal);
@@ -115,13 +125,19 @@ export class UzertApplicationContext implements IUzertApplicationContext {
       await callDisposeHook(module);
     }
   }
-  protected async callShutdownHook(err: Error | null, signal?: string): Promise<void> {
+  protected async callShutdownHook(
+    err: Error | null,
+    signal?: string,
+  ): Promise<void> {
     const modulesContainer = this.container.getModules();
     for (const module of [...modulesContainer.values()].reverse()) {
       await callAppShutdownHook(module, err, signal);
     }
   }
-  protected async callBeforeShutdownHook(err: Error | null, signal?: string): Promise<void> {
+  protected async callBeforeShutdownHook(
+    err: Error | null,
+    signal?: string,
+  ): Promise<void> {
     const modulesContainer = this.container.getModules();
     for (const module of [...modulesContainer.values()].reverse()) {
       await callBeforeAppShutdownHook(module, err, signal);

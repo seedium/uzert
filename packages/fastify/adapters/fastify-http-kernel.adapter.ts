@@ -2,7 +2,8 @@ import { FastifyError } from 'fastify';
 import { HttpKernelAdapter } from '@uzert/core';
 import { Request, Response, IPluginKernel } from '../interfaces';
 
-export class FastifyHttpKernelAdapter implements HttpKernelAdapter<Request, Response> {
+export class FastifyHttpKernelAdapter
+  implements HttpKernelAdapter<Request, Response> {
   public plugins: IPluginKernel[] = [];
 
   public async notFoundHandler(_req: Request, _res: Response): Promise<any> {
@@ -11,7 +12,11 @@ export class FastifyHttpKernelAdapter implements HttpKernelAdapter<Request, Resp
     };
   }
 
-  public async errorHandler(err: Error | FastifyError, _req: Request, _res: Response): Promise<any> {
+  public async errorHandler(
+    err: Error | FastifyError,
+    _req: Request,
+    _res: Response,
+  ): Promise<any> {
     return {
       message: err.message,
     };

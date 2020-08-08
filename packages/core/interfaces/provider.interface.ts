@@ -1,12 +1,17 @@
 import { Abstract } from './abstract.interface';
 
-export type ProviderToken = string | symbol | Type<any> | Abstract<any> | Function;
+export type ProviderToken =
+  | string
+  | symbol
+  | Type<unknown>
+  | Abstract<unknown>
+  | Function;
 
 export interface Type<T> extends Function {
-  new (...args: any[]): T;
+  new (...args: unknown[]): T;
 }
 
-export interface FactoryProvider<T = any> {
+export interface FactoryProvider<T = unknown> {
   /**
    * Injection token
    */
@@ -14,14 +19,14 @@ export interface FactoryProvider<T = any> {
   /**
    * Factory function that returns an instance of the provider to be injected.
    */
-  useFactory: (...args: any[]) => T | Promise<T>;
+  useFactory: (...args: unknown[]) => T | Promise<T>;
   /**
    * Optional list of providers to be injected into the context of the Factory function.
    */
   inject?: Array<ProviderToken>;
 }
 
-export interface ClassProvider<T = any> {
+export interface ClassProvider<T = unknown> {
   /**
    * Injection token
    */
@@ -32,7 +37,7 @@ export interface ClassProvider<T = any> {
   useClass: Type<T>;
 }
 
-export interface ValueProvider<T = any> {
+export interface ValueProvider<T = unknown> {
   /**
    * Injection token
    */
@@ -43,4 +48,8 @@ export interface ValueProvider<T = any> {
   useValue: T;
 }
 
-export type Provider<T = any> = Type<T> | FactoryProvider<T> | ClassProvider<T> | ValueProvider<T>;
+export type Provider<T = unknown> =
+  | Type<T>
+  | FactoryProvider<T>
+  | ClassProvider<T>
+  | ValueProvider<T>;

@@ -1,4 +1,4 @@
-import { OnDispose, OnAppShutdown } from '@uzert/core';
+import { OnDispose, OnAppShutdown, FactoryProvider } from '@uzert/core';
 import { ILoggerOptions } from '../interfaces';
 import { PinoLogger, DefaultLogger } from '../loggers';
 
@@ -6,18 +6,20 @@ export class Logger implements OnDispose, OnAppShutdown {
   protected _default?: DefaultLogger;
   protected _pino?: PinoLogger;
 
-  static boot(options?: ILoggerOptions) {
+  static boot(options?: ILoggerOptions): FactoryProvider {
     return {
       provide: Logger,
       useFactory: () => new Logger(options),
     };
   }
-  get default() {
+  get default(): DefaultLogger {
     return this._default;
   }
-  get pino() {
+  get pino(): PinoLogger {
     if (!this._pino) {
-      throw new Error('Pino instance is not initialized yet. Did you include logger to boot service?');
+      throw new Error(
+        'Pino instance is not initialized yet. Did you include logger to boot service?',
+      );
     }
     return this._pino;
   }
@@ -27,7 +29,7 @@ export class Logger implements OnDispose, OnAppShutdown {
       this._pino = new PinoLogger(options.pino);
     }
   }
-  public onAppShutdown(err: Error | null, signal?: string): any {
+  public onAppShutdown(err: Error | null, signal?: string): void {
     this.pino._finalLogger(err, signal);
   }
   public onDispose(): void {

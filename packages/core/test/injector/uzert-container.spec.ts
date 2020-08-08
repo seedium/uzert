@@ -3,7 +3,11 @@ import * as sinonChai from 'sinon-chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as sinon from 'sinon';
 import { UzertContainer } from '../../injector';
-import { CircularDependencyError, InvalidModuleError, UnknownModuleError } from '../../errors';
+import {
+  CircularDependencyError,
+  InvalidModuleError,
+  UnknownModuleError,
+} from '../../errors';
 import { RouteModule } from '../../interfaces';
 
 chai.use(sinonChai);
@@ -20,13 +24,19 @@ describe('UzertContainer', () => {
   });
   describe('circular dependencies', () => {
     it('should throw an error when add provider', () => {
-      expect(() => container.addProvider(undefined, 'test')).throws(CircularDependencyError);
+      expect(() => container.addProvider(undefined, 'test')).throws(
+        CircularDependencyError,
+      );
     });
     it('should throw an error when add controller', () => {
-      expect(() => container.addController(undefined, 'test')).throws(CircularDependencyError);
+      expect(() => container.addController(undefined, 'test')).throws(
+        CircularDependencyError,
+      );
     });
     it('should throw an error when add route', () => {
-      expect(() => container.addRoute(undefined, 'test')).throws(CircularDependencyError);
+      expect(() => container.addRoute(undefined, 'test')).throws(
+        CircularDependencyError,
+      );
     });
   });
   describe('if module was not found', () => {
@@ -35,24 +45,36 @@ describe('UzertContainer', () => {
       public register(): any {}
     }
     it('should throw an error on add provider', () => {
-      expect(() => container.addProvider(TestProvider, 'unknown')).throws(UnknownModuleError);
+      expect(() => container.addProvider(TestProvider, 'unknown')).throws(
+        UnknownModuleError,
+      );
     });
     it('should throw an error on add controller', () => {
-      expect(() => container.addController(TestProvider, 'unknown')).throws(UnknownModuleError);
+      expect(() => container.addController(TestProvider, 'unknown')).throws(
+        UnknownModuleError,
+      );
     });
     it('should throw an error on add route', () => {
-      expect(() => container.addRoute(TestRouter, 'unknown')).throws(UnknownModuleError);
+      expect(() => container.addRoute(TestRouter, 'unknown')).throws(
+        UnknownModuleError,
+      );
     });
     it('should throw an error on add injectables', () => {
-      expect(() => container.addInjectable(TestProvider, 'unknown')).throws(UnknownModuleError);
+      expect(() => container.addInjectable(TestProvider, 'unknown')).throws(
+        UnknownModuleError,
+      );
     });
     it('should throw an error if module is undefined', () => {
-      expect(() => container.addProvider(TestProvider, undefined)).throws(UnknownModuleError);
+      expect(() => container.addProvider(TestProvider, undefined)).throws(
+        UnknownModuleError,
+      );
     });
   });
   describe('add module', () => {
     it('if metatype is undefined should throw an error', async () => {
-      expect(container.addModule(undefined, [])).to.eventually.rejectedWith(InvalidModuleError);
+      expect(container.addModule(undefined, [])).to.eventually.rejectedWith(
+        InvalidModuleError,
+      );
     });
     it('if module exits dont override', async () => {
       class AppModule {}
@@ -64,7 +86,9 @@ describe('UzertContainer', () => {
   });
   describe('get module', () => {
     it('if undefined passed to get module token should throw an error', async () => {
-      await expect(container.getModuleToken(undefined)).eventually.rejectedWith(InvalidModuleError);
+      await expect(container.getModuleToken(undefined)).eventually.rejectedWith(
+        InvalidModuleError,
+      );
     });
   });
   describe('add importing modules to container', () => {
@@ -86,7 +110,9 @@ describe('UzertContainer', () => {
   describe('add exported provider', () => {
     it('should throw an unknown module error', () => {
       class TestService {}
-      expect(() => container.addExportedProvider(TestService, 'test')).throws(UnknownModuleError);
+      expect(() => container.addExportedProvider(TestService, 'test')).throws(
+        UnknownModuleError,
+      );
     });
     it('should call `addExportedProvider` on host module', async () => {
       class TestService {}
@@ -94,7 +120,10 @@ describe('UzertContainer', () => {
       await container.addModule(TestModule, []);
       const moduleToken = await container.getModuleToken(TestModule);
       const hostModule = container.getModuleByToken(moduleToken);
-      const stubAddExportedProvider = sinon.stub(hostModule, 'addExportedProvider');
+      const stubAddExportedProvider = sinon.stub(
+        hostModule,
+        'addExportedProvider',
+      );
       container.addExportedProvider(TestService, moduleToken);
       expect(stubAddExportedProvider).calledOnceWithExactly(TestService);
     });

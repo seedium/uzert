@@ -6,7 +6,9 @@ interface ExtreameModePinoOptions {
   tick?: number;
 }
 
-export interface ExtendedPinoOptions extends PinoLoggerOptions, LoggerOptionsBase {
+export interface ExtendedPinoOptions
+  extends PinoLoggerOptions,
+    LoggerOptionsBase {
   extremeMode?: ExtreameModePinoOptions;
 }
 

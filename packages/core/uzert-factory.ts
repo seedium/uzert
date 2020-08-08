@@ -18,10 +18,17 @@ export class UzertFactoryStatic {
 
     await this.initialize(module, container);
     if (isHttpAdapterCustomProvider<ApplicationAdapter>(httpServer)) {
-      httpServer = await this.initFactoryHttpAdapter<ApplicationAdapter>(module, container, httpServer);
+      httpServer = await this.initFactoryHttpAdapter<ApplicationAdapter>(
+        module,
+        container,
+        httpServer,
+      );
     }
     const target = this.createUzertInstance(
-      new UzertApplication<ApplicationAdapter>(container, httpServer as ApplicationAdapter),
+      new UzertApplication<ApplicationAdapter>(
+        container,
+        httpServer as ApplicationAdapter,
+      ),
     );
     return this.createAdapterProxy<ApplicationAdapter>(target, httpServer);
   }
@@ -30,9 +37,9 @@ export class UzertFactoryStatic {
     const container = new UzertContainer();
 
     await this.initialize(module, container);
-    const applicationContext = this.createUzertInstance<UzertApplicationContext>(
-      new UzertApplicationContext(container),
-    );
+    const applicationContext = this.createUzertInstance<
+      UzertApplicationContext
+    >(new UzertApplicationContext(container));
     return applicationContext.init();
   }
 
@@ -89,7 +96,10 @@ export class UzertFactoryStatic {
       },
     }) as unknown) as UzertApplication<T>;
   }
-  private createErrorZone(receiver: Record<string, any>, prop: string): Function {
+  private createErrorZone(
+    receiver: Record<string, any>,
+    prop: string,
+  ): Function {
     return (...args: unknown[]) => {
       let result;
 
@@ -110,8 +120,13 @@ export class UzertFactoryStatic {
     const appModuleToken = await container.getModuleToken(module);
     const appModule = container.getModuleByToken(appModuleToken);
     dependenciesScanner.insertProvider(httpFactoryProvider, appModuleToken);
-    const httpAdapterInstanceWrapper = appModule.getProviderInstanceWrapper(httpFactoryProvider);
-    await instanceLoader.createInstanceWithInjectedProviders(httpAdapterInstanceWrapper, appModule);
+    const httpAdapterInstanceWrapper = appModule.getProviderInstanceWrapper(
+      httpFactoryProvider,
+    );
+    await instanceLoader.createInstanceWithInjectedProviders(
+      httpAdapterInstanceWrapper,
+      appModule,
+    );
 
     return httpAdapterInstanceWrapper.instance;
   }

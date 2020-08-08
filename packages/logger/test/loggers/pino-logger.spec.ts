@@ -41,7 +41,10 @@ describe('Pino logger', () => {
       expect(pino).property('_finalLogger').is.not.undefined;
     });
     it('should set custom tick', () => {
-      const stubFlushLogger = sinon.stub(PinoLogger.prototype, <any>'flushLogger');
+      const stubFlushLogger = sinon.stub(
+        PinoLogger.prototype,
+        <any>'flushLogger',
+      );
       const tick = 5000;
       new PinoLogger({
         extremeMode: {

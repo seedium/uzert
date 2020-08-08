@@ -8,7 +8,9 @@ describe('ModuleCompiler', () => {
     moduleCompiler = new ModuleCompiler();
   });
   it('module compiler can be created with default token factory', () => {
-    expect((moduleCompiler as any).moduleTokenFactory).instanceOf(ModuleTokenFactory);
+    expect((moduleCompiler as any).moduleTokenFactory).instanceOf(
+      ModuleTokenFactory,
+    );
   });
   it('should extract metadata from simple type', async () => {
     class TestProvider {}

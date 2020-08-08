@@ -13,7 +13,10 @@ describe('Object', () => {
       const newObject = copy(sourceObject);
       expect(newObject).not.eq(sourceObject);
       expect(newObject).an('object').property('foo').eq(sourceObject.foo);
-      expect(newObject).property('nest').property('hello').eq(sourceObject.nest.hello);
+      expect(newObject)
+        .property('nest')
+        .property('hello')
+        .eq(sourceObject.nest.hello);
       expect(newObject.nest).not.eq(sourceObject.nest);
     });
     it('should not copy if source not plain object and return empty object', () => {

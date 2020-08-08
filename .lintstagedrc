@@ -1,5 +1,10 @@
 {
-  "packages/**/*.{ts,json}": [
+  "packages/**/!(*.spec).ts": [
+    "eslint --ignore-path ./.eslintignore --fix",
+    "prettier --ignore-path ./.prettierignore --write"
+  ],
+  "packages/**/*.spec.ts": [
+    "eslint --ignore-path ./.eslintignore --config ./.eslintrc.spec.js --fix",
     "prettier --ignore-path ./.prettierignore --write"
   ]
 }

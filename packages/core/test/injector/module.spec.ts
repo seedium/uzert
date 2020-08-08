@@ -39,7 +39,9 @@ describe('Module', () => {
   describe('get provider instance wrapper', () => {
     it('should return by custom provider', () => {
       module.addProvider(TestProvider.boot());
-      const instanceWrapper = module.getProviderInstanceWrapper(TestProvider.boot());
+      const instanceWrapper = module.getProviderInstanceWrapper(
+        TestProvider.boot(),
+      );
       expect(instanceWrapper).property('name').eq(TestProvider.name);
     });
     it('should return by type', () => {
@@ -157,14 +159,20 @@ describe('Module', () => {
     });
     it('if exporting module is related module', () => {
       module.addRelatedModule(relatedModule);
-      const result = module.validateExportedProvider(relatedModule.metatype.name);
+      const result = module.validateExportedProvider(
+        relatedModule.metatype.name,
+      );
       expect(result).eq(RelatedModule.name);
     });
     it('should throw an unknown export error if provider not found', () => {
-      expect(() => module.validateExportedProvider(relatedModule.metatype.name)).throws(UnknownExportError);
+      expect(() =>
+        module.validateExportedProvider(relatedModule.metatype.name),
+      ).throws(UnknownExportError);
     });
     it('should throw an unknown export error if provider symbol token not found', () => {
-      expect(() => module.validateExportedProvider(Symbol.for('test'))).throws(UnknownExportError);
+      expect(() => module.validateExportedProvider(Symbol.for('test'))).throws(
+        UnknownExportError,
+      );
     });
   });
   describe('should add to exports', () => {

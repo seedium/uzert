@@ -162,7 +162,9 @@ describe('Lang helpers', () => {
       expect(result).to.be.true;
     });
     it('should return false if any other', () => {
-      ['', null, undefined, {}, [], 2, false, () => {}].forEach((primitive) => expect(isSymbol(primitive)).to.be.false);
+      ['', null, undefined, {}, [], 2, false, () => {}].forEach(
+        (primitive) => expect(isSymbol(primitive)).to.be.false,
+      );
     });
   });
 });

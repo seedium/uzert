@@ -8,7 +8,11 @@ function hasOnAppShutdownHook(instance: unknown): instance is OnAppShutdown {
   return !isNil((instance as OnAppShutdown).onAppShutdown);
 }
 
-function callOperator(instances: OnAppShutdown[], err: Error | null, signal?: string): Promise<any>[] {
+function callOperator(
+  instances: OnAppShutdown[],
+  err: Error | null,
+  signal?: string,
+): Promise<any>[] {
   return iterate(instances)
     .filter((instance) => !isNil(instance))
     .filter(hasOnAppShutdownHook)
@@ -16,7 +20,11 @@ function callOperator(instances: OnAppShutdown[], err: Error | null, signal?: st
     .toArray();
 }
 
-export async function callAppShutdownHook(module: Module, err: Error | null, signal?: string): Promise<any> {
+export async function callAppShutdownHook(
+  module: Module,
+  err: Error | null,
+  signal?: string,
+): Promise<any> {
   const instanceWrappersDictionary = [
     ...module.controllers,
     ...module.providers,
@@ -24,5 +32,7 @@ export async function callAppShutdownHook(module: Module, err: Error | null, sig
     ...module.routes,
   ];
 
-  await Promise.all(callOperator(getInstances(instanceWrappersDictionary), err, signal));
+  await Promise.all(
+    callOperator(getInstances(instanceWrappersDictionary), err, signal),
+  );
 }

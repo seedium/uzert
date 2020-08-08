@@ -26,4 +26,7 @@ export type Request = FastifyRequest<undefined, Http2Server>;
 export type PluginFastifyInstance = FastifyInstanceBase;
 export type RouteHandler = RouteHandlerMethod;
 
-export type RegisterRouterCallback = (router: Router, app: PluginFastifyInstance) => Promise<void> | void;
+export type RegisterRouterCallback = (
+  router: Router,
+  app: PluginFastifyInstance,
+) => Promise<void> | void;

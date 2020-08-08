@@ -30,7 +30,9 @@ describe('Fastify Router', () => {
   }
   beforeEach(() => {
     // Do not modify handler for properly test cases
-    sinon.stub(Router.prototype, <any>'bindMethod').callsFake((handler) => handler);
+    sinon
+      .stub(Router.prototype, <any>'bindMethod')
+      .callsFake((handler) => handler);
   });
   afterEach(() => {
     sinon.restore();
@@ -70,11 +72,17 @@ describe('Fastify Router', () => {
       const testController = new TestController();
       const methods = ['post', 'get', 'put', 'delete', 'patch', 'head'];
       const router = new Router(container, fastify());
-      sinon.stub((router as any)._containerScanner, 'find').returns(testController);
+      sinon
+        .stub((router as any)._containerScanner, 'find')
+        .returns(testController);
       const stubFastifyRoute = sinon.stub((router as any)._app, 'route');
       methods.forEach((method) => {
         const stubMethodHandler = sinon.stub(testController, 'test');
-        Reflect.defineMetadata(ROUTER_INSTANCE, testController, stubMethodHandler);
+        Reflect.defineMetadata(
+          ROUTER_INSTANCE,
+          testController,
+          stubMethodHandler,
+        );
         router[method]('/', stubMethodHandler);
         expect(
           stubFastifyRoute.calledWithExactly({
@@ -189,8 +197,18 @@ describe('Fastify Router', () => {
           public test2() {}
         }
         container.addController(TestController, moduleToken);
-        container.addInjectable(TestCustomPipe.use(options1), moduleToken, TestController, 'test');
-        container.addInjectable(TestCustomPipe.use(options2), moduleToken, TestController, 'test2');
+        container.addInjectable(
+          TestCustomPipe.use(options1),
+          moduleToken,
+          TestController,
+          'test',
+        );
+        container.addInjectable(
+          TestCustomPipe.use(options2),
+          moduleToken,
+          TestController,
+          'test2',
+        );
         await instanceLoader.createInstancesOfDependencies();
         const router = new Router(container, fastify());
         const testController = containerScanner.find(TestController);

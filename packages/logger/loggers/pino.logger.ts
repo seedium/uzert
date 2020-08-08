@@ -1,5 +1,9 @@
 import * as pino from 'pino';
-import { ExtendedPinoOptions, AbstractLogger, PinoEventHandler } from '../interfaces';
+import {
+  ExtendedPinoOptions,
+  AbstractLogger,
+  PinoEventHandler,
+} from '../interfaces';
 
 export class PinoLogger implements AbstractLogger {
   public readonly _finalLogger: PinoEventHandler;
@@ -59,7 +63,11 @@ export class PinoLogger implements AbstractLogger {
       this._logger.flush();
     }, tick).unref();
   }
-  protected finalHandler(err: Error | null, finalLogger: pino.Logger, evt: string) {
+  protected finalHandler(
+    err: Error | null,
+    finalLogger: pino.Logger,
+    evt: string,
+  ) {
     finalLogger.info(`${evt} caught`);
 
     if (err) {

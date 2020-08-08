@@ -1,7 +1,13 @@
 import { isNil } from '@uzert/helpers';
 import { INSTANCE_ID_SYMBOL, INSTANCE_METADATA_SYMBOL } from '../constants';
 import { getRandomString } from '../utils/get-random-string';
-import { ContextId, InstancePerContext, Type, InstanceMetadataStore, PropertyMetadata } from '../interfaces';
+import {
+  ContextId,
+  InstancePerContext,
+  Type,
+  InstanceMetadataStore,
+  PropertyMetadata,
+} from '../interfaces';
 import { STATIC_CONTEXT } from './injector.constants';
 import { Module } from './module';
 
@@ -13,7 +19,9 @@ export class InstanceWrapper<T = any> {
   private readonly [INSTANCE_METADATA_SYMBOL]: InstanceMetadataStore = {};
   public metatype: Type<T> | Function;
   public inject?: (string | symbol | Function | Type<any>)[];
-  constructor(metadata: Partial<InstanceWrapper<T>> & Partial<InstancePerContext<T>> = {}) {
+  constructor(
+    metadata: Partial<InstanceWrapper<T>> & Partial<InstancePerContext<T>> = {},
+  ) {
     this[INSTANCE_ID_SYMBOL] = getRandomString();
     this.initialize(metadata);
   }
@@ -24,7 +32,9 @@ export class InstanceWrapper<T = any> {
     const instancePerContext = this.getInstanceByContextId(STATIC_CONTEXT);
     return instancePerContext.instance;
   }
-  private initialize(metadata: Partial<InstanceWrapper<T>> & Partial<InstancePerContext<T>>) {
+  private initialize(
+    metadata: Partial<InstanceWrapper<T>> & Partial<InstancePerContext<T>>,
+  ) {
     const { instance, isResolved, ...wrapperPartial } = metadata;
     Object.assign(this, wrapperPartial);
 
@@ -45,14 +55,19 @@ export class InstanceWrapper<T = any> {
   public getInstanceByContextId(contextId: ContextId): InstancePerContext<T> {
     const instancePerContext = this.values.get(contextId);
     if (!instancePerContext) {
-      throw new Error('Instance per context was not found, need implement cloning static instance');
+      throw new Error(
+        'Instance per context was not found, need implement cloning static instance',
+      );
     }
     return instancePerContext;
   }
   private isNewable(): boolean {
     return isNil(this.inject) && this.metatype && this.metatype.prototype;
   }
-  public setInstanceByContextId(contextId: ContextId, value: InstancePerContext<T>) {
+  public setInstanceByContextId(
+    contextId: ContextId,
+    value: InstancePerContext<T>,
+  ) {
     this.values.set(contextId, value);
   }
   public getPropertiesMetadata(): PropertyMetadata[] {

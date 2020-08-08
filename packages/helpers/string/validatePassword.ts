@@ -5,8 +5,16 @@ interface IValidatePasswordOptions {
   symbol?: boolean;
 }
 
-const validatePassword = (password: string, options: IValidatePasswordOptions = {}): boolean => {
-  const { minLength = 8, upperCase = false, numberCase = false, symbol = false } = options;
+const validatePassword = (
+  password: string,
+  options: IValidatePasswordOptions = {},
+): boolean => {
+  const {
+    minLength = 8,
+    upperCase = false,
+    numberCase = false,
+    symbol = false,
+  } = options;
 
   if (password.includes(' ')) {
     return false;

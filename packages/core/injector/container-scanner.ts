@@ -8,15 +8,23 @@ import { UnknownElementError } from '../errors';
 export class ContainerScanner {
   private flatContainer: Partial<Module>;
   constructor(private readonly container: UzertContainer) {}
-  public find<TInput = any, TResult = TInput>(typeOrToken: ProviderToken): TResult {
+  public find<TInput = any, TResult = TInput>(
+    typeOrToken: ProviderToken,
+  ): TResult {
     this.initFlatContainer();
-    return this.findInstanceByToken<TInput, TResult>(typeOrToken, this.flatContainer);
+    return this.findInstanceByToken<TInput, TResult>(
+      typeOrToken,
+      this.flatContainer,
+    );
   }
   public findInstanceByToken<TInput = any, TResult = TInput>(
     metatypeOrToken: ProviderToken,
     contextModule: Partial<Module>,
   ): TResult {
-    const [instanceWrapper] = this.getWrapperCollectionPairByHost(metatypeOrToken, contextModule);
+    const [instanceWrapper] = this.getWrapperCollectionPairByHost(
+      metatypeOrToken,
+      contextModule,
+    );
 
     return (instanceWrapper.instance as unknown) as TResult;
   }
@@ -39,14 +47,20 @@ export class ContainerScanner {
     contextModule: Partial<Module>,
   ): [InstanceWrapper<TResult>, Map<string, InstanceWrapper>] {
     const name = this.getStaticTypeToken(metatypeOrToken);
-    const collectionName = this.getHostCollection(name as string, contextModule);
+    const collectionName = this.getHostCollection(
+      name as string,
+      contextModule,
+    );
     const instanceWrapper = contextModule[collectionName].get(name as string);
 
     if (!instanceWrapper) {
       throw new UnknownElementError(name && name.toString());
     }
 
-    return [instanceWrapper as InstanceWrapper<TResult>, contextModule[collectionName]];
+    return [
+      instanceWrapper as InstanceWrapper<TResult>,
+      contextModule[collectionName],
+    ];
   }
 
   private initFlatContainer() {
@@ -62,7 +76,10 @@ export class ContainerScanner {
       injectables: [],
     };
 
-    const merge = <T = unknown>(initial: Map<string, T> | T[], arr: Map<string, T>) => [...initial, ...arr];
+    const merge = <T = unknown>(
+      initial: Map<string, T> | T[],
+      arr: Map<string, T>,
+    ) => [...initial, ...arr];
 
     const partialModule = ([...modules.values()].reduce(
       (current, next) => ({
@@ -81,7 +98,10 @@ export class ContainerScanner {
       injectables: new Map(partialModule.injectables),
     };
   }
-  private getHostCollection(token: string, { providers, controllers, routes }: Partial<Module>): HostCollection {
+  private getHostCollection(
+    token: string,
+    { providers, controllers, routes }: Partial<Module>,
+  ): HostCollection {
     if (providers.has(token)) {
       return 'providers';
     }
@@ -99,6 +119,8 @@ export class ContainerScanner {
   private getStaticTypeToken<TInput = any>(
     metatypeOrToken: Type<TInput> | Abstract<TInput> | string | symbol,
   ): string | symbol {
-    return isFunction(metatypeOrToken) ? (metatypeOrToken as Function).name : metatypeOrToken;
+    return isFunction(metatypeOrToken)
+      ? (metatypeOrToken as Function).name
+      : metatypeOrToken;
   }
 }

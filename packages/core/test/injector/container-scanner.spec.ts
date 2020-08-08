@@ -1,9 +1,17 @@
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
 import * as sinon from 'sinon';
-import { ContainerScanner, InstanceLoader, UzertContainer } from '../../injector';
+import {
+  ContainerScanner,
+  InstanceLoader,
+  UzertContainer,
+} from '../../injector';
 import { UnknownElementError } from '../../errors';
-import { ClassProvider, FactoryProvider, ValueProvider } from '../../interfaces';
+import {
+  ClassProvider,
+  FactoryProvider,
+  ValueProvider,
+} from '../../interfaces';
 import { Module } from '../../injector/module';
 
 chai.use(sinonChai);
@@ -47,9 +55,12 @@ describe('ContainerScanner', () => {
   describe('get wrapper collection by host', () => {
     it('should throw an error if typeOrToken is wrong', () => {
       class TestModule {}
-      expect(() => containerScanner.getWrapperCollectionPairByHost(undefined, new Module(TestModule, []))).throws(
-        UnknownElementError,
-      );
+      expect(() =>
+        containerScanner.getWrapperCollectionPairByHost(
+          undefined,
+          new Module(TestModule, []),
+        ),
+      ).throws(UnknownElementError);
     });
   });
   describe('should resolve', () => {
@@ -92,7 +103,9 @@ describe('ContainerScanner', () => {
         }
         container.addProvider(AsyncFactoryProvider.boot(), moduleToken);
         await instanceLoader.createInstancesOfDependencies();
-        const asyncFactoryProvider = containerScanner.find(AsyncFactoryProvider);
+        const asyncFactoryProvider = containerScanner.find(
+          AsyncFactoryProvider,
+        );
         expect(asyncFactoryProvider).instanceOf(AsyncFactoryProvider);
       });
       it('class provider', async () => {
