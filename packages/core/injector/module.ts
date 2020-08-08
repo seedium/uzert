@@ -1,5 +1,12 @@
 import iterate from 'iterare';
-import { isNil, isFunction, isString, capitalize, isSymbol, isUndefined } from '@uzert/helpers';
+import {
+  isNil,
+  isFunction,
+  isString,
+  capitalize,
+  isSymbol,
+  isUndefined,
+} from '@uzert/helpers';
 import {
   Type,
   IInjectable,
@@ -27,7 +34,10 @@ export class Module {
   private readonly _injectables = new Map<any, InstanceWrapper<IInjectable>>();
   private readonly _exports = new Set<string | symbol>();
 
-  constructor(private readonly _metatype: Type<any>, private readonly _scope: Type<any>[]) {
+  constructor(
+    private readonly _metatype: Type<any>,
+    private readonly _scope: Type<any>[],
+  ) {
     this._id = getRandomString();
   }
   get id(): string {
@@ -112,10 +122,18 @@ export class Module {
 
     return route.name;
   }
-  public addInjectable<T extends IInjectable>(injectable: Provider, host?: Type<T>, hostMethodName?: string) {
+  public addInjectable<T extends IInjectable>(
+    injectable: Provider,
+    host?: Type<T>,
+    hostMethodName?: string,
+  ) {
     let instanceWrapper: InstanceWrapper;
     if (this.isCustomProvider(injectable)) {
-      const name = this.addCustomProvider(injectable, this._injectables, hostMethodName);
+      const name = this.addCustomProvider(
+        injectable,
+        this._injectables,
+        hostMethodName,
+      );
       instanceWrapper = this.injectables.get(name);
     } else {
       instanceWrapper = this.injectables.get(injectable.name);
@@ -132,12 +150,16 @@ export class Module {
     }
     if (host) {
       const token = host && host.name;
-      const hostWrapper = this._controllers.get(token) || this._providers.get(token);
+      const hostWrapper =
+        this._controllers.get(token) || this._providers.get(token);
       hostWrapper && hostWrapper.addEnhancerMetadata(instanceWrapper);
     }
   }
-  public addExportedProvider(provider: (Provider & ProviderName) | string | symbol | DynamicModule) {
-    const addExportedUnit = (token: string | symbol) => this._exports.add(this.validateExportedProvider(token));
+  public addExportedProvider(
+    provider: (Provider & ProviderName) | string | symbol | DynamicModule,
+  ) {
+    const addExportedUnit = (token: string | symbol) =>
+      this._exports.add(this.validateExportedProvider(token));
 
     if (this.isCustomProvider(provider as any)) {
       return this.addCustomExportedProvider(provider as any);
@@ -149,7 +171,9 @@ export class Module {
     }
     addExportedUnit(provider.name);
   }
-  public addCustomExportedProvider(provider: FactoryProvider | ClassProvider | ValueProvider) {
+  public addCustomExportedProvider(
+    provider: FactoryProvider | ClassProvider | ValueProvider,
+  ) {
     const provide = provider.provide;
     if (isString(provide) || isSymbol(provide)) {
       return this._exports.add(this.validateExportedProvider(provide));
@@ -182,7 +206,9 @@ export class Module {
       value: getRandomString(),
     });
   }
-  public isCustomProvider(provider: Provider): provider is FactoryProvider | ClassProvider | ValueProvider {
+  public isCustomProvider(
+    provider: Provider,
+  ): provider is FactoryProvider | ClassProvider | ValueProvider {
     return !isNil((provider as FactoryProvider).provide);
   }
   public addCustomProvider(
@@ -190,7 +216,10 @@ export class Module {
     collection: Map<string, any>,
     hostMethodName?: string,
   ): string {
-    const name = this.getProviderStaticToken(provider.provide, hostMethodName) as string;
+    const name = this.getProviderStaticToken(
+      provider.provide,
+      hostMethodName,
+    ) as string;
     provider = {
       ...provider,
       name,
@@ -222,14 +251,19 @@ export class Module {
     provider: string | symbol | Type<any> | Abstract<any>,
     suffix?: string,
   ): string | symbol {
-    const name = isFunction(provider) ? (provider as Function).name : (provider as string | symbol);
+    const name = isFunction(provider)
+      ? (provider as Function).name
+      : (provider as string | symbol);
     if (isString(name) && suffix) {
       return name + capitalize(suffix);
     } else {
       return name;
     }
   }
-  public addCustomFactory(provider: FactoryProvider & ProviderName, collection: Map<string, InstanceWrapper>) {
+  public addCustomFactory(
+    provider: FactoryProvider & ProviderName,
+    collection: Map<string, InstanceWrapper>,
+  ) {
     const { name, useFactory: factory, inject } = provider;
 
     collection.set(
@@ -244,7 +278,10 @@ export class Module {
       }),
     );
   }
-  public addCustomClass(provider: ClassProvider & ProviderName, collection: Map<string, InstanceWrapper>) {
+  public addCustomClass(
+    provider: ClassProvider & ProviderName,
+    collection: Map<string, InstanceWrapper>,
+  ) {
     const { name, useClass } = provider;
 
     collection.set(
@@ -258,7 +295,10 @@ export class Module {
       }),
     );
   }
-  public addCustomValue(provider: ValueProvider & ProviderName, collection: Map<string, InstanceWrapper>) {
+  public addCustomValue(
+    provider: ValueProvider & ProviderName,
+    collection: Map<string, InstanceWrapper>,
+  ) {
     const { name, useValue: value } = provider;
     collection.set(
       name as string,

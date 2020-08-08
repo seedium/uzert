@@ -3,7 +3,11 @@ import { FactoryProvider, Pipe, Type } from '../../interfaces';
 import { extendArrayMetadata } from '../../utils';
 
 export function UsePipe(pipe: Type<Pipe> | FactoryProvider): MethodDecorator {
-  return (target: any, key?: string | symbol, descriptor?: TypedPropertyDescriptor<any>) => {
+  return (
+    target: any,
+    key?: string | symbol,
+    descriptor?: TypedPropertyDescriptor<any>,
+  ) => {
     if (!descriptor) {
       throw new Error(`@UsePipe doesn't support decoration on the class`);
     }

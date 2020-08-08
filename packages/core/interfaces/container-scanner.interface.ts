@@ -1,1 +1,5 @@
-export type HostCollection = 'providers' | 'controllers' | 'routes' | 'injectables';
+export type HostCollection =
+  | 'providers'
+  | 'controllers'
+  | 'routes'
+  | 'injectables';

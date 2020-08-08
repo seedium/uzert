@@ -9,7 +9,9 @@ export interface ModuleFactory {
 export class ModuleCompiler {
   constructor(private readonly moduleTokenFactory = new ModuleTokenFactory()) {}
 
-  public async compile(metatype: Type<any> | DynamicModule): Promise<ModuleFactory> {
+  public async compile(
+    metatype: Type<any> | DynamicModule,
+  ): Promise<ModuleFactory> {
     const { type } = await this.extractMetadata(metatype);
     const token = this.moduleTokenFactory.create(type);
     return { type, token };
@@ -26,7 +28,9 @@ export class ModuleCompiler {
     const { module: type } = metatype;
     return { type };
   }
-  public isDynamicModule(module: Type<any> | DynamicModule): module is DynamicModule {
+  public isDynamicModule(
+    module: Type<any> | DynamicModule,
+  ): module is DynamicModule {
     return !!(module as DynamicModule).module;
   }
 }

@@ -4,7 +4,10 @@ import { Inject, Injectable, Module, Optional } from '../decorators';
 import { UzertApplicationContext } from '../uzert-application-context';
 import { UnknownElementError } from '../errors';
 import { InstanceLoader, UzertContainer, ContainerScanner } from '../injector';
-import { PROPERTY_DEPS_METADATA, SELF_DECLARED_DEPS_METADATA } from '../constants';
+import {
+  PROPERTY_DEPS_METADATA,
+  SELF_DECLARED_DEPS_METADATA,
+} from '../constants';
 import * as sinon from 'sinon';
 import { ErrorsZone } from '../errors/handlers/errors-zone';
 import { RouteModule } from '../interfaces';
@@ -72,17 +75,32 @@ describe('Injection', () => {
             },
           };
         }
-        constructor(public readonly _options: Record<string, any>, public readonly _testProvider: TestProvider) {}
+        constructor(
+          public readonly _options: Record<string, any>,
+          public readonly _testProvider: TestProvider,
+        ) {}
       }
       @Module({
-        providers: [AsyncTestProvider.boot(testOptions), TestProvider, TestProvider2],
+        providers: [
+          AsyncTestProvider.boot(testOptions),
+          TestProvider,
+          TestProvider2,
+        ],
       })
       class AsyncAppModule {}
-      const asyncContext = await UzertFactory.createApplicationContext(AsyncAppModule);
-      const asyncTestProvider = asyncContext.get<AsyncTestProvider>(AsyncTestProvider);
+      const asyncContext = await UzertFactory.createApplicationContext(
+        AsyncAppModule,
+      );
+      const asyncTestProvider = asyncContext.get<AsyncTestProvider>(
+        AsyncTestProvider,
+      );
       expect(asyncTestProvider).instanceOf(AsyncTestProvider);
-      expect(asyncTestProvider).haveOwnProperty('_testProvider').instanceOf(TestProvider);
-      expect(asyncTestProvider).haveOwnProperty('_options').deep.eq(testOptions);
+      expect(asyncTestProvider)
+        .haveOwnProperty('_testProvider')
+        .instanceOf(TestProvider);
+      expect(asyncTestProvider)
+        .haveOwnProperty('_options')
+        .deep.eq(testOptions);
     });
     it('should not resolve if @Injectable decorator was specified but not added to module providers', async () => {
       @Injectable()
@@ -93,7 +111,9 @@ describe('Injection', () => {
       })
       class BrokenAppModule {}
 
-      const brokenContext = await UzertFactory.createApplicationContext(BrokenAppModule);
+      const brokenContext = await UzertFactory.createApplicationContext(
+        BrokenAppModule,
+      );
       try {
         brokenContext.get(BrokenTestProvider);
       } catch (e) {
@@ -122,7 +142,10 @@ describe('Injection', () => {
       class TestController {}
       @Injectable()
       class TestRoute implements RouteModule {
-        constructor(private readonly _testProvider: TestProvider, private readonly _testController: TestController) {}
+        constructor(
+          private readonly _testProvider: TestProvider,
+          private readonly _testController: TestController,
+        ) {}
         public register(): any {}
       }
       @Module({
@@ -131,10 +154,16 @@ describe('Injection', () => {
         routes: [TestRoute],
       })
       class RouterAppModule {}
-      const context = await UzertFactory.createApplicationContext(RouterAppModule);
+      const context = await UzertFactory.createApplicationContext(
+        RouterAppModule,
+      );
       const routeModuleInstance = await context.get(TestRoute);
-      expect(routeModuleInstance).property('_testProvider').instanceOf(TestProvider);
-      expect(routeModuleInstance).property('_testController').instanceOf(TestController);
+      expect(routeModuleInstance)
+        .property('_testProvider')
+        .instanceOf(TestProvider);
+      expect(routeModuleInstance)
+        .property('_testController')
+        .instanceOf(TestController);
     });
   });
   describe('@Inject', () => {
@@ -165,14 +194,20 @@ describe('Injection', () => {
       class TestService {
         constructor(@Inject(InjectablesClass) injectableClass) {}
       }
-      const injections = Reflect.getMetadata(SELF_DECLARED_DEPS_METADATA, TestService);
+      const injections = Reflect.getMetadata(
+        SELF_DECLARED_DEPS_METADATA,
+        TestService,
+      );
       expect(injections).to.eql([{ index: 0, param: InjectablesClass.name }]);
     });
     it('should reflect type from string or other types', () => {
       class TestService {
         constructor(@Inject('InjectablesClass') injectablesClass) {}
       }
-      const injections = Reflect.getMetadata(SELF_DECLARED_DEPS_METADATA, TestService);
+      const injections = Reflect.getMetadata(
+        SELF_DECLARED_DEPS_METADATA,
+        TestService,
+      );
       expect(injections).to.eql([{ index: 0, param: InjectablesClass.name }]);
     });
     it('should throw an error if dependency not found and it is not optional', async () => {
@@ -190,7 +225,9 @@ describe('Injection', () => {
     it('should return undefined for optional props', async () => {
       class TestServiceOptional {
         public test: InjectablesClass;
-        constructor(@Optional() @Inject(InjectablesClass) test: InjectablesClass) {
+        constructor(
+          @Optional() @Inject(InjectablesClass) test: InjectablesClass,
+        ) {
           this.test = test;
         }
       }
@@ -207,7 +244,10 @@ describe('Injection', () => {
         @Inject() test: InjectablesClass;
       }
       it('should inject in class properties', () => {
-        const injections = Reflect.getMetadata(PROPERTY_DEPS_METADATA, TestService);
+        const injections = Reflect.getMetadata(
+          PROPERTY_DEPS_METADATA,
+          TestService,
+        );
         expect(injections).to.eql([{ key: 'test', type: 'InjectablesClass' }]);
       });
       it('should initiate classes from class properties', async () => {

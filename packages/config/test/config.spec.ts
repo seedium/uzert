@@ -26,7 +26,10 @@ describe('Config', async () => {
     });
     it('should load pure object config', () => {
       const configObject = configObjectFile;
-      expect(config).property('_stores').property('object_config').deep.eq(configObject);
+      expect(config)
+        .property('_stores')
+        .property('object_config')
+        .deep.eq(configObject);
     });
     it('should miss other type of export default', () => {
       expect(config).property('_stores').not.property('class_config');
@@ -37,7 +40,9 @@ describe('Config', async () => {
       path: path.join(__dirname, 'custom_patterns'),
       pattern: '*.config.ts',
     }).useFactory();
-    expect(customConfigPattern).property('_stores').property('test_custom.config');
+    expect(customConfigPattern)
+      .property('_stores')
+      .property('test_custom.config');
     expect(customConfigPattern).property('_stores').not.property('test');
   });
   it('error in glob should be rejected', async () => {

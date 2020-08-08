@@ -1,13 +1,33 @@
-import { HTTPMethods, RouteShorthandOptions, preHandlerHookHandler, RawServerBase } from 'fastify';
-import { ClassProvider, FactoryProvider, Pipe, Provider, Type, UzertContainer, ValueProvider } from '@uzert/core';
-import { ROUTER_INSTANCE, ROUTER_OPTIONS, PIPES_METADATA } from '@uzert/core/constants';
+import {
+  HTTPMethods,
+  RouteShorthandOptions,
+  preHandlerHookHandler,
+  RawServerBase,
+} from 'fastify';
+import {
+  ClassProvider,
+  FactoryProvider,
+  Pipe,
+  Provider,
+  Type,
+  UzertContainer,
+  ValueProvider,
+} from '@uzert/core';
+import {
+  ROUTER_INSTANCE,
+  ROUTER_OPTIONS,
+  PIPES_METADATA,
+} from '@uzert/core/constants';
 import { ContainerScanner } from '@uzert/core/injector/container-scanner';
 import { isNil } from '@uzert/helpers';
 import { PluginFastifyInstance, RouteHandler } from '../interfaces';
 
 export class Router {
   private readonly _containerScanner: ContainerScanner;
-  constructor(private readonly _container: UzertContainer, private readonly _app: PluginFastifyInstance) {
+  constructor(
+    private readonly _container: UzertContainer,
+    private readonly _app: PluginFastifyInstance,
+  ) {
     this._containerScanner = new ContainerScanner(_container);
   }
   public post(path: string, handler: RouteHandler) {
@@ -38,7 +58,9 @@ export class Router {
       handler: this.bindMethod<RouteHandler>(handler, instance),
     });
   }
-  protected exploreMethod(handler: RouteHandler): RouteShorthandOptions<RawServerBase> {
+  protected exploreMethod(
+    handler: RouteHandler,
+  ): RouteShorthandOptions<RawServerBase> {
     const pipes = this.resolvePipes(handler);
     const options = this.reflectRouterOptions(handler);
     return {
@@ -48,24 +70,32 @@ export class Router {
   }
   protected resolvePipes(handler: RouteHandler): Pipe[] {
     const pipesMetadata = this.reflectPipes(handler);
-    return pipesMetadata.map((pipe) => this.findInjectablesPerMethodContext(pipe, handler));
+    return pipesMetadata.map((pipe) =>
+      this.findInjectablesPerMethodContext(pipe, handler),
+    );
   }
   protected reflectInstance(handler: RouteHandler): any {
     const instance = Reflect.getMetadata(ROUTER_INSTANCE, handler);
     if (!instance) {
-      throw new Error('Invalid controller method. Did you set decorator "@Controller" to the class method?');
+      throw new Error(
+        'Invalid controller method. Did you set decorator "@Controller" to the class method?',
+      );
     }
     return this._containerScanner.find(instance.constructor.name);
   }
   protected reflectPipes(handler: RouteHandler): Type<Pipe>[] {
     return Reflect.getMetadata(PIPES_METADATA, handler) || [];
   }
-  protected reflectRouterOptions(handler: RouteHandler): RouteShorthandOptions<RawServerBase> {
+  protected reflectRouterOptions(
+    handler: RouteHandler,
+  ): RouteShorthandOptions<RawServerBase> {
     return Reflect.getMetadata(ROUTER_OPTIONS, handler) || {};
   }
   protected applyHandlers(
     pipes: Pipe[],
-    preHandlers: preHandlerHookHandler<RawServerBase>[] | preHandlerHookHandler<RawServerBase> = [],
+    preHandlers:
+      | preHandlerHookHandler<RawServerBase>[]
+      | preHandlerHookHandler<RawServerBase> = [],
   ): preHandlerHookHandler<RawServerBase>[] {
     const pipesHandlers = this.getPipesHandlers(pipes);
     if (Array.isArray(preHandlers)) {
@@ -74,20 +104,33 @@ export class Router {
       return [...pipesHandlers, preHandlers];
     }
   }
-  protected getPipesHandlers(pipes: Pipe[]): preHandlerHookHandler<RawServerBase>[] {
+  protected getPipesHandlers(
+    pipes: Pipe[],
+  ): preHandlerHookHandler<RawServerBase>[] {
     return pipes.map((pipe) => this.bindMethod(pipe.use, pipe));
   }
   protected findInjectablesPerMethodContext(pipe: Provider, handler: Function) {
     if (this.isCustomProvider(pipe)) {
-      return this._containerScanner.findInjectablesPerMethodContext(pipe.provide, handler);
+      return this._containerScanner.findInjectablesPerMethodContext(
+        pipe.provide,
+        handler,
+      );
     } else {
-      return this._containerScanner.findInjectablesPerMethodContext(pipe, handler);
+      return this._containerScanner.findInjectablesPerMethodContext(
+        pipe,
+        handler,
+      );
     }
   }
-  protected bindMethod<T extends Function>(handler: Function, instance: any): T {
+  protected bindMethod<T extends Function>(
+    handler: Function,
+    instance: any,
+  ): T {
     return handler.bind(instance);
   }
-  private isCustomProvider(provider: Provider): provider is FactoryProvider | ClassProvider | ValueProvider {
+  private isCustomProvider(
+    provider: Provider,
+  ): provider is FactoryProvider | ClassProvider | ValueProvider {
     return !isNil((provider as FactoryProvider).provide);
   }
 }

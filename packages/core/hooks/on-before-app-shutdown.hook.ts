@@ -4,11 +4,17 @@ import { Module } from '../injector/module';
 import { OnBeforeAppShutdown } from '../interfaces';
 import { getInstances } from '../utils/get-instances';
 
-function hasOnBeforeAppShutdownHook(instance: unknown): instance is OnBeforeAppShutdown {
+function hasOnBeforeAppShutdownHook(
+  instance: unknown,
+): instance is OnBeforeAppShutdown {
   return !isNil((instance as OnBeforeAppShutdown).onBeforeAppShutdown);
 }
 
-function callOperator(instances: OnBeforeAppShutdown[], err: Error | null, signal?: string): Promise<any>[] {
+function callOperator(
+  instances: OnBeforeAppShutdown[],
+  err: Error | null,
+  signal?: string,
+): Promise<any>[] {
   return iterate(instances)
     .filter((instance) => !isNil(instance))
     .filter(hasOnBeforeAppShutdownHook)
@@ -16,7 +22,11 @@ function callOperator(instances: OnBeforeAppShutdown[], err: Error | null, signa
     .toArray();
 }
 
-export async function callBeforeAppShutdownHook(module: Module, err: Error | null, signal?: string): Promise<any> {
+export async function callBeforeAppShutdownHook(
+  module: Module,
+  err: Error | null,
+  signal?: string,
+): Promise<any> {
   const instanceWrappersDictionary = [
     ...module.controllers,
     ...module.providers,
@@ -24,5 +34,7 @@ export async function callBeforeAppShutdownHook(module: Module, err: Error | nul
     ...module.routes,
   ];
 
-  await Promise.all(callOperator(getInstances(instanceWrappersDictionary), err, signal));
+  await Promise.all(
+    callOperator(getInstances(instanceWrappersDictionary), err, signal),
+  );
 }

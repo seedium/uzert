@@ -20,10 +20,14 @@ import { Router } from '../router';
 
 const defaultLogger = new DefaultLogger();
 
-export class FastifyAdapter extends HttpAdapter<FastifyInstance, Request, Response> {
+export class FastifyAdapter extends HttpAdapter<
+  FastifyInstance,
+  Request,
+  Response
+> {
   protected _kernel = new FastifyHttpKernelAdapter();
   protected _app?: FastifyInstance;
-  protected _isReady: boolean = false;
+  protected _isReady = false;
 
   get app(): FastifyInstance {
     return this._app;
@@ -40,7 +44,7 @@ export class FastifyAdapter extends HttpAdapter<FastifyInstance, Request, Respon
     this._app = fastify<Http2Server>(this.buildOptions(options));
   }
 
-  public async listen(port: number = 3000, address: string = '0.0.0.0') {
+  public async listen(port = 3000, address = '0.0.0.0') {
     return this.app.listen(port, address);
   }
   public async onDispose() {
@@ -50,7 +54,8 @@ export class FastifyAdapter extends HttpAdapter<FastifyInstance, Request, Respon
   @TraceMethodTime({
     logger: defaultLogger.info.bind(defaultLogger),
     printStartMessage: () => `Start application...`,
-    printFinishMessage: ({ time }) => `Application successfully initialized: ${time}ms`,
+    printFinishMessage: ({ time }) =>
+      `Application successfully initialized: ${time}ms`,
   })
   public async run(): Promise<FastifyInstance> {
     if (this.isReady) {
@@ -63,9 +68,15 @@ export class FastifyAdapter extends HttpAdapter<FastifyInstance, Request, Respon
 
     return this._app;
   }
-  public async registerRouter(container: UzertContainer, cb: RegisterRouterCallback, options?: RegisterOptions) {
+  public async registerRouter(
+    container: UzertContainer,
+    cb: RegisterRouterCallback,
+    options?: RegisterOptions,
+  ) {
     if (!isFunction(cb)) {
-      throw new Error('Your register router method should return callback for registering in fastify');
+      throw new Error(
+        'Your register router method should return callback for registering in fastify',
+      );
     }
     this._app.register(async (app) => {
       const router = new Router(container, app);
@@ -75,11 +86,14 @@ export class FastifyAdapter extends HttpAdapter<FastifyInstance, Request, Respon
   @TraceMethodTime({
     logger: defaultLogger.info.bind(defaultLogger),
     printStartMessage: () => `Start initialization Kernel...`,
-    printFinishMessage: ({ time }) => `Successfully initialization Kernel: ${time}ms`,
+    printFinishMessage: ({ time }) =>
+      `Successfully initialization Kernel: ${time}ms`,
   })
   protected bootKernel() {
     // init users plugins
-    this._kernel.plugins.forEach((plugin: IPluginKernel) => this.applyPlugin(plugin));
+    this._kernel.plugins.forEach((plugin: IPluginKernel) =>
+      this.applyPlugin(plugin),
+    );
     // set handlers
     this._app.setNotFoundHandler(this._kernel.notFoundHandler);
     this._app.setErrorHandler(this._kernel.errorHandler);

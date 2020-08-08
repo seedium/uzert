@@ -1,5 +1,12 @@
 import { expect } from 'chai';
-import { eraseExtension, isEmail, isJson, trimFields, validatePassword, capitalize } from '../string';
+import {
+  eraseExtension,
+  isEmail,
+  isJson,
+  trimFields,
+  validatePassword,
+  capitalize,
+} from '../string';
 
 describe('String', () => {
   describe('eraseExtension', () => {

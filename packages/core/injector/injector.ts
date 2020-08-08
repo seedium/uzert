@@ -1,4 +1,10 @@
-import { isUndefined, isNil, isString, isFunction, isObjectLike } from '@uzert/helpers';
+import {
+  isUndefined,
+  isNil,
+  isString,
+  isFunction,
+  isObjectLike,
+} from '@uzert/helpers';
 import { InstanceWrapper } from './instance-wrapper';
 import { STATIC_CONTEXT } from './injector.constants';
 import {
@@ -44,19 +50,51 @@ export class Injector {
       collection.set(name, wrapper);
     }
   }
-  public async loadProvider(wrapper: InstanceWrapper<IInjectable>, moduleRef: Module, contextId = STATIC_CONTEXT) {
+  public async loadProvider(
+    wrapper: InstanceWrapper<IInjectable>,
+    moduleRef: Module,
+    contextId = STATIC_CONTEXT,
+  ) {
     const providers = moduleRef.providers;
-    await this.loadInstance<IInjectable>(wrapper, providers, moduleRef, contextId);
+    await this.loadInstance<IInjectable>(
+      wrapper,
+      providers,
+      moduleRef,
+      contextId,
+    );
   }
-  public async loadController(wrapper: InstanceWrapper<IInjectable>, moduleRef: Module, contextId = STATIC_CONTEXT) {
+  public async loadController(
+    wrapper: InstanceWrapper<IInjectable>,
+    moduleRef: Module,
+    contextId = STATIC_CONTEXT,
+  ) {
     const controllers = moduleRef.controllers;
-    await this.loadInstance<IInjectable>(wrapper, controllers, moduleRef, contextId);
+    await this.loadInstance<IInjectable>(
+      wrapper,
+      controllers,
+      moduleRef,
+      contextId,
+    );
   }
-  public async loadRoute(wrapper: InstanceWrapper<IInjectable>, moduleRef: Module, contextId = STATIC_CONTEXT) {
+  public async loadRoute(
+    wrapper: InstanceWrapper<IInjectable>,
+    moduleRef: Module,
+    contextId = STATIC_CONTEXT,
+  ) {
     const routes = moduleRef.routes;
-    await this.loadInstance<IInjectable>(wrapper, routes, moduleRef, contextId, ['controllers', 'providers']);
+    await this.loadInstance<IInjectable>(
+      wrapper,
+      routes,
+      moduleRef,
+      contextId,
+      ['controllers', 'providers'],
+    );
   }
-  public async loadInjectable<T = any>(wrapper: InstanceWrapper<T>, moduleRef: Module, contextId = STATIC_CONTEXT) {
+  public async loadInjectable<T = any>(
+    wrapper: InstanceWrapper<T>,
+    moduleRef: Module,
+    contextId = STATIC_CONTEXT,
+  ) {
     const injectables = moduleRef.injectables;
     await this.loadInstance<T>(wrapper, injectables, moduleRef, contextId);
   }
@@ -87,13 +125,30 @@ export class Injector {
     }
 
     const callback = async (instances: unknown[]) => {
-      const properties = await this.resolveProperties(wrapper, moduleRef, inject, contextId);
-      const instance = await this.instantiateClass(instances, wrapper, targetWrapper, contextId);
+      const properties = await this.resolveProperties(
+        wrapper,
+        moduleRef,
+        inject,
+        contextId,
+      );
+      const instance = await this.instantiateClass(
+        instances,
+        wrapper,
+        targetWrapper,
+        contextId,
+      );
       this.applyProperties(instance, properties);
       done();
     };
 
-    await this.resolveConstructorParams<T>(wrapper, moduleRef, inject, callback, contextId, lookupInCollections);
+    await this.resolveConstructorParams<T>(
+      wrapper,
+      moduleRef,
+      inject,
+      callback,
+      contextId,
+      lookupInCollections,
+    );
   }
   public applyDoneHook<T>(wrapper: InstancePerContext<T>): () => void {
     let done: () => void;
@@ -149,8 +204,13 @@ export class Injector {
       instance: instances[index],
     }));
   }
-  public applyProperties<T = any>(instance: T, properties: PropertyDependency[]): void {
-    properties.filter((item) => !isNil(item.instance)).forEach((item) => (instance[item.key] = item.instance));
+  public applyProperties<T = any>(
+    instance: T,
+    properties: PropertyDependency[],
+  ): void {
+    properties
+      .filter((item) => !isNil(item.instance))
+      .forEach((item) => (instance[item.key] = item.instance));
   }
   public async instantiateClass<T = any>(
     instances: any[],
@@ -164,7 +224,9 @@ export class Injector {
     if (isNil(inject)) {
       instanceHost.instance = new (metatype as Type<any>)(...instances);
     } else {
-      const factoryReturnValue = ((targetMetatype.metatype as any) as Function)(...instances);
+      const factoryReturnValue = ((targetMetatype.metatype as any) as Function)(
+        ...instances,
+      );
       instanceHost.instance = await factoryReturnValue;
     }
 
@@ -179,8 +241,12 @@ export class Injector {
     contextId: ContextId,
     lookupInCollections: HostCollection[],
   ) {
-    const dependencies = isNil(inject) ? this.reflectConstructorParams(wrapper.metatype as Type<any>) : inject;
-    const optionalDependenciesIds = isNil(inject) ? this.reflectOptionalParams(wrapper.metatype as Type<any>) : [];
+    const dependencies = isNil(inject)
+      ? this.reflectConstructorParams(wrapper.metatype as Type<any>)
+      : inject;
+    const optionalDependenciesIds = isNil(inject)
+      ? this.reflectOptionalParams(wrapper.metatype as Type<any>)
+      : [];
 
     const resolveParam = async (param: unknown, index: number) => {
       try {
@@ -218,7 +284,8 @@ export class Injector {
   }
   public reflectProperties<T>(type: Type<T>): PropertyDependency[] {
     const properties = Reflect.getMetadata(PROPERTY_DEPS_METADATA, type) || [];
-    const optionalKeys: string[] = Reflect.getMetadata(OPTIONAL_PROPERTY_DEPS_METADATA, type) || [];
+    const optionalKeys: string[] =
+      Reflect.getMetadata(OPTIONAL_PROPERTY_DEPS_METADATA, type) || [];
 
     return properties.map((item: any) => ({
       ...item,
@@ -242,7 +309,11 @@ export class Injector {
     lookupInCollections: HostCollection[] = ['providers'],
   ) {
     if (isUndefined(param)) {
-      throw new UnknownDependencyError(wrapper.name, dependencyContext, moduleRef);
+      throw new UnknownDependencyError(
+        wrapper.name,
+        dependencyContext,
+        moduleRef,
+      );
     }
 
     return this.resolveComponentInstance<T>(
@@ -312,7 +383,13 @@ export class Injector {
       this.addDependencyMetadata(keyOrIndex, wrapper, instanceWrapper);
       return instanceWrapper;
     }
-    return this.lookupComponentInParentModules(dependencyContext, moduleRef, wrapper, contextId, keyOrIndex);
+    return this.lookupComponentInParentModules(
+      dependencyContext,
+      moduleRef,
+      wrapper,
+      contextId,
+      keyOrIndex,
+    );
   }
   public async lookupComponentInParentModules<T = any>(
     dependencyContext: InjectorDependencyContext,
@@ -330,7 +407,11 @@ export class Injector {
       keyOrIndex,
     );
     if (isNil(instanceWrapper)) {
-      throw new UnknownDependencyError(wrapper.name, dependencyContext, moduleRef);
+      throw new UnknownDependencyError(
+        wrapper.name,
+        dependencyContext,
+        moduleRef,
+      );
     }
     return instanceWrapper;
   }
@@ -349,7 +430,9 @@ export class Injector {
 
     if (isTraversing) {
       const contextModuleExports = moduleRef.exports;
-      children = children.filter((child) => contextModuleExports.has(child.metatype && child.metatype.name));
+      children = children.filter((child) =>
+        contextModuleExports.has(child.metatype && child.metatype.name),
+      );
     }
 
     for (const relatedModule of children) {

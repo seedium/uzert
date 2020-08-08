@@ -34,7 +34,10 @@ describe('Fastify', () => {
     expect(adapter).property('_logger').instanceOf(CustomLogger);
   });
   it('should use generate request id', async () => {
-    const spyGenerateRequestId = sinon.spy(FastifyAdapter.prototype, <any>'generateRequestId');
+    const spyGenerateRequestId = sinon.spy(
+      FastifyAdapter.prototype,
+      <any>'generateRequestId',
+    );
     const adapter = new FastifyAdapter({
       logger: false,
       http2: true,
@@ -45,7 +48,10 @@ describe('Fastify', () => {
     expect(spyGenerateRequestId.calledOnce).to.be.true;
   });
   it('should use parse query string', async () => {
-    const spyParseQueryString = sinon.spy(FastifyAdapter.prototype, <any>'parseQueryString');
+    const spyParseQueryString = sinon.spy(
+      FastifyAdapter.prototype,
+      <any>'parseQueryString',
+    );
     const adapter = new FastifyAdapter({
       logger: false,
       http2: true,
@@ -120,19 +126,33 @@ describe('Fastify', () => {
         const spyFastifyRegister = sinon.spy(adapter.app, 'register');
         await adapter.run();
         expect(spyFastifyRegister.calledOnce).to.be.true;
-        expect(spyFastifyRegister.calledWithExactly(stubPlugin, testPluginOptions)).to.be.true;
+        expect(
+          spyFastifyRegister.calledWithExactly(stubPlugin, testPluginOptions),
+        ).to.be.true;
         const secondArg = stubPlugin.firstCall.args[1];
         expect(secondArg).deep.eq(testPluginOptions);
       });
       it('should set not found handler', async () => {
-        const stubFastifySetNotFoundHandler = sinon.stub(adapter.app, 'setNotFoundHandler');
+        const stubFastifySetNotFoundHandler = sinon.stub(
+          adapter.app,
+          'setNotFoundHandler',
+        );
         await adapter.run();
-        expect(stubFastifySetNotFoundHandler.calledOnceWithExactly(stubNotFoundHandler)).to.be.true;
+        expect(
+          stubFastifySetNotFoundHandler.calledOnceWithExactly(
+            stubNotFoundHandler,
+          ),
+        ).to.be.true;
       });
       it('should set error handler', async () => {
-        const stubFastifySetErrorHandler = sinon.stub(adapter.app, 'setErrorHandler');
+        const stubFastifySetErrorHandler = sinon.stub(
+          adapter.app,
+          'setErrorHandler',
+        );
         await adapter.run();
-        expect(stubFastifySetErrorHandler.calledOnceWithExactly(stubErrorHandler)).to.be.true;
+        expect(
+          stubFastifySetErrorHandler.calledOnceWithExactly(stubErrorHandler),
+        ).to.be.true;
       });
     });
     describe('with default kernel', () => {
@@ -140,8 +160,14 @@ describe('Fastify', () => {
       let spyNotFoundHandler: sinon.SinonSpy;
       let spyErrorHandler: sinon.SinonSpy;
       beforeEach(async () => {
-        spyNotFoundHandler = sinon.spy(FastifyHttpKernelAdapter.prototype, 'notFoundHandler');
-        spyErrorHandler = sinon.spy(FastifyHttpKernelAdapter.prototype, 'errorHandler');
+        spyNotFoundHandler = sinon.spy(
+          FastifyHttpKernelAdapter.prototype,
+          'notFoundHandler',
+        );
+        spyErrorHandler = sinon.spy(
+          FastifyHttpKernelAdapter.prototype,
+          'errorHandler',
+        );
         adapter = new FastifyAdapter({
           logger: false,
           http2: true,

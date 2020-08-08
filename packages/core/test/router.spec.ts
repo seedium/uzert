@@ -30,7 +30,10 @@ describe('Router', () => {
         },
       };
     }
-    constructor(public readonly _testService: TestService, public options?: object) {}
+    constructor(
+      public readonly _testService: TestService,
+      public options?: object,
+    ) {}
     public use(req: any, res: any, next?: () => void): void {}
   }
   @Injectable()
@@ -70,7 +73,11 @@ describe('Router', () => {
     class AppModule {}
     class TestHttpAdapter extends MockedHttpAdapter {
       public routes: any[] = [];
-      public registerRouter(container: UzertContainer, func: () => void, options): Promise<void> | void {
+      public registerRouter(
+        container: UzertContainer,
+        func: () => void,
+        options,
+      ): Promise<void> | void {
         this.routes.push({
           func,
           options,
@@ -79,7 +86,10 @@ describe('Router', () => {
     }
     let app: UzertApplication<TestHttpAdapter>;
     beforeEach(async () => {
-      app = await UzertFactory.create<TestHttpAdapter>(AppModule, new TestHttpAdapter());
+      app = await UzertFactory.create<TestHttpAdapter>(
+        AppModule,
+        new TestHttpAdapter(),
+      );
       sinon.stub(app.httpAdapter, 'listen');
     });
     it('uzert application should register router module in adapter', async () => {
@@ -94,7 +104,9 @@ describe('Router', () => {
       const module = app.container.getModules().values().next().value;
       expect(module.injectables.size).eq(2);
       expect(module.injectables.has(TestPipe.name)).to.be.true;
-      expect(module.injectables.get(TestPipe.name).instance).instanceOf(TestPipe);
+      expect(module.injectables.get(TestPipe.name).instance).instanceOf(
+        TestPipe,
+      );
     });
     it('should throw an error if decorator used on the class', () => {
       try {

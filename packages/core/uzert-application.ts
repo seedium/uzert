@@ -3,16 +3,23 @@ import { HttpAdapter } from './adapters';
 import { UzertApplicationContext } from './uzert-application-context';
 import { RouterResolver } from './router';
 
-export class UzertApplication<ApplicationInstance extends HttpAdapter> extends UzertApplicationContext {
+export class UzertApplication<
+  ApplicationInstance extends HttpAdapter
+> extends UzertApplicationContext {
   private readonly _routerResolver: RouterResolver;
   get httpAdapter(): ApplicationInstance {
     return this._httpAdapter;
   }
-  constructor(container: UzertContainer, private readonly _httpAdapter: ApplicationInstance) {
+  constructor(
+    container: UzertContainer,
+    private readonly _httpAdapter: ApplicationInstance,
+  ) {
     super(container);
     this._routerResolver = new RouterResolver(container, _httpAdapter);
   }
-  public async listen(...args: any[]): Promise<UzertApplication<ApplicationInstance>> {
+  public async listen(
+    ...args: any[]
+  ): Promise<UzertApplication<ApplicationInstance>> {
     if (this.isInitialized) {
       return this;
     }

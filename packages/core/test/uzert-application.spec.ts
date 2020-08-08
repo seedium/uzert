@@ -13,7 +13,10 @@ describe('UzertApplication', () => {
   let stubHttpAdapterListen: sinon.SinonStub;
   beforeEach(() => {
     const container = new UzertContainer();
-    app = new UzertApplication<MockedHttpAdapter>(container, new MockedHttpAdapter());
+    app = new UzertApplication<MockedHttpAdapter>(
+      container,
+      new MockedHttpAdapter(),
+    );
     stubHttpAdapterListen = sinon.stub(app.httpAdapter, 'listen');
   });
   afterEach(() => {
@@ -26,12 +29,18 @@ describe('UzertApplication', () => {
       expect(app).property('isInitialized').is.true;
     });
     it('should register router', async () => {
-      const stubRegisterRouter = sinon.stub((app as any)._routerResolver, 'registerRoutes');
+      const stubRegisterRouter = sinon.stub(
+        (app as any)._routerResolver,
+        'registerRoutes',
+      );
       await app.init();
       expect(stubRegisterRouter.calledOnce).to.be.true;
     });
     it('if initialized should return self', async () => {
-      const stubRegisterRouter = sinon.stub((app as any)._routerResolver, 'registerRoutes');
+      const stubRegisterRouter = sinon.stub(
+        (app as any)._routerResolver,
+        'registerRoutes',
+      );
       await app.init();
       const result = await app.init();
       expect(result).eq(app);

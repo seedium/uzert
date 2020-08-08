@@ -33,11 +33,20 @@ export class Config implements OnDispose {
     return this.parseBooleanValue(value);
   }
   protected async loadConfigs(): Promise<any> {
-    const configFiles = await this.loadFiles(this._options.path, this._options.pattern);
-    const configs = this.normalizeWithNamespaces(this._options.path, configFiles);
+    const configFiles = await this.loadFiles(
+      this._options.path,
+      this._options.pattern,
+    );
+    const configs = this.normalizeWithNamespaces(
+      this._options.path,
+      configFiles,
+    );
     await this.importConfigs(configs);
   }
-  protected async loadFiles(path: string, pattern: string = '*.ts'): Promise<string[]> {
+  protected async loadFiles(
+    path: string,
+    pattern = '*.ts',
+  ): Promise<string[]> {
     return new Promise((resolve, reject) => {
       glob(resolvePath(path, pattern), async (err, configFiles) => {
         if (err) {
@@ -48,7 +57,10 @@ export class Config implements OnDispose {
       });
     });
   }
-  protected normalizeWithNamespaces(basePath: string, configFiles: string[]): IConfigBootSpec {
+  protected normalizeWithNamespaces(
+    basePath: string,
+    configFiles: string[],
+  ): IConfigBootSpec {
     return configFiles.reduce((acc, config) => {
       /*
        * TODO add support to erasing custom pattern and applying namespace without suffix

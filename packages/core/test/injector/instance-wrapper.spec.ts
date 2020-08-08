@@ -15,7 +15,9 @@ describe('InstanceWrapper', () => {
     it('if empty should create new array of properties', () => {
       const instanceWrapper = new InstanceWrapper();
       instanceWrapper.addPropertiesMetadata('test', instanceWrapperProperty);
-      expect(instanceWrapper.getPropertiesMetadata()).to.eql([{ key: 'test', wrapper: instanceWrapperProperty }]);
+      expect(instanceWrapper.getPropertiesMetadata()).to.eql([
+        { key: 'test', wrapper: instanceWrapperProperty },
+      ]);
     });
     it('if exists should add new one', () => {
       const instanceWrapper = new InstanceWrapper();

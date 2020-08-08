@@ -1,5 +1,8 @@
 import { isUndefined } from '@uzert/helpers';
-import { OPTIONAL_PROPERTY_DEPS_METADATA, OPTIONAL_DEPS_METADATA } from '../constants';
+import {
+  OPTIONAL_PROPERTY_DEPS_METADATA,
+  OPTIONAL_DEPS_METADATA,
+} from '../constants';
 
 export function Optional() {
   return (target: object, key: string | symbol, index?: number) => {
@@ -8,7 +11,15 @@ export function Optional() {
       Reflect.defineMetadata(OPTIONAL_DEPS_METADATA, [...args, index], target);
       return;
     }
-    const properties = Reflect.getMetadata(OPTIONAL_PROPERTY_DEPS_METADATA, target.constructor) || [];
-    Reflect.defineMetadata(OPTIONAL_PROPERTY_DEPS_METADATA, [...properties, key], target.constructor);
+    const properties =
+      Reflect.getMetadata(
+        OPTIONAL_PROPERTY_DEPS_METADATA,
+        target.constructor,
+      ) || [];
+    Reflect.defineMetadata(
+      OPTIONAL_PROPERTY_DEPS_METADATA,
+      [...properties, key],
+      target.constructor,
+    );
   };
 }

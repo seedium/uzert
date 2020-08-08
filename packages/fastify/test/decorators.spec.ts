@@ -18,7 +18,10 @@ describe('Decorators', () => {
         }
       }
       const testController = new TestController();
-      const controllerInstance: TestController = Reflect.getMetadata(ROUTER_INSTANCE, testController.test);
+      const controllerInstance: TestController = Reflect.getMetadata(
+        ROUTER_INSTANCE,
+        testController.test,
+      );
       expect(controllerInstance.test()).eq('test');
     });
   });

@@ -5,7 +5,10 @@ const isString = (value: any): value is string => {
 
   return (
     type === 'string' ||
-    (type === 'object' && value !== null && !Array.isArray(value) && getTag(value) === '[object String]')
+    (type === 'object' &&
+      value !== null &&
+      !Array.isArray(value) &&
+      getTag(value) === '[object String]')
   );
 };
 

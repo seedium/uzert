@@ -36,8 +36,14 @@ describe('Injector', () => {
         instance: undefined,
         isResolved: false,
       });
-      await expect(injector.loadInstance(instanceWrapper, module.providers, module, STATIC_CONTEXT)).to.eventually
-        .rejected;
+      await expect(
+        injector.loadInstance(
+          instanceWrapper,
+          module.providers,
+          module,
+          STATIC_CONTEXT,
+        ),
+      ).to.eventually.rejected;
     });
     it('if instance resolved call done hook', async () => {
       module.addProvider(TestProvider);
@@ -48,21 +54,41 @@ describe('Injector', () => {
       });
       const stubDoneHook = sinon.stub();
       sinon.stub(injector, 'applyDoneHook').returns(stubDoneHook);
-      await injector.loadInstance(instanceWrapper, module.providers, module, STATIC_CONTEXT);
+      await injector.loadInstance(
+        instanceWrapper,
+        module.providers,
+        module,
+        STATIC_CONTEXT,
+      );
       expect(stubDoneHook.calledOnce).to.be.true;
     });
   });
   describe('resolve single params', () => {
     it('should resolve by component instance', async () => {
-      const stubResolveComponentInstance = sinon.stub(injector, 'resolveComponentInstance');
+      const stubResolveComponentInstance = sinon.stub(
+        injector,
+        'resolveComponentInstance',
+      );
       const instanceWrapper = new InstanceWrapper();
-      await injector.resolveSingleParam(instanceWrapper, 'test', {}, module, STATIC_CONTEXT);
+      await injector.resolveSingleParam(
+        instanceWrapper,
+        'test',
+        {},
+        module,
+        STATIC_CONTEXT,
+      );
       expect(stubResolveComponentInstance.calledOnce).to.be.true;
     });
     it('should throw error if param token is undefined', async () => {
       const instanceWrapper = new InstanceWrapper();
       await expect(
-        injector.resolveSingleParam(instanceWrapper, undefined, {}, module, STATIC_CONTEXT),
+        injector.resolveSingleParam(
+          instanceWrapper,
+          undefined,
+          {},
+          module,
+          STATIC_CONTEXT,
+        ),
       ).eventually.rejectedWith(UnknownDependencyError);
     });
   });
@@ -99,7 +125,11 @@ describe('Injector', () => {
         isResolved: true,
         async: true,
       });
-      const resultInstanceWrapper = await injector.resolveComponentHost(module, instanceWrapper, STATIC_CONTEXT);
+      const resultInstanceWrapper = await injector.resolveComponentHost(
+        module,
+        instanceWrapper,
+        STATIC_CONTEXT,
+      );
       expect(resultInstanceWrapper.instance).eq(test);
     });
   });
@@ -112,7 +142,13 @@ describe('Injector', () => {
       module.addController(TestController);
       const stubLookupComponent = sinon.stub(injector, 'lookupComponent');
       sinon.stub(injector, 'resolveComponentHost');
-      await injector.resolveComponentInstance(module, 'test', {}, instanceWrapper, STATIC_CONTEXT);
+      await injector.resolveComponentInstance(
+        module,
+        'test',
+        {},
+        instanceWrapper,
+        STATIC_CONTEXT,
+      );
       expect(stubLookupComponent).to.have.been.calledOnce;
       const [injectables] = stubLookupComponent.firstCall.args;
       expect(injectables.size).eq(1);
@@ -122,7 +158,10 @@ describe('Injector', () => {
   });
   describe('lookup component in parent modules', () => {
     it(`if component not found in root module should lookup in parent modules`, async () => {
-      const stubLookupComponentInParentModules = sinon.stub(injector, 'lookupComponentInParentModules');
+      const stubLookupComponentInParentModules = sinon.stub(
+        injector,
+        'lookupComponentInParentModules',
+      );
       await injector.lookupComponent(
         module.providers,
         module,
@@ -147,7 +186,9 @@ describe('Injector', () => {
       ).to.eventually.rejectedWith(UnknownDependencyError);
     });
     it('should use static context by default in `lookupComponentInParentModules`', async () => {
-      sinon.stub(injector, 'lookupComponentInImports').resolves(new InstanceWrapper());
+      sinon
+        .stub(injector, 'lookupComponentInImports')
+        .resolves(new InstanceWrapper());
       await injector.lookupComponentInParentModules(
         {
           name: TestProvider.name,
@@ -184,7 +225,11 @@ describe('Injector', () => {
         relatedModule.addRelatedModule(secondRelatedModule);
         relatedModule.addExportedProvider(SecondTestModule);
         module.addRelatedModule(relatedModule);
-        const component = await injector.lookupComponentInImports(module, TestProvider.name, new InstanceWrapper());
+        const component = await injector.lookupComponentInImports(
+          module,
+          TestProvider.name,
+          new InstanceWrapper(),
+        );
         expect(component.instance).instanceOf(TestProvider);
       });
       it('should resolve `null` if component not found in any imports', async () => {
@@ -192,7 +237,11 @@ describe('Injector', () => {
         const relatedModule = new Module(TestModule, []);
         relatedModule.addRelatedModule(secondRelatedModule);
         module.addRelatedModule(relatedModule);
-        const component = await injector.lookupComponentInImports(module, 'test', new InstanceWrapper());
+        const component = await injector.lookupComponentInImports(
+          module,
+          'test',
+          new InstanceWrapper(),
+        );
         expect(component).is.null;
       });
       it('should not load provider if it already resolved', async () => {
@@ -206,7 +255,11 @@ describe('Injector', () => {
         });
         const stubLoadProvider = sinon.stub(injector, 'loadProvider');
         module.addRelatedModule(relatedModule);
-        await injector.lookupComponentInImports(module, TestProvider.name, new InstanceWrapper());
+        await injector.lookupComponentInImports(
+          module,
+          TestProvider.name,
+          new InstanceWrapper(),
+        );
         expect(stubLoadProvider).not.called;
       });
       it('should not processing module if already done', async () => {
@@ -220,17 +273,33 @@ describe('Injector', () => {
         thirdRelatedModule.addExportedProvider(TestModule);
         module.addRelatedModule(secondRelatedModule);
         module.addRelatedModule(thirdRelatedModule);
-        const spyLookupComponentInImports = sinon.spy(injector, 'lookupComponentInImports');
-        await injector.lookupComponentInImports(module, 'test', new InstanceWrapper());
+        const spyLookupComponentInImports = sinon.spy(
+          injector,
+          'lookupComponentInImports',
+        );
+        await injector.lookupComponentInImports(
+          module,
+          'test',
+          new InstanceWrapper(),
+        );
         expect(spyLookupComponentInImports).callCount(4);
       });
     });
     describe('when call `lookupComponentInImports`', () => {
       it('without module registry, by default should be empty array', async () => {
-        await injector.lookupComponentInImports(module, TestProvider.name, new InstanceWrapper());
+        await injector.lookupComponentInImports(
+          module,
+          TestProvider.name,
+          new InstanceWrapper(),
+        );
       });
       it('without context id, be default should use static context', async () => {
-        await injector.lookupComponentInImports(module, TestProvider.name, new InstanceWrapper(), []);
+        await injector.lookupComponentInImports(
+          module,
+          TestProvider.name,
+          new InstanceWrapper(),
+          [],
+        );
       });
     });
   });

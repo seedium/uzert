@@ -1,15 +1,26 @@
 import { isNil, isFunction, isUndefined } from '@uzert/helpers';
 import { UzertContainer } from './uzert-container';
 import { Module } from './module';
-import { Type, FactoryProvider, Provider, RouteModule, IInjectable, InjectablesSchema } from '../interfaces';
+import {
+  Type,
+  FactoryProvider,
+  Provider,
+  RouteModule,
+  IInjectable,
+  InjectablesSchema,
+} from '../interfaces';
 import { MODULE_KEYS, PIPES_METADATA } from '../constants';
 import { MetadataScanner } from '../metadata-scanner';
 import { DynamicModule } from '../interfaces/modules';
-import { CircularDependencyError, InvalidModuleError, UndefinedModuleError } from '../errors';
+import {
+  CircularDependencyError,
+  InvalidModuleError,
+  UndefinedModuleError,
+} from '../errors';
 
 export class DependenciesScanner {
   constructor(private readonly container: UzertContainer) {}
-  public async scan(module: Type<any>) {
+  public async scan(module: Type<unknown>): Promise<void> {
     await this.scanForModules(module);
     await this.scanModulesForDependencies();
   }
@@ -22,7 +33,10 @@ export class DependenciesScanner {
     ctxRegistry.push(module);
 
     const modules = this.isDynamicModule(module)
-      ? [...this.reflectMetadata(module.module, MODULE_KEYS.IMPORTS), ...(module.imports || [])]
+      ? [
+          ...this.reflectMetadata(module.module, MODULE_KEYS.IMPORTS),
+          ...(module.imports || []),
+        ]
       : this.reflectMetadata(module, MODULE_KEYS.IMPORTS);
 
     for (const [index, innerModule] of modules.entries()) {
@@ -36,7 +50,11 @@ export class DependenciesScanner {
       if (ctxRegistry.includes(innerModule)) {
         continue;
       }
-      await this.scanForModules(innerModule, [].concat(scope, module), ctxRegistry);
+      await this.scanForModules(
+        innerModule,
+        [].concat(scope, module),
+        ctxRegistry,
+      );
     }
     return moduleInstance;
   }
@@ -51,7 +69,11 @@ export class DependenciesScanner {
       this.reflectExports(metatype, token);
     }
   }
-  public async reflectImports(module: Type<unknown>, token: string, context: string) {
+  public async reflectImports(
+    module: Type<unknown>,
+    token: string,
+    context: string,
+  ) {
     const modules = this.reflectMetadata(module, MODULE_KEYS.IMPORTS);
     for (const related of modules) {
       await this.insertImport(related, token, context);
@@ -83,7 +105,9 @@ export class DependenciesScanner {
   }
   public reflectExports(module: Type<unknown>, token: string) {
     const exports = this.reflectMetadata(module, MODULE_KEYS.EXPORTS);
-    exports.forEach((exportedProvider) => this.insertExportedProvider(exportedProvider, token));
+    exports.forEach((exportedProvider) =>
+      this.insertExportedProvider(exportedProvider, token),
+    );
   }
   public async insertImport(related: any, token: string, context: string) {
     if (isUndefined(related)) {
@@ -91,7 +115,10 @@ export class DependenciesScanner {
     }
     await this.container.addImport(related, token);
   }
-  public async insertModule(module: any, scope: Type<unknown>[]): Promise<Module> {
+  public async insertModule(
+    module: any,
+    scope: Type<unknown>[],
+  ): Promise<Module> {
     return this.container.addModule(module, scope);
   }
   public insertProvider(provider: Provider, token: string) {
@@ -111,13 +138,18 @@ export class DependenciesScanner {
   ) {
     this.container.addInjectable(injectable, token, host, hostMethodName);
   }
-  public insertExportedProvider(exportedProvider: Type<IInjectable>, token: string) {
+  public insertExportedProvider(
+    exportedProvider: Type<IInjectable>,
+    token: string,
+  ) {
     this.container.addExportedProvider(exportedProvider, token);
   }
   public isCustomProvider(provider: Provider): provider is FactoryProvider {
     return provider && !isNil((provider as any).provide);
   }
-  public isDynamicModule(module: Type<any> | DynamicModule): module is DynamicModule {
+  public isDynamicModule(
+    module: Type<any> | DynamicModule,
+  ): module is DynamicModule {
     return module && !!(module as DynamicModule).module;
   }
   public reflectDynamicMetadata(obj: Type<IInjectable>, token: string) {
@@ -126,7 +158,11 @@ export class DependenciesScanner {
     }
     this.reflectInjectables(obj, token, PIPES_METADATA);
   }
-  public reflectInjectables(component: Type<IInjectable>, token: string, metadataKey: string) {
+  public reflectInjectables(
+    component: Type<IInjectable>,
+    token: string,
+    metadataKey: string,
+  ) {
     const controllerInjectables: InjectablesSchema[] = [
       {
         injectables: this.reflectMetadata(component, metadataKey),
@@ -136,22 +172,33 @@ export class DependenciesScanner {
       component.prototype,
       (methodName) => ({
         hostMethodName: methodName,
-        injectables: this.reflectKeyMetadata(component, metadataKey, methodName) || [],
+        injectables:
+          this.reflectKeyMetadata(component, metadataKey, methodName) || [],
       }),
     );
 
-    const combinedInjectables: InjectablesSchema[] = [...controllerInjectables, ...methodsInjectables].map(
-      this.filterInvalidInjectablesSchemas.bind(this),
-    );
+    const combinedInjectables: InjectablesSchema[] = [
+      ...controllerInjectables,
+      ...methodsInjectables,
+    ].map(this.filterInvalidInjectablesSchemas.bind(this));
     const injectablesSchemas = Array.from(new Set(combinedInjectables));
 
     injectablesSchemas.forEach((injectableSchema) =>
       injectableSchema.injectables.forEach((injectable) =>
-        this.insertInjectable(injectable, token, component, injectableSchema.hostMethodName),
+        this.insertInjectable(
+          injectable,
+          token,
+          component,
+          injectableSchema.hostMethodName,
+        ),
       ),
     );
   }
-  public reflectKeyMetadata(component: Type<IInjectable>, key: string, method: string) {
+  public reflectKeyMetadata(
+    component: Type<IInjectable>,
+    key: string,
+    method: string,
+  ) {
     let prototype = component.prototype;
     do {
       const descriptor = Reflect.getOwnPropertyDescriptor(prototype, method);
@@ -159,12 +206,19 @@ export class DependenciesScanner {
         continue;
       }
       return Reflect.getMetadata(key, descriptor.value);
-    } while ((prototype = Reflect.getPrototypeOf(prototype)) && prototype && prototype !== Object.prototype);
+    } while (
+      (prototype = Reflect.getPrototypeOf(prototype)) &&
+      prototype &&
+      prototype !== Object.prototype
+    );
     return undefined;
   }
-  private filterInvalidInjectablesSchemas(injectableSchema: InjectablesSchema): InjectablesSchema {
+  private filterInvalidInjectablesSchemas(
+    injectableSchema: InjectablesSchema,
+  ): InjectablesSchema {
     injectableSchema.injectables = injectableSchema.injectables.filter(
-      (injectable) => isFunction(injectable) || this.isCustomProvider(injectable),
+      (injectable) =>
+        isFunction(injectable) || this.isCustomProvider(injectable),
     );
     return injectableSchema;
   }

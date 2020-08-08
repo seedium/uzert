@@ -61,14 +61,19 @@ describe('Factory', () => {
     class AppModule {}
     it('should abort process if injection falls', async () => {
       const stubProcessAbort = sinon.stub(process, 'abort');
-      sinon.stub(InstanceLoader.prototype, 'createInstancesOfDependencies').rejects(new Error('test'));
+      sinon
+        .stub(InstanceLoader.prototype, 'createInstancesOfDependencies')
+        .rejects(new Error('test'));
       sinon.stub(ErrorsZone, 'asyncRun').callsFake(async (cb) => await cb());
       await UzertFactory.create(AppModule, new MockedHttpAdapter());
       expect(stubProcessAbort.calledOnce).to.be.true;
     });
     it('should create error zone for prop in adapter', async () => {
       const app = await UzertFactory.create(AppModule, new MockedHttpAdapter());
-      const stubCreateErrorZone = sinon.spy(UzertFactory, <any>'createErrorZone');
+      const stubCreateErrorZone = sinon.spy(
+        UzertFactory,
+        <any>'createErrorZone',
+      );
       /* @ts-expect-error */
       await app.run();
       expect(stubCreateErrorZone.calledOnce).to.be.true;

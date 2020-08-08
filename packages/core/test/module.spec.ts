@@ -39,7 +39,10 @@ describe('Boot module', () => {
       providers: [TestProvider],
     })
     class AppModule {}
-    const metadataProviders = Reflect.getMetadata(MODULE_KEYS.PROVIDERS, AppModule);
+    const metadataProviders = Reflect.getMetadata(
+      MODULE_KEYS.PROVIDERS,
+      AppModule,
+    );
     expect(metadataProviders).length(1);
     const [TestProviderMeta] = metadataProviders;
     expect(TestProviderMeta).eq(TestProvider);
@@ -50,7 +53,10 @@ describe('Boot module', () => {
       controllers: [TestController],
     })
     class AppModule {}
-    const metadataControllers = Reflect.getMetadata(MODULE_KEYS.CONTROLLERS, AppModule);
+    const metadataControllers = Reflect.getMetadata(
+      MODULE_KEYS.CONTROLLERS,
+      AppModule,
+    );
     expect(metadataControllers).length(1);
     const [TestControllerMeta] = metadataControllers;
     expect(TestControllerMeta).eq(TestController);
