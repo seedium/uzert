@@ -1,5 +1,5 @@
 import { HTTPMethods, RouteShorthandOptions, preHandlerHookHandler, RawServerBase } from 'fastify';
-import { FactoryProvider, Pipe, Provider, Type, UzertContainer } from '@uzert/core';
+import { ClassProvider, FactoryProvider, Pipe, Provider, Type, UzertContainer, ValueProvider } from '@uzert/core';
 import { ROUTER_INSTANCE, ROUTER_OPTIONS, PIPES_METADATA } from '@uzert/core/constants';
 import { ContainerScanner } from '@uzert/core/injector/container-scanner';
 import { isNil } from '@uzert/helpers';
@@ -87,7 +87,7 @@ export class Router {
   protected bindMethod<T extends Function>(handler: Function, instance: any): T {
     return handler.bind(instance);
   }
-  private isCustomProvider(provider: Provider): provider is FactoryProvider {
+  private isCustomProvider(provider: Provider): provider is FactoryProvider | ClassProvider | ValueProvider {
     return !isNil((provider as FactoryProvider).provide);
   }
 }
