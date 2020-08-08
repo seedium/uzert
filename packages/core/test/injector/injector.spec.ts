@@ -66,6 +66,43 @@ describe('Injector', () => {
       ).eventually.rejectedWith(UnknownDependencyError);
     });
   });
+  describe('resolve component host', () => {
+    class TestService {}
+    it('should not load provider if resolved', async () => {
+      const stubLoadProvider = sinon.stub(injector, 'loadProvider');
+      await injector.resolveComponentHost(
+        module,
+        new InstanceWrapper({
+          instance: null,
+          isResolved: true,
+        }),
+        STATIC_CONTEXT,
+      );
+      expect(stubLoadProvider).not.called;
+    });
+    it('should load provider if not resolved', async () => {
+      const stubLoadProvider = sinon.stub(injector, 'loadProvider');
+      await injector.resolveComponentHost(
+        module,
+        new InstanceWrapper({
+          instance: null,
+          isResolved: false,
+        }),
+        STATIC_CONTEXT,
+      );
+      expect(stubLoadProvider).called;
+    });
+    it('should await instance if wrapper is async', async () => {
+      const test = { foo: 'bar' };
+      const instanceWrapper = new InstanceWrapper({
+        instance: Promise.resolve(test),
+        isResolved: true,
+        async: true,
+      });
+      const resultInstanceWrapper = await injector.resolveComponentHost(module, instanceWrapper, STATIC_CONTEXT);
+      expect(resultInstanceWrapper.instance).eq(test);
+    });
+  });
   describe('resolve component instance', () => {
     it('by default should resolve in providers collection', async () => {
       class TestProvider {}

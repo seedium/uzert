@@ -1,5 +1,5 @@
 import { capitalize, isFunction, isString } from '@uzert/helpers';
-import { Type, Abstract, HostCollection } from '../interfaces';
+import { Type, Abstract, HostCollection, ProviderToken } from '../interfaces';
 import { Module } from './module';
 import { UzertContainer } from './uzert-container';
 import { InstanceWrapper } from './instance-wrapper';
@@ -8,12 +8,12 @@ import { UnknownElementError } from '../errors';
 export class ContainerScanner {
   private flatContainer: Partial<Module>;
   constructor(private readonly container: UzertContainer) {}
-  public find<TInput = any, TResult = TInput>(typeOrToken: Type<TInput> | Abstract<TInput> | string | symbol): TResult {
+  public find<TInput = any, TResult = TInput>(typeOrToken: ProviderToken): TResult {
     this.initFlatContainer();
     return this.findInstanceByToken<TInput, TResult>(typeOrToken, this.flatContainer);
   }
   public findInstanceByToken<TInput = any, TResult = TInput>(
-    metatypeOrToken: Type<TInput> | Abstract<TInput> | string | symbol,
+    metatypeOrToken: ProviderToken,
     contextModule: Partial<Module>,
   ): TResult {
     const [instanceWrapper] = this.getWrapperCollectionPairByHost(metatypeOrToken, contextModule);
@@ -21,7 +21,7 @@ export class ContainerScanner {
     return (instanceWrapper.instance as unknown) as TResult;
   }
   public findInjectablesPerMethodContext<TInput = any, TResult = TInput>(
-    typeOrToken: Type<TInput> | Abstract<TInput> | string | symbol,
+    typeOrToken: ProviderToken,
     contextMethod: Function,
   ): TResult {
     let token = this.getStaticTypeToken(typeOrToken);
@@ -35,7 +35,7 @@ export class ContainerScanner {
     }
   }
   public getWrapperCollectionPairByHost<TInput = any, TResult = TInput>(
-    metatypeOrToken: Type<TInput> | Abstract<TInput> | string | symbol,
+    metatypeOrToken: ProviderToken,
     contextModule: Partial<Module>,
   ): [InstanceWrapper<TResult>, Map<string, InstanceWrapper>] {
     const name = this.getStaticTypeToken(metatypeOrToken);

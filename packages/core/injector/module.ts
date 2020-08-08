@@ -1,5 +1,5 @@
 import iterate from 'iterare';
-import { isNil, isFunction, isString, capitalize, isSymbol } from '@uzert/helpers';
+import { isNil, isFunction, isString, capitalize, isSymbol, isUndefined } from '@uzert/helpers';
 import {
   Type,
   IInjectable,
@@ -10,6 +10,8 @@ import {
   Abstract,
   RouteModule,
   DynamicModule,
+  ClassProvider,
+  ValueProvider,
 } from '../interfaces';
 import { InstanceWrapper } from './instance-wrapper';
 import { getRandomString } from '../utils/get-random-string';
@@ -96,7 +98,7 @@ export class Module {
   public addRelatedModule(module: Module) {
     this._imports.add(module);
   }
-  public addRoute(route: Type<IInjectable>): string {
+  public addRoute(route: Type<RouteModule>): string {
     this._routes.set(
       route.name,
       new InstanceWrapper<RouteModule>({
@@ -147,7 +149,7 @@ export class Module {
     }
     addExportedUnit(provider.name);
   }
-  public addCustomExportedProvider(provider: FactoryProvider) {
+  public addCustomExportedProvider(provider: FactoryProvider | ClassProvider | ValueProvider) {
     const provide = provider.provide;
     if (isString(provide) || isSymbol(provide)) {
       return this._exports.add(this.validateExportedProvider(provide));
@@ -180,24 +182,38 @@ export class Module {
       value: getRandomString(),
     });
   }
-  public isCustomProvider(provider: Provider): provider is FactoryProvider {
+  public isCustomProvider(provider: Provider): provider is FactoryProvider | ClassProvider | ValueProvider {
     return !isNil((provider as FactoryProvider).provide);
   }
   public addCustomProvider(
-    provider: FactoryProvider & ProviderName,
+    provider: (FactoryProvider | ClassProvider | ValueProvider) & ProviderName,
     collection: Map<string, any>,
     hostMethodName?: string,
   ): string {
     const name = this.getProviderStaticToken(provider.provide, hostMethodName) as string;
-
     provider = {
       ...provider,
       name,
     };
 
-    this.addCustomFactory(provider, collection);
+    if (this.isCustomClass(provider)) {
+      this.addCustomClass(provider, collection);
+    } else if (this.isCustomValue(provider)) {
+      this.addCustomValue(provider, collection);
+    } else if (this.isCustomFactory(provider)) {
+      this.addCustomFactory(provider, collection);
+    }
 
     return name;
+  }
+  public isCustomClass(provider: any): provider is ClassProvider {
+    return !isUndefined((provider as ClassProvider).useClass);
+  }
+  public isCustomValue(provider: any): provider is ValueProvider {
+    return !isUndefined((provider as ValueProvider).useValue);
+  }
+  public isCustomFactory(provider: any): provider is FactoryProvider {
+    return !isUndefined((provider as FactoryProvider).useFactory);
   }
   public isDynamicModule(exported: any): exported is DynamicModule {
     return exported && exported.module;
@@ -224,6 +240,34 @@ export class Module {
         instance: null,
         isResolved: false,
         inject: inject || [],
+        host: this,
+      }),
+    );
+  }
+  public addCustomClass(provider: ClassProvider & ProviderName, collection: Map<string, InstanceWrapper>) {
+    const { name, useClass } = provider;
+
+    collection.set(
+      name as string,
+      new InstanceWrapper({
+        name,
+        metatype: useClass,
+        instance: null,
+        isResolved: false,
+        host: this,
+      }),
+    );
+  }
+  public addCustomValue(provider: ValueProvider & ProviderName, collection: Map<string, InstanceWrapper>) {
+    const { name, useValue: value } = provider;
+    collection.set(
+      name as string,
+      new InstanceWrapper({
+        name,
+        metatype: null,
+        instance: value,
+        isResolved: true,
+        async: value instanceof Promise,
         host: this,
       }),
     );

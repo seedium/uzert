@@ -289,6 +289,11 @@ export class Injector {
     if (!instanceHost.isResolved) {
       await this.loadProvider(instanceWrapper, moduleRef, contextId);
     }
+    if (instanceWrapper.async) {
+      const host = instanceWrapper.getInstanceByContextId(contextId);
+      host.instance = await host.instance;
+      instanceWrapper.setInstanceByContextId(contextId, host);
+    }
 
     return instanceWrapper;
   }

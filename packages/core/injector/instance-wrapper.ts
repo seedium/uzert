@@ -8,6 +8,7 @@ import { Module } from './module';
 export class InstanceWrapper<T = any> {
   public readonly name: any;
   public readonly host?: Module;
+  public readonly async?: boolean;
   private readonly values = new WeakMap<ContextId, InstancePerContext<T>>();
   private readonly [INSTANCE_METADATA_SYMBOL]: InstanceMetadataStore = {};
   public metatype: Type<T> | Function;

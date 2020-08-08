@@ -1,7 +1,12 @@
-import { expect } from 'chai';
+import * as chai from 'chai';
+import * as sinon from 'sinon';
+import * as sinonChai from 'sinon-chai';
 import { Module } from '../../injector/module';
-import { Provider } from '../../interfaces';
+import { FactoryProvider, Provider } from '../../interfaces';
 import { UnknownExportError } from '../../errors';
+
+chai.use(sinonChai);
+const expect = chai.expect;
 
 describe('Module', () => {
   class AppModule {}
@@ -27,6 +32,9 @@ describe('Module', () => {
   beforeEach(() => {
     module = new Module(AppModule, []);
     relatedModule = new Module(RelatedModule, []);
+  });
+  afterEach(() => {
+    sinon.restore();
   });
   describe('get provider instance wrapper', () => {
     it('should return by custom provider', () => {
@@ -65,6 +73,74 @@ describe('Module', () => {
       const enhancers = testProviderWrapper.getEnhancerMetadata();
       expect(enhancers).length(1);
       expect(enhancers[0].name).eq(TestProvider.name);
+    });
+  });
+  describe('add providers', () => {
+    it('should create new instance wrapper for type provider', () => {
+      const spyIsCustomProvider = sinon.spy(module, 'isCustomProvider');
+      module.addProvider(TestProvider);
+      expect(spyIsCustomProvider).returned(false);
+      expect(module.providers.has(TestProvider.name)).is.true;
+      const instanceWrapper = module.providers.get(TestProvider.name);
+      expect(instanceWrapper.metatype).eq(TestProvider);
+      expect(instanceWrapper.name).eq(TestProvider.name);
+    });
+    describe('custom providers', () => {
+      it('should add custom factory', () => {
+        const factoryFunction = () => {
+          return new TestProvider();
+        };
+        module.addProvider({
+          provide: TestProvider,
+          useFactory: factoryFunction,
+        });
+        const instanceWrapper = module.providers.get(TestProvider.name);
+        expect(instanceWrapper.metatype).eq(factoryFunction);
+        expect(instanceWrapper.name).eq(TestProvider.name);
+      });
+      it('should add custom class', () => {
+        module.addProvider({
+          provide: TestProvider,
+          useClass: TestProvider,
+        });
+        const instanceWrapper = module.providers.get(TestProvider.name);
+        expect(instanceWrapper.metatype).eq(TestProvider);
+        expect(instanceWrapper.name).eq(TestProvider.name);
+      });
+      it('should add custom value', () => {
+        const testProvider = new TestProvider();
+        module.addProvider({
+          provide: TestProvider.name,
+          useValue: testProvider,
+        });
+        const instanceWrapper = module.providers.get(TestProvider.name);
+        expect(instanceWrapper.instance).eq(testProvider);
+        expect(instanceWrapper.name).eq(TestProvider.name);
+        expect(instanceWrapper.async).is.false;
+      });
+      it('should add async custom value', () => {
+        const testProvider = Promise.resolve(new TestProvider());
+        module.addProvider({
+          provide: TestProvider.name,
+          useValue: testProvider,
+        });
+        const instanceWrapper = module.providers.get(TestProvider.name);
+        expect(instanceWrapper.instance).eq(testProvider);
+        expect(instanceWrapper.name).eq(TestProvider.name);
+        expect(instanceWrapper.async).is.true;
+      });
+      it('should not add custom provider is not satisfied to any custom types', () => {
+        const stubs = [
+          sinon.stub(module, 'addCustomClass'),
+          sinon.stub(module, 'addCustomValue'),
+          sinon.stub(module, 'addCustomFactory'),
+        ];
+        /* @ts-expect-error */
+        module.addProvider({
+          provide: TestProvider,
+        });
+        stubs.forEach((stub) => expect(stub).not.called);
+      });
     });
   });
   describe('add import modules', () => {
