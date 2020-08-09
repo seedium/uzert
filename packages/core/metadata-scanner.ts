@@ -3,7 +3,7 @@ import { isNil, isFunction, isConstructor } from '@uzert/helpers';
 import iterate from 'iterare';
 
 export class MetadataScanner {
-  public static scanFromPrototype<T extends IInjectable, R = any>(
+  public static scanFromPrototype<T extends IInjectable, R = unknown>(
     prototype: object,
     callback: (name: string) => R,
   ): R[] {

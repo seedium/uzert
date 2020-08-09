@@ -2,7 +2,7 @@ import { DynamicModule, Type } from '../interfaces';
 import { ModuleTokenFactory } from './module-token-factory';
 
 export interface ModuleFactory {
-  type: Type<any>;
+  type: Type<unknown>;
   token: string;
 }
 
@@ -10,16 +10,16 @@ export class ModuleCompiler {
   constructor(private readonly moduleTokenFactory = new ModuleTokenFactory()) {}
 
   public async compile(
-    metatype: Type<any> | DynamicModule,
+    metatype: Type<unknown> | DynamicModule,
   ): Promise<ModuleFactory> {
     const { type } = await this.extractMetadata(metatype);
     const token = this.moduleTokenFactory.create(type);
     return { type, token };
   }
   public async extractMetadata(
-    metatype: Type<any> | DynamicModule,
+    metatype: Type<unknown> | DynamicModule,
   ): Promise<{
-    type: Type<any>;
+    type: Type<unknown>;
   }> {
     metatype = await metatype;
     if (!this.isDynamicModule(metatype)) {
@@ -29,7 +29,7 @@ export class ModuleCompiler {
     return { type };
   }
   public isDynamicModule(
-    module: Type<any> | DynamicModule,
+    module: Type<unknown> | DynamicModule,
   ): module is DynamicModule {
     return !!(module as DynamicModule).module;
   }

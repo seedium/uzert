@@ -1,3 +1,3 @@
 export interface OnBeforeAppShutdown {
-  onBeforeAppShutdown(err: Error | null, signal?: string): any;
+  onBeforeAppShutdown(err: Error | null, signal?: string): unknown;
 }

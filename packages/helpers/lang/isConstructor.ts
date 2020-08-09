@@ -1,3 +1,3 @@
-const isConstructor = (fn: any): boolean => fn === 'constructor';
+const isConstructor = (fn: unknown): boolean => fn === 'constructor';
 
 export default isConstructor;

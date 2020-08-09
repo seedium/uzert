@@ -1,6 +1,6 @@
 import getTag from '../internal/getTag';
 
-const isSymbol = (value: any): value is symbol => {
+const isSymbol = (value: unknown): value is symbol => {
   const type = typeof value;
   return (
     type == 'symbol' ||

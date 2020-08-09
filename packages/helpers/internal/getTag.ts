@@ -7,7 +7,7 @@ const toString = Object.prototype.toString;
  * @param {*} value The value to query.
  * @returns {string} Returns the `toStringTag`.
  */
-const getTag = (value: any) => {
+const getTag = (value: unknown): string => {
   if (value == null) {
     return value === undefined ? '[object Undefined]' : '[object Null]';
   }

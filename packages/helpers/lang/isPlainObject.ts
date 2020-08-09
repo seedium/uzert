@@ -1,7 +1,7 @@
 import getTag from '../internal/getTag';
 import isObjectLike from './isObjectLike';
 
-export default (value: any) => {
+const isPlainObject = (value: unknown): boolean => {
   if (!isObjectLike(value) || getTag(value) !== '[object Object]') {
     return false;
   }
@@ -18,3 +18,5 @@ export default (value: any) => {
 
   return Object.getPrototypeOf(value) === proto;
 };
+
+export default isPlainObject;

@@ -50,7 +50,10 @@ describe('Fastify Router', () => {
         routes: [TestRouter],
       })
       class AppModule {}
-      const app = await UzertFactory.create(AppModule, new FastifyAdapter());
+      const app = await UzertFactory.create<FastifyAdapter>(
+        AppModule,
+        new FastifyAdapter(),
+      );
       sinon.stub(app.httpAdapter.app, 'listen');
       await app.listen();
       expect(stubRouterRegisterCallback.calledOnce).to.be.true;
@@ -96,11 +99,11 @@ describe('Fastify Router', () => {
       });
       expect(stubFastifyRoute.callCount).eq(methods.length);
     });
-    it('register router should receive only callbacks', async () => {
+    it('register router should receive only callbacks', () => {
       const fastifyAdapter = new FastifyAdapter();
       const stubRegister = sinon.stub(fastifyAdapter.app, 'register');
       // @ts-expect-error
-      expect(fastifyAdapter.registerRouter(container, {})).eventually.rejected;
+      expect(() => fastifyAdapter.registerRouter(container, {})).throw();
       expect(stubRegister).not.called;
     });
     describe('metadata injection', () => {
@@ -127,11 +130,13 @@ describe('Fastify Router', () => {
         await instanceLoader.createInstancesOfDependencies();
         const router = new Router(container, fastify());
         const stubFastifyRoute = sinon.stub((router as any)._app, 'route');
-        const testController = containerScanner.find(TestController);
+        const testController = containerScanner.find<TestController>(
+          TestController,
+        );
         router.get('/', testController.test);
         const [[routeArgs]] = stubFastifyRoute.args;
         expect(routeArgs).property('preHandler').an('array').length(1);
-        const testPipe = containerScanner.find(TestPipe);
+        const testPipe = containerScanner.find<TestPipe>(TestPipe);
         expect(routeArgs.preHandler[0]).eq(testPipe.use);
       });
       it('should extend pipes with router pre handler', async () => {
@@ -146,7 +151,9 @@ describe('Fastify Router', () => {
         container.addController(TestController, moduleToken);
         container.addInjectable(TestPipe, moduleToken);
         await instanceLoader.createInstancesOfDependencies();
-        const testController = containerScanner.find(TestController);
+        const testController = containerScanner.find<TestController>(
+          TestController,
+        );
         const router = new Router(container, fastify());
         const stubFastifyRoute = sinon.stub((router as any)._app, 'route');
         router.get('/', testController.test);
@@ -161,7 +168,9 @@ describe('Fastify Router', () => {
         container.addController(TestController, moduleToken);
         await instanceLoader.createInstancesOfDependencies();
         const router = new Router(container, fastify());
-        const testController = containerScanner.find(TestController);
+        const testController = containerScanner.find<TestController>(
+          TestController,
+        );
         try {
           router.get('/', testController.test);
         } catch (e) {
@@ -211,7 +220,9 @@ describe('Fastify Router', () => {
         );
         await instanceLoader.createInstancesOfDependencies();
         const router = new Router(container, fastify());
-        const testController = containerScanner.find(TestController);
+        const testController = containerScanner.find<TestController>(
+          TestController,
+        );
         const stubFastifyRoute = sinon.stub((router as any)._app, 'route');
         router.get('/test', testController.test);
         router.get('/test2', testController.test2);

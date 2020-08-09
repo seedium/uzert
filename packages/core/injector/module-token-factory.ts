@@ -28,7 +28,7 @@ export class ModuleTokenFactory {
     return moduleId;
   }
 
-  public getModuleName(metatype: Type<any>): string {
+  public getModuleName(metatype: Type<unknown>): string {
     return metatype.name;
   }
 }

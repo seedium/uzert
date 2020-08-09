@@ -5,13 +5,12 @@ import {
   RawServerBase,
 } from 'fastify';
 import {
-  ClassProvider,
-  FactoryProvider,
+  Controller,
+  CustomProvider,
   Pipe,
   Provider,
   Type,
   UzertContainer,
-  ValueProvider,
 } from '@uzert/core';
 import {
   ROUTER_INSTANCE,
@@ -30,25 +29,29 @@ export class Router {
   ) {
     this._containerScanner = new ContainerScanner(_container);
   }
-  public post(path: string, handler: RouteHandler) {
+  public post(path: string, handler: RouteHandler): void {
     this.route(path, 'POST', handler);
   }
-  public get(path: string, handler: RouteHandler) {
+  public get(path: string, handler: RouteHandler): void {
     this.route(path, 'GET', handler);
   }
-  public put(path: string, handler: RouteHandler) {
+  public put(path: string, handler: RouteHandler): void {
     this.route(path, 'PUT', handler);
   }
-  public delete(path: string, handler: RouteHandler) {
+  public delete(path: string, handler: RouteHandler): void {
     this.route(path, 'DELETE', handler);
   }
-  public patch(path: string, handler: RouteHandler) {
+  public patch(path: string, handler: RouteHandler): void {
     this.route(path, 'PATCH', handler);
   }
-  public head(path: string, handler: RouteHandler) {
+  public head(path: string, handler: RouteHandler): void {
     this.route(path, 'HEAD', handler);
   }
-  protected route(path, method: HTTPMethods, handler: RouteHandler) {
+  protected route(
+    path: string,
+    method: HTTPMethods,
+    handler: RouteHandler,
+  ): void {
     const instance = this.reflectInstance(handler);
     const routerOptions = this.exploreMethod(handler);
     this._app.route({
@@ -74,7 +77,7 @@ export class Router {
       this.findInjectablesPerMethodContext(pipe, handler),
     );
   }
-  protected reflectInstance(handler: RouteHandler): any {
+  protected reflectInstance(handler: RouteHandler): Controller {
     const instance = Reflect.getMetadata(ROUTER_INSTANCE, handler);
     if (!instance) {
       throw new Error(
@@ -109,7 +112,10 @@ export class Router {
   ): preHandlerHookHandler<RawServerBase>[] {
     return pipes.map((pipe) => this.bindMethod(pipe.use, pipe));
   }
-  protected findInjectablesPerMethodContext(pipe: Provider, handler: Function) {
+  protected findInjectablesPerMethodContext(
+    pipe: Provider,
+    handler: Function,
+  ): Pipe {
     if (this.isCustomProvider(pipe)) {
       return this._containerScanner.findInjectablesPerMethodContext(
         pipe.provide,
@@ -124,13 +130,11 @@ export class Router {
   }
   protected bindMethod<T extends Function>(
     handler: Function,
-    instance: any,
+    instance: Controller,
   ): T {
     return handler.bind(instance);
   }
-  private isCustomProvider(
-    provider: Provider,
-  ): provider is FactoryProvider | ClassProvider | ValueProvider {
-    return !isNil((provider as FactoryProvider).provide);
+  private isCustomProvider(provider: Provider): provider is CustomProvider {
+    return !isNil((provider as CustomProvider).provide);
   }
 }

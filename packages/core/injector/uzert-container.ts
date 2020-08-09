@@ -32,7 +32,7 @@ export class UzertContainer {
     const moduleRef = this.modules.get(token);
     return moduleRef.addProvider(provider);
   }
-  public addController(controller: Type<any>, token: string): string {
+  public addController(controller: Type<unknown>, token: string): string {
     if (!controller) {
       throw new CircularDependencyError();
     }
@@ -57,7 +57,7 @@ export class UzertContainer {
     token: string,
     host?: Type<IInjectable>,
     hostMethodName?: string,
-  ) {
+  ): void {
     if (!this.modules.has(token)) {
       throw new UnknownModuleError(token);
     }
@@ -65,9 +65,9 @@ export class UzertContainer {
     moduleRef.addInjectable(injectable, host, hostMethodName);
   }
   public async addImport(
-    relatedModule: Type<any> | DynamicModule,
+    relatedModule: Type<unknown> | DynamicModule,
     token: string,
-  ) {
+  ): Promise<void> {
     if (!this.modules.has(token)) {
       return;
     }
@@ -78,7 +78,7 @@ export class UzertContainer {
     const related = this.modules.get(relatedModuleToken);
     moduleRef.addRelatedModule(related);
   }
-  public addExportedProvider(provider: Type<any>, token: string) {
+  public addExportedProvider(provider: Type<unknown>, token: string): void {
     if (!this.modules.has(token)) {
       throw new UnknownModuleError();
     }
@@ -86,8 +86,8 @@ export class UzertContainer {
     moduleRef.addExportedProvider(provider);
   }
   public async addModule(
-    metatype: Type<any>,
-    scope: Type<any>[],
+    metatype: Type<unknown> | DynamicModule,
+    scope: Type<unknown>[],
   ): Promise<Module> {
     if (!metatype) {
       throw new InvalidModuleError(metatype);
@@ -105,7 +105,7 @@ export class UzertContainer {
     return moduleRef;
   }
   public async getModuleToken(
-    metatype: Type<any> | DynamicModule,
+    metatype: Type<unknown> | DynamicModule,
   ): Promise<string> {
     if (!metatype) {
       throw new InvalidModuleError(metatype);

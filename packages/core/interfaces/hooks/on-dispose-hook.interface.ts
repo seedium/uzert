@@ -1,3 +1,3 @@
 export interface OnDispose {
-  onDispose(): any;
+  onDispose(): unknown;
 }

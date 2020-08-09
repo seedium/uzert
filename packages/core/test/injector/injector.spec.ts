@@ -79,21 +79,87 @@ describe('Injector', () => {
       );
       expect(stubResolveComponentInstance.calledOnce).to.be.true;
     });
-    it('should throw error if param token is undefined', async () => {
-      const instanceWrapper = new InstanceWrapper();
-      await expect(
-        injector.resolveSingleParam(
-          instanceWrapper,
-          undefined,
-          {},
-          module,
-          STATIC_CONTEXT,
-        ),
-      ).eventually.rejectedWith(UnknownDependencyError);
+    describe('should throw an error when param token is undefined and', () => {
+      it('nothing else', async () => {
+        const instanceWrapper = new InstanceWrapper();
+        await expect(
+          injector.resolveSingleParam(
+            instanceWrapper,
+            undefined,
+            {},
+            module,
+            STATIC_CONTEXT,
+          ),
+        ).eventually.rejectedWith(UnknownDependencyError);
+      });
+      it('name of instance wrapper is symbol', async () => {
+        const instanceWrapper = new InstanceWrapper({
+          name: Symbol.for('test'),
+        });
+        await expect(
+          injector.resolveSingleParam(
+            instanceWrapper,
+            undefined,
+            {},
+            module,
+            STATIC_CONTEXT,
+          ),
+        ).eventually.rejectedWith(UnknownDependencyError);
+      });
+      it('module metatype is undefined', async () => {
+        await expect(
+          injector.resolveSingleParam(
+            new InstanceWrapper(),
+            undefined,
+            {},
+            new Module(undefined, []),
+            STATIC_CONTEXT,
+          ),
+        ).eventually.rejectedWith(UnknownDependencyError);
+      });
+      it('name of dependency context is symbol', async () => {
+        await expect(
+          injector.resolveSingleParam(
+            new InstanceWrapper(),
+            undefined,
+            {
+              name: Symbol.for('test'),
+            },
+            module,
+            STATIC_CONTEXT,
+          ),
+        ).eventually.rejectedWith(UnknownDependencyError);
+      });
+      it('name of dependency context is null', async () => {
+        await expect(
+          injector.resolveSingleParam(
+            new InstanceWrapper(),
+            undefined,
+            {
+              name: null,
+            },
+            module,
+            STATIC_CONTEXT,
+          ),
+        ).eventually.rejectedWith(UnknownDependencyError);
+      });
+      it('dependencies is undefined', async () => {
+        await expect(
+          injector.resolveSingleParam(
+            new InstanceWrapper(),
+            undefined,
+            {
+              index: 0,
+              dependencies: undefined,
+            },
+            module,
+            STATIC_CONTEXT,
+          ),
+        ).eventually.rejectedWith(UnknownDependencyError);
+      });
     });
   });
   describe('resolve component host', () => {
-    class TestService {}
     it('should not load provider if resolved', async () => {
       const stubLoadProvider = sinon.stub(injector, 'loadProvider');
       await injector.resolveComponentHost(

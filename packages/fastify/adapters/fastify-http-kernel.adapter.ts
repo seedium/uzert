@@ -6,7 +6,10 @@ export class FastifyHttpKernelAdapter
   implements HttpKernelAdapter<Request, Response> {
   public plugins: IPluginKernel[] = [];
 
-  public async notFoundHandler(_req: Request, _res: Response): Promise<any> {
+  public async notFoundHandler(
+    _req: Request,
+    _res: Response,
+  ): Promise<unknown> {
     return {
       message: 'Route not found',
     };
@@ -16,7 +19,7 @@ export class FastifyHttpKernelAdapter
     err: Error | FastifyError,
     _req: Request,
     _res: Response,
-  ): Promise<any> {
+  ): Promise<unknown> {
     return {
       message: err.message,
     };

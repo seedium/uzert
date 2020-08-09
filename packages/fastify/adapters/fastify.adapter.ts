@@ -44,10 +44,10 @@ export class FastifyAdapter extends HttpAdapter<
     this._app = fastify<Http2Server>(this.buildOptions(options));
   }
 
-  public async listen(port = 3000, address = '0.0.0.0') {
+  public async listen(port = 3000, address = '0.0.0.0'): Promise<string> {
     return this.app.listen(port, address);
   }
-  public async onDispose() {
+  public async onDispose(): Promise<void> {
     await this.app.close();
   }
 
@@ -68,11 +68,11 @@ export class FastifyAdapter extends HttpAdapter<
 
     return this._app;
   }
-  public async registerRouter(
+  public registerRouter(
     container: UzertContainer,
     cb: RegisterRouterCallback,
     options?: RegisterOptions,
-  ) {
+  ): void {
     if (!isFunction(cb)) {
       throw new Error(
         'Your register router method should return callback for registering in fastify',
@@ -89,7 +89,7 @@ export class FastifyAdapter extends HttpAdapter<
     printFinishMessage: ({ time }) =>
       `Successfully initialization Kernel: ${time}ms`,
   })
-  protected bootKernel() {
+  protected bootKernel(): void {
     // init users plugins
     this._kernel.plugins.forEach((plugin: IPluginKernel) =>
       this.applyPlugin(plugin),
@@ -99,7 +99,7 @@ export class FastifyAdapter extends HttpAdapter<
     this._app.setErrorHandler(this._kernel.errorHandler);
   }
 
-  protected applyPlugin(plugin: IPluginKernel) {
+  protected applyPlugin(plugin: IPluginKernel): void {
     this._app.register(plugin.plugin, plugin.options);
   }
   protected buildOptions(options: FastifyHttp2Options): FastifyHttp2Options {
@@ -113,10 +113,12 @@ export class FastifyAdapter extends HttpAdapter<
       options,
     );
   }
-  protected generateRequestId() {
+  protected generateRequestId(): string {
     return uuidv4();
   }
-  protected parseQueryString(str: string): Record<string, any> {
-    return qs.parse(str);
+  protected parseQueryString(
+    str: string,
+  ): { [key: string]: string | string[] } {
+    return qs.parse(str) as { [key: string]: string | string[] };
   }
 }

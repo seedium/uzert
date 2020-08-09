@@ -3,11 +3,11 @@ import { UzertContainer } from './uzert-container';
 import { Module } from './module';
 import {
   Type,
-  FactoryProvider,
   Provider,
   RouteModule,
   IInjectable,
   InjectablesSchema,
+  CustomProvider,
 } from '../interfaces';
 import { MODULE_KEYS, PIPES_METADATA } from '../constants';
 import { MetadataScanner } from '../metadata-scanner';
@@ -32,12 +32,17 @@ export class DependenciesScanner {
     const moduleInstance = await this.insertModule(module, scope);
     ctxRegistry.push(module);
 
-    const modules = this.isDynamicModule(module)
+    const modules: (Type<unknown> | DynamicModule)[] = this.isDynamicModule(
+      module,
+    )
       ? [
-          ...this.reflectMetadata(module.module, MODULE_KEYS.IMPORTS),
+          ...this.reflectMetadata<Type<unknown>[]>(
+            module.module,
+            MODULE_KEYS.IMPORTS,
+          ),
           ...(module.imports || []),
         ]
-      : this.reflectMetadata(module, MODULE_KEYS.IMPORTS);
+      : this.reflectMetadata<Type<unknown>[]>(module, MODULE_KEYS.IMPORTS);
 
     for (const [index, innerModule] of modules.entries()) {
       // In case of a circular dependency (ES module system), JavaScript will resolve the type to `undefined`.
@@ -58,7 +63,7 @@ export class DependenciesScanner {
     }
     return moduleInstance;
   }
-  public async scanModulesForDependencies() {
+  public async scanModulesForDependencies(): Promise<void> {
     const modules = this.container.getModules();
 
     for (const [token, { metatype }] of modules) {
@@ -73,61 +78,83 @@ export class DependenciesScanner {
     module: Type<unknown>,
     token: string,
     context: string,
-  ) {
-    const modules = this.reflectMetadata(module, MODULE_KEYS.IMPORTS);
+  ): Promise<void> {
+    const modules = this.reflectMetadata<Array<Type<unknown> | DynamicModule>>(
+      module,
+      MODULE_KEYS.IMPORTS,
+    );
     for (const related of modules) {
       await this.insertImport(related, token, context);
     }
   }
-  public reflectProviders(module: Type<any>, token: string) {
-    const providers = this.reflectMetadata(module, MODULE_KEYS.PROVIDERS);
+  public reflectProviders(module: Type<unknown>, token: string): void {
+    const providers = this.reflectMetadata<Type<unknown>[]>(
+      module,
+      MODULE_KEYS.PROVIDERS,
+    );
 
     providers.forEach((provider) => {
       this.insertProvider(provider, token);
     });
   }
-  public reflectControllers(module: Type<any>, token: string) {
-    const controllers = this.reflectMetadata(module, MODULE_KEYS.CONTROLLERS);
+  public reflectControllers(module: Type<unknown>, token: string): void {
+    const controllers = this.reflectMetadata<Type<unknown>[]>(
+      module,
+      MODULE_KEYS.CONTROLLERS,
+    );
 
     controllers.forEach((controller) => {
       this.insertController(controller, token);
       this.reflectDynamicMetadata(controller, token);
     });
   }
-  public reflectRoutes(module: Type<RouteModule>, token: string) {
-    const routes = this.reflectMetadata(module, MODULE_KEYS.ROUTES);
+  public reflectRoutes(module: Type<unknown>, token: string): void {
+    const routes: Type<RouteModule>[] = this.reflectMetadata(
+      module,
+      MODULE_KEYS.ROUTES,
+    );
     routes.forEach((route) => {
       this.insertRoute(route, token);
     });
   }
-  public reflectMetadata(metatype: Type<any>, metadataKey: string) {
+  public reflectMetadata<T = unknown[]>(
+    metatype: Type<unknown>,
+    metadataKey: string,
+  ): T {
     return Reflect.getMetadata(metadataKey, metatype) || [];
   }
-  public reflectExports(module: Type<unknown>, token: string) {
-    const exports = this.reflectMetadata(module, MODULE_KEYS.EXPORTS);
+  public reflectExports(module: Type<unknown>, token: string): void {
+    const exports = this.reflectMetadata<Type<unknown>[]>(
+      module,
+      MODULE_KEYS.EXPORTS,
+    );
     exports.forEach((exportedProvider) =>
       this.insertExportedProvider(exportedProvider, token),
     );
   }
-  public async insertImport(related: any, token: string, context: string) {
+  public async insertImport(
+    related: Type<unknown> | DynamicModule,
+    token: string,
+    context: string,
+  ): Promise<void> {
     if (isUndefined(related)) {
       throw new CircularDependencyError(context);
     }
     await this.container.addImport(related, token);
   }
   public async insertModule(
-    module: any,
+    module: Type<unknown> | DynamicModule,
     scope: Type<unknown>[],
   ): Promise<Module> {
     return this.container.addModule(module, scope);
   }
-  public insertProvider(provider: Provider, token: string) {
-    return this.container.addProvider(provider as Type<any>, token);
+  public insertProvider(provider: Provider, token: string): string {
+    return this.container.addProvider(provider as Type<unknown>, token);
   }
-  public insertController(controller: Type<any>, token: string) {
+  public insertController(controller: Type<unknown>, token: string): string {
     return this.container.addController(controller, token);
   }
-  public insertRoute(route: Type<RouteModule>, token: string) {
+  public insertRoute(route: Type<RouteModule>, token: string): string {
     return this.container.addRoute(route, token);
   }
   public insertInjectable(
@@ -135,24 +162,24 @@ export class DependenciesScanner {
     token: string,
     host: Type<IInjectable>,
     hostMethodName?: string,
-  ) {
+  ): void {
     this.container.addInjectable(injectable, token, host, hostMethodName);
   }
   public insertExportedProvider(
     exportedProvider: Type<IInjectable>,
     token: string,
-  ) {
+  ): void {
     this.container.addExportedProvider(exportedProvider, token);
   }
-  public isCustomProvider(provider: Provider): provider is FactoryProvider {
-    return provider && !isNil((provider as any).provide);
+  public isCustomProvider(provider: Provider): provider is CustomProvider {
+    return provider && !isNil((provider as CustomProvider).provide);
   }
   public isDynamicModule(
-    module: Type<any> | DynamicModule,
+    module: Type<unknown> | DynamicModule,
   ): module is DynamicModule {
     return module && !!(module as DynamicModule).module;
   }
-  public reflectDynamicMetadata(obj: Type<IInjectable>, token: string) {
+  public reflectDynamicMetadata(obj: Type<IInjectable>, token: string): void {
     if (!obj || !obj.prototype) {
       return;
     }
@@ -162,7 +189,7 @@ export class DependenciesScanner {
     component: Type<IInjectable>,
     token: string,
     metadataKey: string,
-  ) {
+  ): void {
     const controllerInjectables: InjectablesSchema[] = [
       {
         injectables: this.reflectMetadata(component, metadataKey),
@@ -194,11 +221,11 @@ export class DependenciesScanner {
       ),
     );
   }
-  public reflectKeyMetadata(
+  public reflectKeyMetadata<T = unknown>(
     component: Type<IInjectable>,
     key: string,
     method: string,
-  ) {
+  ): T {
     let prototype = component.prototype;
     do {
       const descriptor = Reflect.getOwnPropertyDescriptor(prototype, method);

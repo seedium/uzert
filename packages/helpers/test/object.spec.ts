@@ -10,7 +10,7 @@ describe('Object', () => {
           hello: 'world',
         },
       };
-      const newObject = copy(sourceObject);
+      const newObject = copy<typeof sourceObject>(sourceObject);
       expect(newObject).not.eq(sourceObject);
       expect(newObject).an('object').property('foo').eq(sourceObject.foo);
       expect(newObject)

@@ -4,8 +4,9 @@ import { extendArrayMetadata } from '../../utils';
 
 export function UsePipe(pipe: Type<Pipe> | FactoryProvider): MethodDecorator {
   return (
-    target: any,
+    target: unknown,
     key?: string | symbol,
+    /* eslint-disable-next-line*/
     descriptor?: TypedPropertyDescriptor<any>,
   ) => {
     if (!descriptor) {

@@ -18,7 +18,7 @@ export class UzertApplication<
     this._routerResolver = new RouterResolver(container, _httpAdapter);
   }
   public async listen(
-    ...args: any[]
+    ...args: unknown[]
   ): Promise<UzertApplication<ApplicationInstance>> {
     if (this.isInitialized) {
       return this;

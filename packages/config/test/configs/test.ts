@@ -1,4 +1,4 @@
-export default () => ({
+export default (): object => ({
   string: 'value',
   testFalse: 'false',
   testTrue: 'true',

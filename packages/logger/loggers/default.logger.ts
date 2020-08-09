@@ -12,28 +12,28 @@ export class DefaultLogger implements AbstractLogger {
       this._isEnabled = true;
     }
   }
-  public fatal(...args): void {
+  public fatal(...args: unknown[]): void {
     this.call(console.error, ...args);
   }
-  public error(...args): void {
+  public error(...args: unknown[]): void {
     this.call(console.error, ...args);
   }
-  public warn(...args): void {
+  public warn(...args: unknown[]): void {
     this.call(console.warn, ...args);
   }
-  public info(...args): void {
+  public info(...args: unknown[]): void {
     this.call(console.log, ...args);
   }
-  public debug(...args): void {
+  public debug(...args: unknown[]): void {
     this.call(console.debug, ...args);
   }
-  public trace(...args): void {
+  public trace(...args: unknown[]): void {
     this.call(console.trace, ...args);
   }
   public child(options?: LoggerOptionsBase): AbstractLogger {
     return new DefaultLogger(options);
   }
-  private call(fn: (...args: any) => void, ...args) {
+  private call(fn: (...args: unknown[]) => void, ...args) {
     if (this._isEnabled) {
       fn(...args);
     }

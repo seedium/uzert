@@ -8,15 +8,15 @@ function hasOnDisposeHook(instance: unknown): instance is OnInit {
   return !isNil((instance as OnInit).onInit);
 }
 
-function callOperator(instances: OnInit[]): Promise<any>[] {
+function callOperator(instances: unknown[]): Promise<unknown>[] {
   return iterate(instances)
     .filter((instance) => !isNil(instance))
     .filter(hasOnDisposeHook)
-    .map(async (instance) => instance.onInit())
+    .map(async (instance) => (instance as OnInit).onInit())
     .toArray();
 }
 
-export async function callInitHook(module: Module): Promise<any> {
+export async function callInitHook(module: Module): Promise<void> {
   const instanceWrappersDictionary = [
     ...module.controllers,
     ...module.providers,
