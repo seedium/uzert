@@ -13,8 +13,8 @@ describe('ConfigModule', () => {
     store = { foo: 'bar' };
     stubConfigFor = sinon.stub(Config, 'for').returns({
       provide: Config,
-      // @ts-expect-error
       useFactory: () =>
+        // @ts-expect-error
         Promise.resolve({
           store,
         }),

@@ -6,7 +6,8 @@ export interface Type<T> extends Function {
   new (...args: unknown[]): T;
 }
 
-export interface FactoryProvider<T = unknown> {
+// eslint-disable-next-line
+export interface FactoryProvider<T = any> {
   /**
    * Injection token
    */
@@ -14,11 +15,12 @@ export interface FactoryProvider<T = unknown> {
   /**
    * Factory function that returns an instance of the provider to be injected.
    */
-  useFactory: (...args: unknown[]) => T | Promise<T>;
+  // eslint-disable-next-line
+  useFactory: (...args: any[]) => T | Promise<T>;
   /**
    * Optional list of providers to be injected into the context of the Factory function.
    */
-  inject?: Array<ProviderToken>;
+  inject?: ProviderToken[];
 }
 
 export interface ClassProvider<T = unknown> {

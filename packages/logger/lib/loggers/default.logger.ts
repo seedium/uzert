@@ -1,7 +1,14 @@
+import { FactoryProvider } from '@uzert/core';
 import { AbstractLogger, LoggerOptionsBase } from '../interfaces';
 
 export class DefaultLogger implements AbstractLogger {
   private readonly _isEnabled: boolean;
+  static for(options?: LoggerOptionsBase): FactoryProvider {
+    return {
+      provide: DefaultLogger,
+      useFactory: () => new DefaultLogger(options),
+    };
+  }
   constructor(options?: LoggerOptionsBase) {
     const isDisabledFromEnv = process.env.UZERT_LOGGER_ENABLED === 'false';
     if (isDisabledFromEnv) {

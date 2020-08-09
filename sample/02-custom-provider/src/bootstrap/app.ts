@@ -1,5 +1,5 @@
 import { UzertFactory } from '@uzert/core';
-import { FastifyAdapter } from '../app/core/FastifyAdapter';
+import { FastifyAdapter } from '../app/core/fastify-adapter';
 import { AppModule } from '../app/app-module';
 
 const bootstrap = async () => {

@@ -1,13 +1,20 @@
 import * as pino from 'pino';
+import { FactoryProvider, OnAppShutdown, OnDispose } from '@uzert/core';
 import {
   ExtendedPinoOptions,
   AbstractLogger,
   PinoEventHandler,
 } from '../interfaces';
 
-export class PinoLogger implements AbstractLogger {
-  public readonly _finalLogger: PinoEventHandler;
-  private readonly _logger: pino.Logger;
+export class PinoLogger implements AbstractLogger, OnAppShutdown, OnDispose {
+  private readonly _finalLogger: PinoEventHandler;
+  private _logger: pino.Logger;
+  static for(options?: ExtendedPinoOptions): FactoryProvider {
+    return {
+      provide: PinoLogger,
+      useFactory: () => new PinoLogger(options),
+    };
+  }
   constructor(options?: ExtendedPinoOptions) {
     if (options?.extremeMode?.enabled) {
       const extremeModeTick = options.extremeMode.tick || 10000;
@@ -64,12 +71,18 @@ export class PinoLogger implements AbstractLogger {
   public child(bindings?: pino.Bindings): AbstractLogger {
     return this._logger.child(bindings);
   }
-  protected flushLogger(tick: number): void {
+  public onAppShutdown(err: Error | null, signal?: string): void {
+    this._finalLogger(err, signal);
+  }
+  public onDispose(): void {
+    this._logger = undefined;
+  }
+  private flushLogger(tick: number): void {
     setInterval(() => {
       this._logger.flush();
     }, tick).unref();
   }
-  protected finalHandler(
+  private finalHandler(
     err: Error | null,
     finalLogger: pino.Logger,
     evt: string,

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { IncomingMessage, ServerResponse } from 'http';
 import { Socket } from 'net';
-import { request, response } from '../serializers';
+import { request, response } from '../lib/serializers';
 
 describe('Serializers', () => {
   describe('http', () => {

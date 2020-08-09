@@ -1,5 +1,5 @@
 import { Module } from '@uzert/core';
-import { Logger } from '@uzert/logger';
+import { LoggerModule } from '@uzert/logger';
 import { CustomService } from './services/custom.service';
 import { FooController } from './controllers/foo.controller';
 import { MainRoute } from './routes/main.route';
@@ -10,10 +10,9 @@ import { MainRoute } from './routes/main.route';
       bool: true,
       foo: 'bar',
     }),
-    Logger.for({
-      default: {
-        enabled: false,
-      },
+  ],
+  imports: [
+    LoggerModule.for({
       pino: {
         enabled: true,
       },
