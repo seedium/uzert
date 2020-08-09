@@ -22,7 +22,7 @@ describe('Router', () => {
   }
   @Injectable()
   class TestPipeOptions implements Pipe {
-    static boot(options: object) {
+    static for(options: object) {
       return {
         provide: TestPipeOptions,
         useFactory: (testService: TestService) => {
@@ -40,7 +40,7 @@ describe('Router', () => {
   class TestController {
     @UsePipe(TestPipe)
     public test() {}
-    @UsePipe(TestPipeOptions.boot(testOptions))
+    @UsePipe(TestPipeOptions.for(testOptions))
     public testWithCustomPipe() {}
   }
 

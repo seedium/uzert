@@ -5,10 +5,10 @@ import { Logger } from '@uzert/logger';
 
 @Module({
   providers: [
-    Config.boot({
+    Config.for({
       path: join(process.cwd(), 'src', 'config/**/*'),
     }),
-    Logger.boot({
+    Logger.for({
       pino: {
         enabled: true,
       },

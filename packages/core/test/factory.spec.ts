@@ -81,7 +81,7 @@ describe('Factory', () => {
   });
   it('should use factory http adapter', async () => {
     class CustomHttpAdapter extends MockedHttpAdapter {
-      static boot(): FactoryProvider<CustomHttpAdapter> {
+      static for(): FactoryProvider<CustomHttpAdapter> {
         return {
           provide: CustomHttpAdapter,
           useFactory: () => {
@@ -92,7 +92,7 @@ describe('Factory', () => {
     }
     @Module({})
     class AppModule {}
-    const app = await UzertFactory.create(AppModule, CustomHttpAdapter.boot());
+    const app = await UzertFactory.create(AppModule, CustomHttpAdapter.for());
     expect(app).instanceOf(UzertApplication);
     expect(app.httpAdapter).instanceOf(CustomHttpAdapter);
   });

@@ -66,7 +66,7 @@ describe('Injection', () => {
       };
       @Injectable()
       class AsyncTestProvider {
-        static boot(options: Record<string, any>) {
+        static for(options: Record<string, any>) {
           return {
             provide: AsyncTestProvider,
             inject: [TestProvider],
@@ -82,7 +82,7 @@ describe('Injection', () => {
       }
       @Module({
         providers: [
-          AsyncTestProvider.boot(testOptions),
+          AsyncTestProvider.for(testOptions),
           TestProvider,
           TestProvider2,
         ],

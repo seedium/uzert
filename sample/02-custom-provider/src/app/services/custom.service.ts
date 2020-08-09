@@ -6,7 +6,7 @@ const delay = promisify(setTimeout);
 
 @Injectable()
 export class CustomService {
-  static boot(options: CustomServiceOptions): FactoryProvider<CustomService> {
+  static for(options: CustomServiceOptions): FactoryProvider<CustomService> {
     return {
       provide: CustomService,
       useFactory: async () => {

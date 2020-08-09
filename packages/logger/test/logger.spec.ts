@@ -11,7 +11,7 @@ describe('Pino default', function () {
     process.env.UZERT_LOGGER_ENABLED = 'false';
   });
   it('factory function should return logger instance', () => {
-    const logger = Logger.boot().useFactory();
+    const logger = Logger.for().useFactory();
     expect(logger).instanceOf(Logger);
   });
   describe('when logger is disposing', () => {

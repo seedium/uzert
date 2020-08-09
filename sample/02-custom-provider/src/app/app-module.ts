@@ -6,11 +6,11 @@ import { MainRoute } from './routes/main.route';
 
 @Module({
   providers: [
-    CustomService.boot({
+    CustomService.for({
       bool: true,
       foo: 'bar',
     }),
-    Logger.boot({
+    Logger.for({
       default: {
         enabled: false,
       },
