@@ -2,10 +2,13 @@ import { DynamicModule, Type } from '../interfaces';
 import { isDynamicModule } from '../utils';
 
 export class UndefinedModuleError extends Error {
-  constructor(parentModule: Type<unknown> | DynamicModule, index: number) {
+  constructor(
+    parentModule: Type<unknown> | DynamicModule | Promise<DynamicModule>,
+    index: number,
+  ) {
     let module: Type<unknown>;
     if (isDynamicModule(parentModule)) {
-      module = parentModule.module;
+      module = (parentModule as DynamicModule).module;
     } else {
       module = parentModule;
     }

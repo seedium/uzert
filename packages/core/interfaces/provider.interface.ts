@@ -48,4 +48,7 @@ export type CustomProvider<T = unknown> =
   | ClassProvider<T>
   | ValueProvider<T>;
 
-export type Provider<T = unknown> = Type<T> | CustomProvider<T>;
+export type Provider<T = unknown> =
+  | Type<T>
+  | CustomProvider
+  | Abstract<unknown>;

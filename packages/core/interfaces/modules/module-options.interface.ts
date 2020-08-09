@@ -4,12 +4,18 @@ import { DynamicModule } from './dynamic-module.interface';
 import { Abstract } from '../abstract.interface';
 
 export interface ModuleOptions {
-  imports?: Array<Type<unknown> | DynamicModule>;
+  imports?: Array<Type<unknown> | DynamicModule | Promise<DynamicModule>>;
   providers?: Provider[];
   controllers?: Type<unknown>[];
   routes?: Type<RouteModule>[];
   exports?: Array<
-    DynamicModule | string | symbol | Provider | Abstract<unknown> | Function
+    | Promise<DynamicModule>
+    | DynamicModule
+    | string
+    | symbol
+    | Provider
+    | Abstract<unknown>
+    | Function
   >;
 }
 

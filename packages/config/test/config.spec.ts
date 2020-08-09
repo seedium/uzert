@@ -1,10 +1,16 @@
 import * as path from 'path';
 import * as sinon from 'sinon';
-import { expect } from 'chai';
+import * as chai from 'chai';
+import * as sinonChai from 'sinon-chai';
+import * as chaiAsPromised from 'chai-as-promised';
 import * as proxyquire from 'proxyquire';
-import { Config } from '../config';
+import { Config } from '../lib';
 import configFile from './configs/test';
 import configObjectFile from './configs/object_config';
+
+chai.use(chaiAsPromised);
+chai.use(sinonChai);
+const expect = chai.expect;
 
 describe('Config', async () => {
   let config: Config;
@@ -12,6 +18,7 @@ describe('Config', async () => {
     if (config) {
       config.onDispose();
     }
+    sinon.restore();
   });
   describe('Load default configs', () => {
     beforeEach(async () => {
@@ -23,6 +30,10 @@ describe('Config', async () => {
     it('should load configs from provided folder', async () => {
       const configObject = configFile();
       expect(config).property('_stores').property('test').deep.eq(configObject);
+    });
+    it('getter `store` should return object with all configs', () => {
+      const configObject = configFile();
+      expect(config.store).property('test').deep.eq(configObject);
     });
     it('should load pure object config', () => {
       const configObject = configObjectFile;
@@ -48,18 +59,16 @@ describe('Config', async () => {
   it('error in glob should be rejected', async () => {
     const testErrorGlob = new Error('test error glob');
     const stubGlob = sinon.stub().callsFake((path, cb) => cb(testErrorGlob));
-    const { Config } = proxyquire('../config', {
+    const { ConfigLoader } = proxyquire('../lib/loaders/config.loader', {
       glob: stubGlob,
     });
-    try {
-      await Config.for({
-        path: path.join(__dirname, 'configs'),
-      }).useFactory();
-    } catch (e) {
-      expect(e).eq(testErrorGlob);
-      return;
-    }
-    throw new Error('error from glob should be processed');
+    const options = { path: path.join(__dirname, 'configs') };
+    await expect(
+      Config.for(
+        options,
+        new ConfigLoader(new Config(options), options),
+      ).useFactory(),
+    ).eventually.rejectedWith(testErrorGlob);
   });
   describe('Resolving', () => {
     beforeEach(async () => {
