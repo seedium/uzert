@@ -6,8 +6,8 @@ import { Abstract } from '../abstract.interface';
 export interface ModuleOptions {
   imports?: Array<Type<unknown> | DynamicModule | Promise<DynamicModule>>;
   providers?: Provider[];
-  controllers?: Type<unknown>[];
-  routes?: Type<RouteModule>[];
+  controllers?: (Type<unknown> | Abstract<unknown>)[];
+  routes?: (Type<RouteModule> | Abstract<unknown>)[];
   exports?: Array<
     | Promise<DynamicModule>
     | DynamicModule

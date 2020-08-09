@@ -1,14 +1,14 @@
 import { FactoryProvider } from '@uzert/core';
 import { FastifyAdapter as FastifyAdapterBase } from '@uzert/fastify';
-import { Logger } from '@uzert//logger';
+import { PinoLogger } from '@uzert//logger';
 
 export class FastifyAdapter extends FastifyAdapterBase {
-  static for(): FactoryProvider {
+  static for(): FactoryProvider<FastifyAdapter> {
     return {
       provide: FastifyAdapter,
-      inject: [Logger],
-      useFactory: (logger: Logger) => {
-        return new FastifyAdapter(undefined, logger.pino);
+      inject: [PinoLogger],
+      useFactory: (logger: PinoLogger): FastifyAdapter => {
+        return new FastifyAdapter(undefined, logger);
       },
     };
   }
