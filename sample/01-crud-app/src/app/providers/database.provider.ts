@@ -2,7 +2,7 @@ import { Mongo } from '@uzert/mongo';
 import { Config } from '@uzert/config';
 
 export class Database extends Mongo {
-  static boot() {
+  static for() {
     return {
       provide: Database,
       inject: [Config],

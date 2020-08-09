@@ -12,7 +12,7 @@ describe('Module', () => {
   class AppModule {}
   let module: Module;
   class RelatedModule {
-    static boot() {
+    static for() {
       return {
         module: RelatedModule,
       };
@@ -20,7 +20,7 @@ describe('Module', () => {
   }
   let relatedModule: Module;
   class TestProvider {
-    static boot(): Provider {
+    static for(): Provider {
       return {
         provide: TestProvider,
         useFactory: () => {
@@ -38,9 +38,9 @@ describe('Module', () => {
   });
   describe('get provider instance wrapper', () => {
     it('should return by custom provider', () => {
-      module.addProvider(TestProvider.boot());
+      module.addProvider(TestProvider.for());
       const instanceWrapper = module.getProviderInstanceWrapper(
-        TestProvider.boot(),
+        TestProvider.for(),
       );
       expect(instanceWrapper).property('name').eq(TestProvider.name);
     });
@@ -179,34 +179,34 @@ describe('Module', () => {
     describe('custom provider', () => {
       it('with provide property string', () => {
         class TestProviderString {
-          static boot(): Provider {
+          static for(): Provider {
             return {
               provide: TestProviderString.name,
               useFactory: () => new TestProviderString(),
             };
           }
         }
-        module.addProvider(TestProviderString.boot());
-        module.addExportedProvider(TestProviderString.boot());
+        module.addProvider(TestProviderString.for());
+        module.addExportedProvider(TestProviderString.for());
         expect([...module.exports.values()]).deep.eq([TestProviderString.name]);
       });
       it('with provide property symbol', () => {
         const provideSymbol = Symbol.for('TestProviderSymbol');
         class TestProviderSymbol {
-          static boot(): Provider {
+          static for(): Provider {
             return {
               provide: provideSymbol,
               useFactory: () => new TestProviderSymbol(),
             };
           }
         }
-        module.addProvider(TestProviderSymbol.boot());
-        module.addExportedProvider(TestProviderSymbol.boot());
+        module.addProvider(TestProviderSymbol.for());
+        module.addExportedProvider(TestProviderSymbol.for());
         expect([...module.exports.values()]).deep.eq([provideSymbol]);
       });
       it('with provide property simple type', () => {
-        module.addProvider(TestProvider.boot());
-        module.addExportedProvider(TestProvider.boot());
+        module.addProvider(TestProvider.for());
+        module.addExportedProvider(TestProvider.for());
         expect([...module.exports.values()]).deep.eq([TestProvider.name]);
       });
     });
@@ -217,7 +217,7 @@ describe('Module', () => {
     });
     it('dynamic module', () => {
       module.addRelatedModule(relatedModule);
-      module.addExportedProvider(RelatedModule.boot());
+      module.addExportedProvider(RelatedModule.for());
       expect([...module.exports.values()]).deep.eq([RelatedModule.name]);
     });
     it('simple type', () => {

@@ -78,7 +78,7 @@ describe('ContainerScanner', () => {
     describe('custom', () => {
       it('factory provider', async () => {
         class TestFactoryProvider {
-          static boot(): FactoryProvider {
+          static for(): FactoryProvider {
             return {
               provide: TestFactoryProvider,
               useFactory: () => {
@@ -87,21 +87,21 @@ describe('ContainerScanner', () => {
             };
           }
         }
-        container.addProvider(TestFactoryProvider.boot(), moduleToken);
+        container.addProvider(TestFactoryProvider.for(), moduleToken);
         await instanceLoader.createInstancesOfDependencies();
         const factoryProvider = containerScanner.find(TestFactoryProvider);
         expect(factoryProvider).instanceOf(TestFactoryProvider);
       });
       it('async factory provider', async () => {
         class AsyncFactoryProvider {
-          static boot(): FactoryProvider {
+          static for(): FactoryProvider {
             return {
               provide: AsyncFactoryProvider,
               useFactory: () => Promise.resolve(new AsyncFactoryProvider()),
             };
           }
         }
-        container.addProvider(AsyncFactoryProvider.boot(), moduleToken);
+        container.addProvider(AsyncFactoryProvider.for(), moduleToken);
         await instanceLoader.createInstancesOfDependencies();
         const asyncFactoryProvider = containerScanner.find(
           AsyncFactoryProvider,
@@ -110,14 +110,14 @@ describe('ContainerScanner', () => {
       });
       it('class provider', async () => {
         class TestClassProvider {
-          static boot(): ClassProvider {
+          static for(): ClassProvider {
             return {
               provide: TestClassProvider,
               useClass: TestClassProvider,
             };
           }
         }
-        container.addProvider(TestClassProvider.boot(), moduleToken);
+        container.addProvider(TestClassProvider.for(), moduleToken);
         await instanceLoader.createInstancesOfDependencies();
         const testClassProvider = containerScanner.find(TestClassProvider);
         expect(testClassProvider).instanceOf(TestClassProvider);
@@ -125,14 +125,14 @@ describe('ContainerScanner', () => {
       it('value provider', async () => {
         const test = { foo: 'bar' };
         class TestValueProvider {
-          static boot(): ValueProvider {
+          static for(): ValueProvider {
             return {
               provide: TestValueProvider,
               useValue: test,
             };
           }
         }
-        container.addProvider(TestValueProvider.boot(), moduleToken);
+        container.addProvider(TestValueProvider.for(), moduleToken);
         await instanceLoader.createInstancesOfDependencies();
         const resolvedTest = containerScanner.find(TestValueProvider);
         expect(resolvedTest).eq(test);
@@ -140,14 +140,14 @@ describe('ContainerScanner', () => {
       it('async value provider', async () => {
         const test = { foo: 'bar' };
         class AsyncTestValueProvider {
-          static boot(): ValueProvider {
+          static for(): ValueProvider {
             return {
               provide: AsyncTestValueProvider,
               useValue: Promise.resolve(test),
             };
           }
         }
-        container.addProvider(AsyncTestValueProvider.boot(), moduleToken);
+        container.addProvider(AsyncTestValueProvider.for(), moduleToken);
         await instanceLoader.createInstancesOfDependencies();
         const resolvedTest = containerScanner.find(AsyncTestValueProvider);
         expect(await resolvedTest).eq(test);

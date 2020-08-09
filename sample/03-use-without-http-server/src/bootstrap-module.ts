@@ -4,8 +4,8 @@ import { Logger } from '@uzert/logger';
 
 @Module({
   providers: [
-    Config.boot(),
-    Logger.boot(),
+    Config.for(),
+    Logger.for(),
   ]
 })
 export class BootstrapModule {

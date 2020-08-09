@@ -15,7 +15,7 @@ describe('Config', async () => {
   });
   describe('Load default configs', () => {
     beforeEach(async () => {
-      const provider = Config.boot({
+      const provider = Config.for({
         path: path.join(__dirname, 'configs'),
       });
       config = await provider.useFactory();
@@ -36,7 +36,7 @@ describe('Config', async () => {
     });
   });
   it('should load configs with custom pattern', async () => {
-    const customConfigPattern = await Config.boot({
+    const customConfigPattern = await Config.for({
       path: path.join(__dirname, 'custom_patterns'),
       pattern: '*.config.ts',
     }).useFactory();
@@ -52,7 +52,7 @@ describe('Config', async () => {
       glob: stubGlob,
     });
     try {
-      await Config.boot({
+      await Config.for({
         path: path.join(__dirname, 'configs'),
       }).useFactory();
     } catch (e) {
@@ -63,7 +63,7 @@ describe('Config', async () => {
   });
   describe('Resolving', () => {
     beforeEach(async () => {
-      const provider = Config.boot({
+      const provider = Config.for({
         path: path.join(__dirname, 'configs'),
       });
       config = await provider.useFactory();

@@ -7,7 +7,7 @@ import { IStore, IConfigBootSpec, IConfigOptions } from './interfaces';
 export class Config implements OnDispose {
   private _stores: IStore = {};
 
-  static boot(options: IConfigOptions): FactoryProvider<Config> {
+  static for(options: IConfigOptions): FactoryProvider<Config> {
     return {
       provide: Config,
       useFactory: async () => {

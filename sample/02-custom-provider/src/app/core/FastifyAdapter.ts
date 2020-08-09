@@ -3,7 +3,7 @@ import { FastifyAdapter as FastifyAdapterBase } from '@uzert/fastify';
 import { Logger } from '@uzert//logger';
 
 export class FastifyAdapter extends FastifyAdapterBase {
-  static boot(): FactoryProvider {
+  static for(): FactoryProvider {
     return {
       provide: FastifyAdapter,
       inject: [Logger],

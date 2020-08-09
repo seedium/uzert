@@ -110,17 +110,17 @@ describe('Scanner', () => {
     });
     it('if dynamic module was provided should reflect imports on property `module`', async () => {
       class TestModule {
-        static boot(): DynamicModule {
+        static for(): DynamicModule {
           return {
             module: TestModule,
           };
         }
       }
-      await scanner.scanForModules(TestModule.boot());
+      await scanner.scanForModules(TestModule.for());
     });
     it('if inner module includes undefined in imports should throw an undefined module error', async () => {
       class TestModule {
-        static boot(): DynamicModule {
+        static for(): DynamicModule {
           return {
             module: TestModule,
             imports: [undefined],
@@ -128,7 +128,7 @@ describe('Scanner', () => {
         }
       }
       await expect(
-        scanner.scanForModules(TestModule.boot()),
+        scanner.scanForModules(TestModule.for()),
       ).eventually.rejectedWith(UndefinedModuleError);
     });
     it('if module is undefined when dynamic module has undefined in imports should throw an error', async () => {
@@ -140,7 +140,7 @@ describe('Scanner', () => {
     });
     it('if inner module is falsy should throw an invalid module error', async () => {
       class TestModule {
-        static boot(): DynamicModule {
+        static for(): DynamicModule {
           return {
             module: TestModule,
             imports: [null],
@@ -148,13 +148,13 @@ describe('Scanner', () => {
         }
       }
       await expect(
-        scanner.scanForModules(TestModule.boot()),
+        scanner.scanForModules(TestModule.for()),
       ).eventually.rejectedWith(InvalidModuleError);
     });
     it('should scan modules for each inner imports', async () => {
       class InnerModule {}
       class TestModule {
-        static boot(): DynamicModule {
+        static for(): DynamicModule {
           return {
             module: TestModule,
             imports: [InnerModule],
@@ -162,14 +162,14 @@ describe('Scanner', () => {
         }
       }
       const spyScanForModules = sinon.spy(scanner, 'scanForModules');
-      await scanner.scanForModules(TestModule.boot());
+      await scanner.scanForModules(TestModule.for());
       expect(spyScanForModules).calledTwice;
       expect(spyScanForModules.secondCall).calledWith(InnerModule);
     });
     it('if importing module have already imported from another module should miss scanning', async () => {
       class InnerModule {}
       class SecondInnerModule {
-        static boot(): DynamicModule {
+        static for(): DynamicModule {
           return {
             module: SecondInnerModule,
             imports: [InnerModule],
@@ -177,15 +177,15 @@ describe('Scanner', () => {
         }
       }
       class TestModule {
-        static boot(): DynamicModule {
+        static for(): DynamicModule {
           return {
             module: TestModule,
-            imports: [InnerModule, SecondInnerModule.boot()],
+            imports: [InnerModule, SecondInnerModule.for()],
           };
         }
       }
       const spyScanForModules = sinon.spy(scanner, 'scanForModules');
-      await scanner.scanForModules(TestModule.boot());
+      await scanner.scanForModules(TestModule.for());
       expect(spyScanForModules).calledThrice;
     });
   });

@@ -2,7 +2,7 @@ import { Route } from '@uzert/http';
 import { IProvider } from '@uzert/core';
 
 export class RouteProvider implements IProvider {
-  public async boot() {
+  public async for() {
     await this.mapApiRoutes();
   }
 

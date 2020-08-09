@@ -6,7 +6,7 @@ export class Logger implements OnDispose, OnAppShutdown {
   protected _default?: DefaultLogger;
   protected _pino?: PinoLogger;
 
-  static boot(options?: ILoggerOptions): FactoryProvider {
+  static for(options?: ILoggerOptions): FactoryProvider {
     return {
       provide: Logger,
       useFactory: () => new Logger(options),
