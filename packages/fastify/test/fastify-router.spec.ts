@@ -39,13 +39,14 @@ describe('Fastify Router', () => {
   });
   describe('Register', () => {
     it('should pass router with uzert container to register', async () => {
-      const stubRouterRegisterCallback: sinon.SinonStub = sinon.stub();
       @Injectable()
       class TestRouter implements RouteModule {
-        public register(): any {
-          return stubRouterRegisterCallback;
-        }
+        public register(router: Router): any {}
       }
+      const stubRouterRegisterCallback = sinon.stub(
+        TestRouter.prototype,
+        'register',
+      );
       @Module({
         routes: [TestRouter],
       })

@@ -34,10 +34,9 @@ export class RouterResolver {
     router: InstanceWrapper<RouteModule>,
   ): Promise<void> {
     const { instance } = router;
-    const registerRequest = await instance.register();
     await this._httpAdapter.registerRouter(
       this._container,
-      registerRequest,
+      instance.register.bind(instance),
       instance.options,
     );
   }

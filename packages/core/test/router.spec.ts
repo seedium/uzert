@@ -9,7 +9,6 @@ import { PIPES_METADATA } from '../constants';
 import { MockedHttpAdapter } from './utils';
 
 describe('Router', () => {
-  const testRouterFunc = sinon.stub();
   const testOptions = {
     foo: 'bar',
   };
@@ -47,9 +46,7 @@ describe('Router', () => {
   @Injectable()
   class TestRoute implements RouteModule {
     public options = testOptions;
-    public register(): any {
-      return testRouterFunc;
-    }
+    public register(): any {}
   }
 
   afterEach(() => {
@@ -85,7 +82,9 @@ describe('Router', () => {
       }
     }
     let app: UzertApplication<TestHttpAdapter>;
+    let stubRegisterRouterCallback: sinon.SinonStub;
     beforeEach(async () => {
+      stubRegisterRouterCallback = sinon.stub(TestRoute.prototype, 'register');
       app = await UzertFactory.create<TestHttpAdapter>(
         AppModule,
         new TestHttpAdapter(),
@@ -96,7 +95,9 @@ describe('Router', () => {
       await app.listen();
       expect(app.httpAdapter).property('routes').an('array').length(1);
       const [router] = app.httpAdapter.routes;
-      expect(router.func).eq(testRouterFunc);
+      expect(router.func.name).eq(
+        stubRegisterRouterCallback.bind(TestRoute).name,
+      );
       expect(router.options).eq(testOptions);
     });
     it('should load pipes for controller method', async () => {
