@@ -4,6 +4,7 @@ import {
   UzertContainer,
   InstanceLoader,
   DependenciesScanner,
+  ContainerScanner,
 } from './injector';
 import { UzertApplication } from './uzert-application';
 import { UzertApplicationContext } from './uzert-application-context';
@@ -18,13 +19,15 @@ export class UzertFactoryStatic {
   ): Promise<UzertApplication<ApplicationAdapter>> {
     const container = new UzertContainer();
 
-    await this.initialize(module, container);
     if (isHttpAdapterCustomProvider<ApplicationAdapter>(httpServer)) {
-      httpServer = await this.initFactoryHttpAdapter<ApplicationAdapter>(
-        module,
-        container,
-        httpServer,
+      container.addHttpAdapter(httpServer);
+      await this.initialize(module, container);
+      const containerScanner = new ContainerScanner(container);
+      httpServer = containerScanner.find<ApplicationAdapter>(
+        httpServer.provide,
       );
+    } else {
+      await this.initialize(module, container);
     }
     const target = this.createUzertInstance(
       new UzertApplication<ApplicationAdapter>(
@@ -34,7 +37,6 @@ export class UzertFactoryStatic {
     );
     return this.createAdapterProxy<ApplicationAdapter>(target, httpServer);
   }
-
   public async createApplicationContext(
     module: Type<unknown>,
   ): Promise<UzertApplicationContext> {
@@ -46,7 +48,6 @@ export class UzertFactoryStatic {
     >(new UzertApplicationContext(container));
     return applicationContext.init();
   }
-
   private async initialize(module: Type<unknown>, container: UzertContainer) {
     const instanceLoader = new InstanceLoader(container);
     const dependenciesScanner = new DependenciesScanner(container);
@@ -60,11 +61,9 @@ export class UzertFactoryStatic {
       process.abort();
     }
   }
-
   private createUzertInstance<T>(instance: T): T {
     return this.createProxy(instance);
   }
-
   /* eslint-disable-next-line*/
   private createProxy(target: any) {
     const proxy = this.createErrorProxy();
@@ -74,7 +73,6 @@ export class UzertFactoryStatic {
       set: proxy,
     });
   }
-
   private createErrorProxy() {
     return (receiver: object, prop: string) => {
       if (!(prop in receiver)) {
@@ -111,26 +109,6 @@ export class UzertFactoryStatic {
 
       return result;
     };
-  }
-  private async initFactoryHttpAdapter<T extends HttpAdapter>(
-    module: Type<unknown>,
-    container: UzertContainer,
-    httpFactoryProvider: FactoryProvider,
-  ): Promise<T> {
-    const dependenciesScanner = new DependenciesScanner(container);
-    const instanceLoader = new InstanceLoader(container);
-    const appModuleToken = await container.getModuleToken(module);
-    const appModule = container.getModuleByToken(appModuleToken);
-    dependenciesScanner.insertProvider(httpFactoryProvider, appModuleToken);
-    const httpAdapterInstanceWrapper = appModule.getProviderInstanceWrapper<T>(
-      httpFactoryProvider,
-    );
-    await instanceLoader.createInstanceWithInjectedProviders(
-      httpAdapterInstanceWrapper,
-      appModule,
-    );
-
-    return httpAdapterInstanceWrapper.instance;
   }
 }
 

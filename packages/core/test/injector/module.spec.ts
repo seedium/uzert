@@ -36,20 +36,6 @@ describe('Module', () => {
   afterEach(() => {
     sinon.restore();
   });
-  describe('get provider instance wrapper', () => {
-    it('should return by custom provider', () => {
-      module.addProvider(TestProvider.for());
-      const instanceWrapper = module.getProviderInstanceWrapper(
-        TestProvider.for(),
-      );
-      expect(instanceWrapper).property('name').eq(TestProvider.name);
-    });
-    it('should return by type', () => {
-      module.addProvider(TestProvider);
-      const instanceWrapper = module.getProviderInstanceWrapper(TestProvider);
-      expect(instanceWrapper).property('name').eq(TestProvider.name);
-    });
-  });
   describe('get provider static token', () => {
     it('should return symbol token', () => {
       const tokenSymbol = Symbol.for('test');

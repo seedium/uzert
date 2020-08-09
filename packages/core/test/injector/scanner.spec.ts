@@ -10,6 +10,7 @@ import {
   UndefinedModuleError,
 } from '../../errors';
 import { DynamicModule } from '../../interfaces/modules';
+import { RouteModule } from '../../interfaces';
 
 chai.use(sinonChai);
 chai.use(chaiAsPromised);
@@ -150,6 +151,7 @@ describe('Scanner', () => {
       expect(container.getModules().size).eq(2);
     });
     it('if inner module includes undefined in imports should throw an undefined module error', async () => {
+      sinon.stub(scanner, 'insertModule');
       class TestModule {
         static for(): DynamicModule {
           return {
@@ -172,6 +174,20 @@ describe('Scanner', () => {
     it('if inner module is falsy should throw an invalid module error', async () => {
       class TestModule {
         static for(): DynamicModule {
+          return {
+            module: TestModule,
+            imports: [null],
+          };
+        }
+      }
+      await expect(
+        scanner.scanForModules(TestModule.for()),
+      ).eventually.rejectedWith(InvalidModuleError);
+    });
+    it('if async inner module is falsy should throw an error', async () => {
+      sinon.stub(scanner, 'insertModule');
+      class TestModule {
+        static async for(): Promise<DynamicModule> {
           return {
             module: TestModule,
             imports: [null],
@@ -218,6 +234,94 @@ describe('Scanner', () => {
       const spyScanForModules = sinon.spy(scanner, 'scanForModules');
       await scanner.scanForModules(TestModule.for());
       expect(spyScanForModules).calledThrice;
+    });
+  });
+  describe('scan modules for dependencies', () => {
+    class TestModule {}
+    describe('should reflect dynamic', () => {
+      let moduleToken: string;
+      beforeEach(async () => {
+        moduleToken = await container.getModuleToken(TestModule);
+      });
+      it('imports', async () => {
+        const stubInsertImport = sinon.stub(scanner, 'insertImport');
+        await container.addModule(
+          {
+            module: TestModule,
+            imports: [TestModule],
+          },
+          [],
+        );
+        await scanner.scanModulesForDependencies();
+        expect(stubInsertImport).calledOnceWithExactly(
+          TestModule,
+          moduleToken,
+          TestModule.name,
+        );
+      });
+      it('providers', async () => {
+        const stubInsertProvider = sinon.stub(scanner, 'insertProvider');
+        await container.addModule(
+          {
+            module: TestModule,
+            providers: [TestProvider],
+          },
+          [],
+        );
+        await scanner.scanModulesForDependencies();
+        expect(stubInsertProvider).calledOnceWithExactly(
+          TestProvider,
+          moduleToken,
+        );
+      });
+      it('controllers', async () => {
+        const stubInsertController = sinon.stub(scanner, 'insertController');
+        await container.addModule(
+          {
+            module: TestModule,
+            controllers: [TestProvider],
+          },
+          [],
+        );
+        await scanner.scanModulesForDependencies();
+        expect(stubInsertController).calledOnceWithExactly(
+          TestProvider,
+          moduleToken,
+        );
+      });
+      it('routes', async () => {
+        class TestRoute implements RouteModule {
+          public register() {}
+        }
+        const stubInsertRoute = sinon.stub(scanner, 'insertRoute');
+        await container.addModule(
+          {
+            module: TestModule,
+            routes: [TestRoute],
+          },
+          [],
+        );
+        await scanner.scanModulesForDependencies();
+        expect(stubInsertRoute).calledOnceWithExactly(TestRoute, moduleToken);
+      });
+      it('exports', async () => {
+        const stubInsertExportedProvider = sinon.stub(
+          scanner,
+          'insertExportedProvider',
+        );
+        await container.addModule(
+          {
+            module: TestModule,
+            exports: [TestProvider],
+          },
+          [],
+        );
+        await scanner.scanModulesForDependencies();
+        expect(stubInsertExportedProvider).calledOnceWithExactly(
+          TestProvider,
+          moduleToken,
+        );
+      });
     });
   });
 });

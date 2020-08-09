@@ -26,6 +26,7 @@ describe('ModuleCompiler', () => {
     });
     expect(result).deep.eq({
       type: TestModule,
+      dynamicMetadata: {},
     });
   });
 });
