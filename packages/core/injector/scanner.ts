@@ -90,58 +90,79 @@ export class DependenciesScanner {
     token: string,
     context: string,
   ): Promise<void> {
-    const modules = this.reflectMetadata<Array<Type<unknown> | DynamicModule>>(
-      module,
-      MODULE_KEYS.IMPORTS,
-    );
+    const modules = [
+      ...this.reflectMetadata<Array<Type<unknown> | DynamicModule>>(
+        module,
+        MODULE_KEYS.IMPORTS,
+      ),
+      ...this.container.getDynamicMetadataByToken(
+        token,
+        MODULE_KEYS.IMPORTS as 'imports',
+      ),
+    ];
     for (const related of modules) {
-      await this.insertImport(related, token, context);
+      await this.insertImport(
+        related as Type<unknown> | DynamicModule,
+        token,
+        context,
+      );
     }
   }
   public reflectProviders(module: Type<unknown>, token: string): void {
-    const providers = this.reflectMetadata<Type<unknown>[]>(
-      module,
-      MODULE_KEYS.PROVIDERS,
-    );
-
+    const providers = [
+      ...this.reflectMetadata<Type<unknown>[]>(module, MODULE_KEYS.PROVIDERS),
+      ...this.container.getDynamicMetadataByToken(
+        token,
+        MODULE_KEYS.PROVIDERS as 'providers',
+      ),
+    ];
     providers.forEach((provider) => {
-      this.insertProvider(provider, token);
+      this.insertProvider(provider as Provider, token);
     });
   }
   public reflectControllers(module: Type<unknown>, token: string): void {
-    const controllers = this.reflectMetadata<Type<unknown>[]>(
-      module,
-      MODULE_KEYS.CONTROLLERS,
-    );
+    const controllers = [
+      ...this.reflectMetadata<Type<unknown>[]>(module, MODULE_KEYS.CONTROLLERS),
+      ...this.container.getDynamicMetadataByToken(
+        token,
+        MODULE_KEYS.CONTROLLERS as 'controllers',
+      ),
+    ];
 
     controllers.forEach((controller) => {
-      this.insertController(controller, token);
-      this.reflectDynamicMetadata(controller, token);
+      this.insertController(controller as Type<unknown>, token);
+      this.reflectDynamicMetadata(controller as Type<unknown>, token);
     });
   }
   public reflectRoutes(module: Type<unknown>, token: string): void {
-    const routes: Type<RouteModule>[] = this.reflectMetadata(
-      module,
-      MODULE_KEYS.ROUTES,
-    );
+    const routes = [
+      ...this.reflectMetadata(module, MODULE_KEYS.ROUTES),
+      ...this.container.getDynamicMetadataByToken(
+        token,
+        MODULE_KEYS.ROUTES as 'routes',
+      ),
+    ];
     routes.forEach((route) => {
-      this.insertRoute(route, token);
+      this.insertRoute(route as Type<RouteModule>, token);
     });
+  }
+  public reflectExports(module: Type<unknown>, token: string): void {
+    const exports = [
+      ...this.reflectMetadata<Type<unknown>[]>(module, MODULE_KEYS.EXPORTS),
+      ...this.container.getDynamicMetadataByToken(
+        token,
+        MODULE_KEYS.EXPORTS as 'exports',
+      ),
+    ];
+    exports.forEach((exportedProvider) =>
+      this.insertExportedProvider(exportedProvider as Type<unknown>, token),
+    );
   }
   public reflectMetadata<T = unknown[]>(
     metatype: Type<unknown>,
     metadataKey: string,
   ): T {
     return Reflect.getMetadata(metadataKey, metatype) || [];
-  }
-  public reflectExports(module: Type<unknown>, token: string): void {
-    const exports = this.reflectMetadata<Type<unknown>[]>(
-      module,
-      MODULE_KEYS.EXPORTS,
-    );
-    exports.forEach((exportedProvider) =>
-      this.insertExportedProvider(exportedProvider, token),
-    );
   }
   public async insertImport(
     related: Type<unknown> | DynamicModule,

@@ -19,6 +19,12 @@ export class UzertContainer {
   private readonly moduleTokenFactory = new ModuleTokenFactory();
   private readonly moduleCompiler = new ModuleCompiler(this.moduleTokenFactory);
   private readonly modules = new ModulesContainer();
+  private httpAdapterProvider: Provider;
+  private readonly dynamicModulesMetadata = new Map<
+    string,
+    Partial<DynamicModule>
+  >();
+
   public getModules(): ModulesContainer {
     return this.modules;
   }
@@ -31,6 +37,9 @@ export class UzertContainer {
     }
     const moduleRef = this.modules.get(token);
     return moduleRef.addProvider(provider);
+  }
+  public addHttpAdapter(httpAdapter: Provider): void {
+    this.httpAdapterProvider = httpAdapter;
   }
   public addController(controller: Type<unknown>, token: string): string {
     if (!controller) {
@@ -93,16 +102,55 @@ export class UzertContainer {
       throw new InvalidModuleError(metatype);
     }
 
-    const { type, token } = await this.moduleCompiler.compile(metatype);
+    const { type, token, dynamicMetadata } = await this.moduleCompiler.compile(
+      metatype,
+    );
 
     if (this.modules.has(token)) {
       return;
     }
 
     const moduleRef = new Module(type, scope);
+    /*
+     * If custom http provider is provided need to add they to the root module,
+     * for properly initialization within all available modules in the application.
+     * After http adapter was added to the root module delete from class for preventing adding http adapter to other modules
+     * */
+    if (this.httpAdapterProvider) {
+      moduleRef.addProvider(this.httpAdapterProvider);
+      delete this.httpAdapterProvider;
+    }
     this.modules.set(token, moduleRef);
-
+    await this.addDynamicMetadata(
+      token,
+      dynamicMetadata,
+      [].concat(scope, type),
+    );
     return moduleRef;
+  }
+  public async addDynamicMetadata(
+    token: string,
+    dynamicModuleMetadata: Partial<DynamicModule>,
+    scope: Type<unknown>[],
+  ): Promise<void> {
+    if (!dynamicModuleMetadata) {
+      return;
+    }
+    this.dynamicModulesMetadata.set(token, dynamicModuleMetadata);
+
+    const { imports } = dynamicModuleMetadata;
+    await this.addDynamicModules(imports, scope);
+  }
+  public async addDynamicModules(
+    modules: Array<Type<unknown> | DynamicModule | Promise<DynamicModule>>,
+    scope: Type<unknown>[],
+  ): Promise<void> {
+    if (!modules) {
+      return;
+    }
+    await Promise.all(
+      modules.map(async (module) => this.addModule(module, scope)),
+    );
   }
   public async getModuleToken(
     metatype: Type<unknown> | DynamicModule,
@@ -115,5 +163,15 @@ export class UzertContainer {
   }
   public getModuleByToken(token: string): Module {
     return this.modules.get(token);
+  }
+  public getDynamicMetadataByToken(
+    token: string,
+    metadataKey: keyof DynamicModule,
+  ): unknown[] {
+    const metadata = this.dynamicModulesMetadata.get(token);
+    if (metadata && metadata[metadataKey]) {
+      return metadata[metadataKey] as unknown[];
+    }
+    return [];
   }
 }

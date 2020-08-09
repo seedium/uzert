@@ -8,7 +8,7 @@ import {
   InvalidModuleError,
   UnknownModuleError,
 } from '../../errors';
-import { RouteModule } from '../../interfaces';
+import { DynamicModule, RouteModule } from '../../interfaces';
 
 chai.use(sinonChai);
 chai.use(chaiAsPromised);
@@ -72,16 +72,27 @@ describe('UzertContainer', () => {
   });
   describe('add module', () => {
     it('if metatype is undefined should throw an error', async () => {
-      expect(container.addModule(undefined, [])).to.eventually.rejectedWith(
-        InvalidModuleError,
-      );
+      await expect(
+        container.addModule(undefined, []),
+      ).to.eventually.rejectedWith(InvalidModuleError);
     });
-    it('if module exits dont override', async () => {
+    it(`if module exits don't override`, async () => {
       class AppModule {}
       const spyModuleSet = sinon.spy((container as any).modules, 'set');
       await container.addModule(AppModule, []);
       await container.addModule(AppModule, []);
       expect(spyModuleSet.calledOnce).to.be.true;
+    });
+    it('should add async dynamic module', async () => {
+      class AppModule {
+        static async for(): Promise<DynamicModule> {
+          return {
+            module: AppModule,
+          };
+        }
+      }
+      await container.addModule(AppModule, []);
+      expect(container.getModules().size).eq(1);
     });
   });
   describe('get module', () => {

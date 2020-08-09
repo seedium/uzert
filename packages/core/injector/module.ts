@@ -96,17 +96,6 @@ export class Module {
 
     return (provider as Type<IInjectable>).name;
   }
-  public getProviderInstanceWrapper<T = IInjectable>(
-    provider: Provider,
-  ): InstanceWrapper<T> {
-    if (this.isCustomProvider(provider)) {
-      const staticToken = this.getProviderStaticToken(provider.provide);
-      return this._providers.get(staticToken) as InstanceWrapper<T>;
-    }
-    return this._providers.get(
-      (provider as Type<IInjectable>).name,
-    ) as InstanceWrapper<T>;
-  }
   public addController(controller: Type<IInjectable>): string {
     this._controllers.set(
       controller.name,

@@ -3,7 +3,6 @@ import { ModulesContainer } from './modules-container';
 import { Module } from './module';
 import { Injector } from './injector';
 import { IInjectable } from '../interfaces';
-import { InstanceWrapper } from './instance-wrapper';
 
 export class InstanceLoader {
   private readonly injector = new Injector();
@@ -15,12 +14,6 @@ export class InstanceLoader {
 
     this.createPrototypes(modules);
     await this.createInstances(modules);
-  }
-  public async createInstanceWithInjectedProviders(
-    provider: InstanceWrapper<IInjectable>,
-    module: Module,
-  ): Promise<void> {
-    await this.injector.loadProvider(provider, module);
   }
   private createPrototypes(modules: ModulesContainer) {
     modules.forEach((module) => {
