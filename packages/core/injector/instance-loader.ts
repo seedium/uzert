@@ -10,7 +10,7 @@ export class InstanceLoader {
 
   constructor(private readonly container: UzertContainer) {}
 
-  public async createInstancesOfDependencies() {
+  public async createInstancesOfDependencies(): Promise<void> {
     const modules = this.container.getModules();
 
     this.createPrototypes(modules);
@@ -19,8 +19,8 @@ export class InstanceLoader {
   public async createInstanceWithInjectedProviders(
     provider: InstanceWrapper<IInjectable>,
     module: Module,
-  ) {
-    return this.injector.loadProvider(provider, module);
+  ): Promise<void> {
+    await this.injector.loadProvider(provider, module);
   }
   private createPrototypes(modules: ModulesContainer) {
     modules.forEach((module) => {

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { HttpAdapter } from '../../adapters';
 
 export class MockedHttpAdapter extends HttpAdapter {

@@ -1,3 +1,3 @@
 import { v4 as uuid } from 'uuid';
 
-export const getRandomString = () => uuid();
+export const getRandomString = (): string => uuid();

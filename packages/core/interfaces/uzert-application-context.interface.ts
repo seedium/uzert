@@ -6,7 +6,7 @@ export interface IUzertApplicationContext {
    * Retrieves an instance of either injectable or controller, otherwise, throws exception.
    * @returns {TResult}
    */
-  get<TInput = any, TResult = TInput>(
+  get<TInput = unknown, TResult = TInput>(
     typeOrToken: Type<TInput> | Abstract<TInput> | string | symbol,
     options?: { strict: boolean },
   ): TResult;

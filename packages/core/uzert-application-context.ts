@@ -16,7 +16,7 @@ export class UzertApplicationContext implements IUzertApplicationContext {
   private readonly containerScanner: ContainerScanner;
   private readonly activeShutdownSignals = new Array<string>();
 
-  get container() {
+  get container(): UzertContainer {
     return this._container;
   }
   constructor(private readonly _container: UzertContainer) {
@@ -24,7 +24,6 @@ export class UzertApplicationContext implements IUzertApplicationContext {
   }
   public get<TInput = unknown, TResult = TInput>(
     typeOrToken: Type<TInput> | Abstract<TInput> | string | symbol,
-    options: { strict: boolean } = { strict: false },
   ): TResult {
     return this.find<TInput, TResult>(typeOrToken);
   }
@@ -70,7 +69,9 @@ export class UzertApplicationContext implements IUzertApplicationContext {
     // to dispose, therefore just call a noop
     return Promise.resolve();
   }
-  protected listenToShutdownSignals(signals: (ShutdownSignal | string)[]) {
+  protected listenToShutdownSignals(
+    signals: (ShutdownSignal | string)[],
+  ): void {
     const cleanup = async (signalOrError: Error | string) => {
       let error: Error = null;
       let signal: string;
@@ -99,13 +100,13 @@ export class UzertApplicationContext implements IUzertApplicationContext {
   protected async startShutdownCycle(
     err: Error | null,
     signal?: ShutdownSignal | string,
-  ) {
+  ): Promise<void> {
     await this.callBeforeShutdownHook(err, signal);
     await this.dispose();
     await this.callShutdownHook(err, signal);
     await this.callDisposeHook();
   }
-  protected unsubscribeFromProcessSignals() {
+  protected unsubscribeFromProcessSignals(): void {
     if (!this.shutdownCleanupRef) {
       return;
     }

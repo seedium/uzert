@@ -7,8 +7,8 @@ export class ErrorsZone {
 
   public static run(
     callback: () => void,
-    teardown: (err: any) => void = DEFAULT_TEARDOWN,
-  ) {
+    teardown: (err: Error) => void = DEFAULT_TEARDOWN,
+  ): void {
     try {
       callback();
     } catch (e) {
@@ -19,8 +19,8 @@ export class ErrorsZone {
 
   public static async asyncRun(
     callback: () => Promise<void>,
-    teardown: (err: any) => void = DEFAULT_TEARDOWN,
-  ) {
+    teardown: (err: Error) => void = DEFAULT_TEARDOWN,
+  ): Promise<void> {
     try {
       await callback();
     } catch (e) {

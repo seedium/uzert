@@ -1,6 +1,7 @@
 import { IncomingMessage, ServerResponse } from 'http';
+import { SerializedRequest, SerializedResponse } from '../interfaces';
 
-export const request = (req: IncomingMessage) => {
+export const request = (req: IncomingMessage): SerializedRequest => {
   return {
     method: req.method,
     url: req.url,
@@ -9,7 +10,7 @@ export const request = (req: IncomingMessage) => {
   };
 };
 
-export const response = (res: ServerResponse) => {
+export const response = (res: ServerResponse): SerializedResponse => {
   return {
     statusCode: res.statusCode,
   };

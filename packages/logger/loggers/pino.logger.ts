@@ -25,34 +25,40 @@ export class PinoLogger implements AbstractLogger {
       this._logger = pino(options);
     }
   }
-  public fatal(obj: object, msg?: string, ...args: any[]): void;
-  public fatal(msg: string, ...args: any[]): void;
-  public fatal(msgOrObject: any, ...args: any[]): void {
+  public fatal(obj: object, msg?: string, ...args: unknown[]): void;
+  public fatal(msg: string, ...args: unknown[]): void;
+  // eslint-disable-next-line
+  public fatal(msgOrObject: any, ...args: unknown[]): void {
     this._logger.fatal(msgOrObject, ...args);
   }
-  public error(obj: object, msg?: string, ...args: any[]): void;
-  public error(msg: string, ...args: any[]): void;
-  public error(msgOrObject: any, ...args: any[]): void {
+  public error(obj: object, msg?: string, ...args: unknown[]): void;
+  public error(msg: string, ...args: unknown[]): void;
+  // eslint-disable-next-line
+  public error(msgOrObject: any, ...args: unknown[]): void {
     this._logger.error(msgOrObject, ...args);
   }
-  public warn(obj: object, msg?: string, ...args: any[]): void;
-  public warn(msg: string, ...args: any[]): void;
-  public warn(msgOrObject: any, ...args: any[]): void {
+  public warn(obj: object, msg?: string, ...args: unknown[]): void;
+  public warn(msg: string, ...args: unknown[]): void;
+  // eslint-disable-next-line
+  public warn(msgOrObject: any, ...args: unknown[]): void {
     this._logger.warn(msgOrObject, ...args);
   }
-  public info(obj: object, msg?: string, ...args: any[]): void;
-  public info(msg: string, ...args: any[]): void;
-  public info(msgOrObject: any, ...args: any[]): void {
+  public info(obj: object, msg?: string, ...args: unknown[]): void;
+  public info(msg: string, ...args: unknown[]): void;
+  // eslint-disable-next-line
+  public info(msgOrObject: any, ...args: unknown[]): void {
     this._logger.info(msgOrObject, ...args);
   }
-  public debug(obj: object, msg?: string, ...args: any[]): void;
-  public debug(msg: string, ...args: any[]): void;
-  public debug(msgOrObject: any, ...args: any[]): void {
+  public debug(obj: object, msg?: string, ...args: unknown[]): void;
+  public debug(msg: string, ...args: unknown[]): void;
+  // eslint-disable-next-line
+  public debug(msgOrObject: any, ...args: unknown[]): void {
     this._logger.debug(msgOrObject, ...args);
   }
-  public trace(obj: object, msg?: string, ...args: any[]): void;
-  public trace(msg: string, ...args: any[]): void;
-  public trace(msgOrObject: any, ...args: any[]): void {
+  public trace(obj: object, msg?: string, ...args: unknown[]): void;
+  public trace(msg: string, ...args: unknown[]): void;
+  // eslint-disable-next-line
+  public trace(msgOrObject: any, ...args: unknown[]): void {
     this._logger.trace(msgOrObject, ...args);
   }
   public child(bindings?: pino.Bindings): AbstractLogger {
@@ -67,7 +73,7 @@ export class PinoLogger implements AbstractLogger {
     err: Error | null,
     finalLogger: pino.Logger,
     evt: string,
-  ) {
+  ): void {
     finalLogger.info(`${evt} caught`);
 
     if (err) {

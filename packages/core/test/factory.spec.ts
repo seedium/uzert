@@ -81,7 +81,7 @@ describe('Factory', () => {
   });
   it('should use factory http adapter', async () => {
     class CustomHttpAdapter extends MockedHttpAdapter {
-      static boot(): FactoryProvider {
+      static boot(): FactoryProvider<CustomHttpAdapter> {
         return {
           provide: CustomHttpAdapter,
           useFactory: () => {

@@ -12,4 +12,7 @@ export interface ExtendedPinoOptions
   extremeMode?: ExtreameModePinoOptions;
 }
 
-export type PinoEventHandler = (error: Error | null, ...args: any[]) => void;
+export type PinoEventHandler = (
+  error: Error | null,
+  ...args: unknown[]
+) => void;

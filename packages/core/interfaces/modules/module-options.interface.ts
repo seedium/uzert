@@ -4,21 +4,17 @@ import { DynamicModule } from './dynamic-module.interface';
 import { Abstract } from '../abstract.interface';
 
 export interface ModuleOptions {
-  imports?: Array<Type<any> | DynamicModule | Promise<DynamicModule>>;
+  imports?: Array<Type<unknown> | DynamicModule>;
   providers?: Provider[];
-  controllers?: Type<any>[];
+  controllers?: Type<unknown>[];
   routes?: Type<RouteModule>[];
   exports?: Array<
-    | DynamicModule
-    | Promise<DynamicModule>
-    | string
-    | symbol
-    | Provider
-    | Abstract<any>
-    | Function
+    DynamicModule | string | symbol | Provider | Abstract<unknown> | Function
   >;
 }
 
 export interface ProviderName {
   name?: string | symbol;
 }
+
+export type ProviderStaticToken = string | symbol;

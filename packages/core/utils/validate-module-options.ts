@@ -9,7 +9,7 @@ const moduleKeys = [
   MODULE_KEYS.EXPORTS,
 ];
 
-export const validateModuleKeys = (keys: string[]) => {
+export const validateModuleKeys = (keys: string[]): void => {
   const validateKey = (key: string) => {
     if (moduleKeys.includes(key)) {
       return;

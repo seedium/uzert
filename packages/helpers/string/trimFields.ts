@@ -2,7 +2,7 @@ import isPlainObject from '../lang/isPlainObject';
 import isString from '../lang/isString';
 import merge from '../object/merge';
 
-const trimFields = <T = any>(data: T): T => {
+const trimFields = <T = unknown>(data: T): T => {
   if (!isPlainObject(data)) {
     return data;
   }
@@ -10,8 +10,9 @@ const trimFields = <T = any>(data: T): T => {
   const copy = merge({}, data);
 
   for (const key in copy) {
-    if (copy.hasOwnProperty(key) && isString(copy[key])) {
-      copy[key] = (copy[key] as string).trim();
+    const property = copy[key];
+    if (copy.hasOwnProperty(key) && isString(property)) {
+      copy[key] = property.trim();
     }
   }
 

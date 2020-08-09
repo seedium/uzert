@@ -1,6 +1,6 @@
 import getTag from '../internal/getTag';
 
-const isString = (value: any): value is string => {
+const isString = (value: unknown): value is string => {
   const type = typeof value;
 
   return (

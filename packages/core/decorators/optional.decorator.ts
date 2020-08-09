@@ -5,7 +5,7 @@ import {
 } from '../constants';
 
 export function Optional() {
-  return (target: object, key: string | symbol, index?: number) => {
+  return (target: unknown, key: string | symbol, index?: number): void => {
     if (!isUndefined(index)) {
       const args = Reflect.getMetadata(OPTIONAL_DEPS_METADATA, target) || [];
       Reflect.defineMetadata(OPTIONAL_DEPS_METADATA, [...args, index], target);

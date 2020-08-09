@@ -1,6 +1,6 @@
 import { Type } from './provider.interface';
 
-export type InjectorDependency = Type<any> | Function | string | symbol;
+export type InjectorDependency = Type<unknown> | Function | string | symbol;
 
 /**
  * Context of a dependency which gets injected by
@@ -30,5 +30,13 @@ export interface PropertyDependency {
   key: string;
   name: InjectorDependency;
   isOptional?: boolean;
-  instance?: any;
+  instance?: unknown;
+  type: Type<unknown>;
+}
+
+export interface SelfDeclaredMetadata<T = unknown> {
+  param?: string | T;
+  type?: string;
+  index?: number;
+  key?: string;
 }

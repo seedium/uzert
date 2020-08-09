@@ -30,7 +30,9 @@ export class RouterResolver {
     const { routes } = module;
     return [...routes.values()];
   }
-  protected async callRouterRegister(router: InstanceWrapper<RouteModule>) {
+  protected async callRouterRegister(
+    router: InstanceWrapper<RouteModule>,
+  ): Promise<void> {
     const { instance } = router;
     const registerRequest = await instance.register();
     await this._httpAdapter.registerRouter(

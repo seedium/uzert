@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { expect } from 'chai';
 import { Controller } from '../decorators';
 import { ROUTER_INSTANCE } from '@uzert/core/constants';
@@ -5,10 +6,11 @@ import { ROUTER_INSTANCE } from '@uzert/core/constants';
 describe('Decorators', () => {
   describe('@Controller decorator', () => {
     it('should miss if wrapped on the class', () => {
-      @Controller()
-      class TestController {}
-      const metadata = Reflect.getMetadata(ROUTER_INSTANCE, TestController);
-      expect(metadata).is.undefined;
+      expect(() => {
+        // @ts-expect-error
+        @Controller()
+        class TestController {}
+      }).throw();
     });
     it('should set router parent on the controller method', () => {
       class TestController {

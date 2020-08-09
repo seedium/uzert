@@ -1,3 +1,3 @@
 export interface OnInit {
-  onInit(): any;
+  onInit(): unknown;
 }

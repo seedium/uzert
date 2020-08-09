@@ -1,6 +1,6 @@
 import paths from './paths';
 
-export const path = (pathAr: any[], obj: any) => {
+export const path = <T = unknown>(pathAr: unknown[], obj: unknown): T => {
   return paths([pathAr], obj)[0];
 };
 

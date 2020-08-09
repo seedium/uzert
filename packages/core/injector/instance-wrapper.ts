@@ -7,18 +7,19 @@ import {
   Type,
   InstanceMetadataStore,
   PropertyMetadata,
+  ProviderStaticToken,
 } from '../interfaces';
 import { STATIC_CONTEXT } from './injector.constants';
 import { Module } from './module';
 
-export class InstanceWrapper<T = any> {
-  public readonly name: any;
+export class InstanceWrapper<T = unknown> {
+  public readonly name: ProviderStaticToken;
   public readonly host?: Module;
   public readonly async?: boolean;
   private readonly values = new WeakMap<ContextId, InstancePerContext<T>>();
   private readonly [INSTANCE_METADATA_SYMBOL]: InstanceMetadataStore = {};
   public metatype: Type<T> | Function;
-  public inject?: (string | symbol | Function | Type<any>)[];
+  public inject?: (string | symbol | Function | Type<unknown>)[];
   constructor(
     metadata: Partial<InstanceWrapper<T>> & Partial<InstancePerContext<T>> = {},
   ) {
@@ -43,7 +44,7 @@ export class InstanceWrapper<T = any> {
       isResolved,
     });
   }
-  public createPrototype(contextId: ContextId) {
+  public createPrototype<T = unknown>(contextId: ContextId): T {
     const host = this.getInstanceByContextId(contextId);
 
     if (!this.isNewable() || host.isResolved) {
@@ -67,7 +68,7 @@ export class InstanceWrapper<T = any> {
   public setInstanceByContextId(
     contextId: ContextId,
     value: InstancePerContext<T>,
-  ) {
+  ): void {
     this.values.set(contextId, value);
   }
   public getPropertiesMetadata(): PropertyMetadata[] {
@@ -76,7 +77,7 @@ export class InstanceWrapper<T = any> {
   public getEnhancerMetadata(): InstanceWrapper[] {
     return this[INSTANCE_METADATA_SYMBOL].enhancers;
   }
-  public addPropertiesMetadata(key: string, wrapper: InstanceWrapper) {
+  public addPropertiesMetadata(key: string, wrapper: InstanceWrapper): void {
     if (!this[INSTANCE_METADATA_SYMBOL].properties) {
       this[INSTANCE_METADATA_SYMBOL].properties = [];
     }
@@ -85,13 +86,13 @@ export class InstanceWrapper<T = any> {
       wrapper,
     });
   }
-  public addCtorMetadata(index: number, wrapper: InstanceWrapper) {
+  public addCtorMetadata(index: number, wrapper: InstanceWrapper): void {
     if (!this[INSTANCE_METADATA_SYMBOL].dependencies) {
       this[INSTANCE_METADATA_SYMBOL].dependencies = [];
     }
     this[INSTANCE_METADATA_SYMBOL].dependencies[index] = wrapper;
   }
-  public addEnhancerMetadata(wrapper: InstanceWrapper) {
+  public addEnhancerMetadata(wrapper: InstanceWrapper): void {
     if (!this[INSTANCE_METADATA_SYMBOL].enhancers) {
       this[INSTANCE_METADATA_SYMBOL].enhancers = [];
     }

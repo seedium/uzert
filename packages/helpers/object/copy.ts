@@ -1,10 +1,8 @@
 import isPlainObject from '../lang/isPlainObject';
 
-const copy = (value: any): any => {
-  const result = {};
-
+const copy = <T = object>(value: object): T => {
   if (!isPlainObject(value)) {
-    return result;
+    return {} as T;
   }
 
   return JSON.parse(JSON.stringify(value));

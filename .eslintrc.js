@@ -15,5 +15,21 @@ module.exports = {
   env: {
     node: true,
   },
-  rules: {},
+  rules: {
+    '@typescript-eslint/ban-types': [
+      'error',
+      {
+        types: {
+          Function: false,
+          object: false,
+        },
+      },
+    ],
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      {
+        argsIgnorePattern: '^_',
+      },
+    ],
+  },
 };

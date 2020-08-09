@@ -1,5 +1,9 @@
 import { capitalize, isFunction, isString } from '@uzert/helpers';
-import { Type, Abstract, HostCollection, ProviderToken } from '../interfaces';
+import {
+  HostCollection,
+  ProviderToken,
+  ProviderStaticToken,
+} from '../interfaces';
 import { Module } from './module';
 import { UzertContainer } from './uzert-container';
 import { InstanceWrapper } from './instance-wrapper';
@@ -8,7 +12,7 @@ import { UnknownElementError } from '../errors';
 export class ContainerScanner {
   private flatContainer: Partial<Module>;
   constructor(private readonly container: UzertContainer) {}
-  public find<TInput = any, TResult = TInput>(
+  public find<TInput = unknown, TResult = TInput>(
     typeOrToken: ProviderToken,
   ): TResult {
     this.initFlatContainer();
@@ -17,7 +21,7 @@ export class ContainerScanner {
       this.flatContainer,
     );
   }
-  public findInstanceByToken<TInput = any, TResult = TInput>(
+  public findInstanceByToken<TInput = unknown, TResult = TInput>(
     metatypeOrToken: ProviderToken,
     contextModule: Partial<Module>,
   ): TResult {
@@ -28,7 +32,7 @@ export class ContainerScanner {
 
     return (instanceWrapper.instance as unknown) as TResult;
   }
-  public findInjectablesPerMethodContext<TInput = any, TResult = TInput>(
+  public findInjectablesPerMethodContext<TInput = unknown, TResult = TInput>(
     typeOrToken: ProviderToken,
     contextMethod: Function,
   ): TResult {
@@ -42,15 +46,12 @@ export class ContainerScanner {
       return this.find(typeOrToken);
     }
   }
-  public getWrapperCollectionPairByHost<TInput = any, TResult = TInput>(
+  public getWrapperCollectionPairByHost<TInput = unknown, TResult = TInput>(
     metatypeOrToken: ProviderToken,
     contextModule: Partial<Module>,
   ): [InstanceWrapper<TResult>, Map<string, InstanceWrapper>] {
     const name = this.getStaticTypeToken(metatypeOrToken);
-    const collectionName = this.getHostCollection(
-      name as string,
-      contextModule,
-    );
+    const collectionName = this.getHostCollection(name, contextModule);
     const instanceWrapper = contextModule[collectionName].get(name as string);
 
     if (!instanceWrapper) {
@@ -59,7 +60,7 @@ export class ContainerScanner {
 
     return [
       instanceWrapper as InstanceWrapper<TResult>,
-      contextModule[collectionName],
+      contextModule[collectionName as string],
     ];
   }
 
@@ -69,7 +70,7 @@ export class ContainerScanner {
     }
 
     const modules = this.container.getModules();
-    const initialValue: Record<string, any[]> = {
+    const initialValue: Record<string, unknown[]> = {
       providers: [],
       controllers: [],
       routes: [],
@@ -77,8 +78,8 @@ export class ContainerScanner {
     };
 
     const merge = <T = unknown>(
-      initial: Map<string, T> | T[],
-      arr: Map<string, T>,
+      initial: Map<ProviderStaticToken, T> | T[],
+      arr: Map<ProviderStaticToken, T>,
     ) => [...initial, ...arr];
 
     const partialModule = ([...modules.values()].reduce(
@@ -89,7 +90,7 @@ export class ContainerScanner {
         injectables: merge(current.injectables, next.injectables),
       }),
       initialValue,
-    ) as any) as Partial<Module>;
+    ) as unknown) as Partial<Module>;
 
     this.flatContainer = {
       providers: new Map(partialModule.providers),
@@ -99,7 +100,7 @@ export class ContainerScanner {
     };
   }
   private getHostCollection(
-    token: string,
+    token: ProviderStaticToken,
     { providers, controllers, routes }: Partial<Module>,
   ): HostCollection {
     if (providers.has(token)) {
@@ -116,9 +117,9 @@ export class ContainerScanner {
 
     return 'injectables';
   }
-  private getStaticTypeToken<TInput = any>(
-    metatypeOrToken: Type<TInput> | Abstract<TInput> | string | symbol,
-  ): string | symbol {
+  private getStaticTypeToken<TInput = unknown>(
+    metatypeOrToken: ProviderToken,
+  ): ProviderStaticToken {
     return isFunction(metatypeOrToken)
       ? (metatypeOrToken as Function).name
       : metatypeOrToken;

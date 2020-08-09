@@ -1,13 +1,13 @@
 import { resolve as resolvePath } from 'path';
 import * as glob from 'glob';
-import { OnDispose } from '@uzert/core';
+import { FactoryProvider, OnDispose } from '@uzert/core';
 import { isFunction, isUndefined, prop, isPlainObject } from '@uzert/helpers';
 import { IStore, IConfigBootSpec, IConfigOptions } from './interfaces';
 
 export class Config implements OnDispose {
   private _stores: IStore = {};
 
-  static boot(options: IConfigOptions) {
+  static boot(options: IConfigOptions): FactoryProvider<Config> {
     return {
       provide: Config,
       useFactory: async () => {
@@ -18,21 +18,21 @@ export class Config implements OnDispose {
     };
   }
   constructor(private readonly _options: IConfigOptions) {}
-  public onDispose() {
+  public onDispose(): void {
     this._stores = {};
   }
-  public get(key: string, defaultValue?: any): any {
+  public get(key: string, defaultValue?: unknown): unknown {
     let valueToReturn = prop(key)(this._stores);
     if (isUndefined(valueToReturn)) {
       valueToReturn = defaultValue;
     }
     return this.parseBooleanValue(valueToReturn);
   }
-  public env(key: string, defaultValue?: any): any {
+  public env(key: string, defaultValue?: unknown): unknown {
     const value = process.env[key] || defaultValue;
     return this.parseBooleanValue(value);
   }
-  protected async loadConfigs(): Promise<any> {
+  protected async loadConfigs(): Promise<void> {
     const configFiles = await this.loadFiles(
       this._options.path,
       this._options.pattern,
@@ -43,10 +43,7 @@ export class Config implements OnDispose {
     );
     await this.importConfigs(configs);
   }
-  protected async loadFiles(
-    path: string,
-    pattern = '*.ts',
-  ): Promise<string[]> {
+  protected async loadFiles(path: string, pattern = '*.ts'): Promise<string[]> {
     return new Promise((resolve, reject) => {
       glob(resolvePath(path, pattern), async (err, configFiles) => {
         if (err) {
@@ -90,7 +87,7 @@ export class Config implements OnDispose {
       }
     }
   }
-  protected parseBooleanValue(value: any): any {
+  protected parseBooleanValue(value: unknown): unknown {
     if (value === 'true') {
       value = true;
     } else if (value === 'false') {

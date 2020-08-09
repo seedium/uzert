@@ -1,7 +1,8 @@
 import isInteger from '../lang/isInteger';
 import nth from '../lang/nth';
 
-export const paths = (pathsArray: any[], obj: any): any => {
+// eslint-disable-next-line
+export const paths = (pathsArray: unknown[][], obj: unknown): any[] => {
   return pathsArray.map((nestedPaths) => {
     let val = obj;
     let idx = 0;
@@ -13,7 +14,7 @@ export const paths = (pathsArray: any[], obj: any): any => {
       }
 
       p = nestedPaths[idx];
-      val = isInteger(p) ? nth(p, val) : val[p];
+      val = isInteger(p) ? nth(p, val as unknown[]) : val[p];
       idx += 1;
     }
 

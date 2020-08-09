@@ -5,7 +5,7 @@ const verifyHash = (
   userHash: string,
   salt: string,
   algorithm = 'sha512',
-) => {
+): boolean => {
   const hash = getHash(origin, salt, algorithm);
 
   return hash === userHash;

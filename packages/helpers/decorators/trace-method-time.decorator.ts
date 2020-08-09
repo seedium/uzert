@@ -1,12 +1,12 @@
 import * as chalk from 'chalk';
 
 interface MessageOptions {
-  propertyName: string;
+  propertyName: string | unknown;
   time: number;
 }
 
 interface TraceMethodTimeOptions {
-  logger?: (message?: any, ...optionalParams: any[]) => void;
+  logger?: (message?: string, ...optionalParams: unknown[]) => void;
   printStartMessage?: (options: MessageOptions) => string;
   printFinishMessage?: (options: MessageOptions) => string;
 }
@@ -17,19 +17,21 @@ export function TraceMethodTime({
     `Start "${propertyName}" method`,
   printFinishMessage = ({ propertyName, time }: MessageOptions) =>
     `Finish "${propertyName}" in time: ${time}ms`,
-}: TraceMethodTimeOptions = {}) {
+}: TraceMethodTimeOptions = {}): MethodDecorator {
   return function (
     target: object,
-    propertyName: string,
+    propertyName: string | unknown,
+    // eslint-disable-next-line
     descriptor: TypedPropertyDescriptor<any>,
-  ) {
+    // eslint-disable-next-line
+  ): TypedPropertyDescriptor<any> {
     if (!descriptor?.value) {
       throw new Error(
         `Decorator "@TraceMethodTime" can trace time only on method`,
       );
     }
     const originalMethod = descriptor.value;
-    descriptor.value = async function (this: any, ...args: any[]) {
+    descriptor.value = async function (this: unknown, ...args: unknown[]) {
       const startTime = new Date().getTime();
       logger(
         chalk.blue(

@@ -11,14 +11,16 @@ function hasOnBeforeAppShutdownHook(
 }
 
 function callOperator(
-  instances: OnBeforeAppShutdown[],
+  instances: unknown[],
   err: Error | null,
   signal?: string,
-): Promise<any>[] {
+): Promise<unknown>[] {
   return iterate(instances)
     .filter((instance) => !isNil(instance))
     .filter(hasOnBeforeAppShutdownHook)
-    .map(async (instance) => instance.onBeforeAppShutdown(err, signal))
+    .map(async (instance) =>
+      (instance as OnBeforeAppShutdown).onBeforeAppShutdown(err, signal),
+    )
     .toArray();
 }
 
@@ -26,7 +28,7 @@ export async function callBeforeAppShutdownHook(
   module: Module,
   err: Error | null,
   signal?: string,
-): Promise<any> {
+): Promise<void> {
   const instanceWrappersDictionary = [
     ...module.controllers,
     ...module.providers,
