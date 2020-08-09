@@ -8,9 +8,7 @@ export class MainRoute implements RouteModule {
     prefix: '/api',
   };
   constructor(private readonly fooController: FooController) {}
-  public register() {
-    return (router: Router) => {
-      router.get('/custom-service', this.fooController.test);
-    };
+  public register(router: Router) {
+    router.get('/custom-service', this.fooController.test);
   }
 }

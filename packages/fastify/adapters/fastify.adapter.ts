@@ -75,7 +75,7 @@ export class FastifyAdapter extends HttpAdapter<
   ): void {
     if (!isFunction(cb)) {
       throw new Error(
-        'Your register router method should return callback for registering in fastify',
+        'Your should register routes via passed Router to the function',
       );
     }
     this._app.register(async (app) => {
