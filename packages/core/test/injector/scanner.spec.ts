@@ -117,6 +117,37 @@ describe('Scanner', () => {
         }
       }
       await scanner.scanForModules(TestModule.for());
+      expect(container.getModules().size).eq(1);
+    });
+    it('if async dynamic module was provided should reflect imports', async () => {
+      class TestModule {
+        static async for(): Promise<DynamicModule> {
+          return {
+            module: TestModule,
+          };
+        }
+      }
+      await scanner.scanForModules(TestModule.for());
+      expect(container.getModules().size).eq(1);
+    });
+    it('async modules in imports should be imported', async () => {
+      class AnotherAsyncModule {
+        static async for(): Promise<DynamicModule> {
+          return {
+            module: AnotherAsyncModule,
+          };
+        }
+      }
+      class TestModule {
+        static async for(): Promise<DynamicModule> {
+          return {
+            module: TestModule,
+            imports: [AnotherAsyncModule.for()],
+          };
+        }
+      }
+      await scanner.scanForModules(TestModule.for());
+      expect(container.getModules().size).eq(2);
     });
     it('if inner module includes undefined in imports should throw an undefined module error', async () => {
       class TestModule {

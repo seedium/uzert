@@ -86,7 +86,7 @@ export class UzertContainer {
     moduleRef.addExportedProvider(provider);
   }
   public async addModule(
-    metatype: Type<unknown> | DynamicModule,
+    metatype: Type<unknown> | DynamicModule | Promise<DynamicModule>,
     scope: Type<unknown>[],
   ): Promise<Module> {
     if (!metatype) {

@@ -10,14 +10,14 @@ export class ModuleCompiler {
   constructor(private readonly moduleTokenFactory = new ModuleTokenFactory()) {}
 
   public async compile(
-    metatype: Type<unknown> | DynamicModule,
+    metatype: Type<unknown> | DynamicModule | Promise<DynamicModule>,
   ): Promise<ModuleFactory> {
     const { type } = await this.extractMetadata(metatype);
     const token = this.moduleTokenFactory.create(type);
     return { type, token };
   }
   public async extractMetadata(
-    metatype: Type<unknown> | DynamicModule,
+    metatype: Type<unknown> | DynamicModule | Promise<DynamicModule>,
   ): Promise<{
     type: Type<unknown>;
   }> {

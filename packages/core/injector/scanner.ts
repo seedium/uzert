@@ -17,6 +17,7 @@ import {
   InvalidModuleError,
   UndefinedModuleError,
 } from '../errors';
+import { isDynamicModule } from '../utils';
 
 export class DependenciesScanner {
   constructor(private readonly container: UzertContainer) {}
@@ -25,24 +26,34 @@ export class DependenciesScanner {
     await this.scanModulesForDependencies();
   }
   public async scanForModules(
-    module: Type<unknown> | DynamicModule,
+    module: Type<unknown> | DynamicModule | Promise<DynamicModule>,
     scope: Type<unknown>[] = [],
-    ctxRegistry: (DynamicModule | Type<unknown>)[] = [],
+    ctxRegistry: (
+      | DynamicModule
+      | Promise<DynamicModule>
+      | Type<unknown>
+    )[] = [],
   ): Promise<Module> {
     const moduleInstance = await this.insertModule(module, scope);
     ctxRegistry.push(module);
 
-    const modules: (Type<unknown> | DynamicModule)[] = this.isDynamicModule(
-      module,
-    )
-      ? [
-          ...this.reflectMetadata<Type<unknown>[]>(
-            module.module,
-            MODULE_KEYS.IMPORTS,
-          ),
-          ...(module.imports || []),
-        ]
-      : this.reflectMetadata<Type<unknown>[]>(module, MODULE_KEYS.IMPORTS);
+    let modules: (Type<unknown> | DynamicModule | Promise<DynamicModule>)[];
+    if (isDynamicModule(module)) {
+      if (module instanceof Promise) {
+        module = await module;
+      }
+      modules = [
+        ...this.reflectMetadata<
+          Type<unknown | DynamicModule | Promise<DynamicModule>>[]
+        >(module.module, MODULE_KEYS.IMPORTS),
+        ...(module.imports || []),
+      ];
+    } else {
+      modules = this.reflectMetadata<Type<unknown>[]>(
+        module,
+        MODULE_KEYS.IMPORTS,
+      );
+    }
 
     for (const [index, innerModule] of modules.entries()) {
       // In case of a circular dependency (ES module system), JavaScript will resolve the type to `undefined`.
@@ -143,7 +154,7 @@ export class DependenciesScanner {
     await this.container.addImport(related, token);
   }
   public async insertModule(
-    module: Type<unknown> | DynamicModule,
+    module: Type<unknown> | DynamicModule | Promise<DynamicModule>,
     scope: Type<unknown>[],
   ): Promise<Module> {
     return this.container.addModule(module, scope);
@@ -173,11 +184,6 @@ export class DependenciesScanner {
   }
   public isCustomProvider(provider: Provider): provider is CustomProvider {
     return provider && !isNil((provider as CustomProvider).provide);
-  }
-  public isDynamicModule(
-    module: Type<unknown> | DynamicModule,
-  ): module is DynamicModule {
-    return module && !!(module as DynamicModule).module;
   }
   public reflectDynamicMetadata(obj: Type<IInjectable>, token: string): void {
     if (!obj || !obj.prototype) {
