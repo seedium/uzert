@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import { AbstractLogger } from '@uzert/logger';
-import { DefaultLogger } from '@uzert/logger/loggers';
+import { AbstractLogger, DefaultLogger } from '@uzert/logger';
 import { FastifyAdapter, FastifyHttpKernelAdapter } from '../adapters';
 import { IPluginKernel } from '../interfaces';
 

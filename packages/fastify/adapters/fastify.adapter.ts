@@ -4,8 +4,7 @@ import * as qs from 'qs';
 import { isFunction, merge, TraceMethodTime } from '@uzert/helpers';
 import { HttpAdapter, UzertContainer } from '@uzert/core';
 // core providers
-import { AbstractLogger } from '@uzert/logger';
-import { DefaultLogger } from '@uzert/logger/loggers';
+import { AbstractLogger, DefaultLogger } from '@uzert/logger';
 import {
   IPluginKernel,
   Request,
