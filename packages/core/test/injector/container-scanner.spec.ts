@@ -21,16 +21,40 @@ describe('ContainerScanner', () => {
   let containerScanner: ContainerScanner;
   let container: UzertContainer;
   let moduleToken: string;
+  class AppModule {}
   beforeEach(async () => {
     container = new UzertContainer();
     containerScanner = new ContainerScanner(container);
-
-    class AppModule {}
     await container.addModule(AppModule, []);
     moduleToken = await container.getModuleToken(AppModule);
   });
   afterEach(() => {
     sinon.restore();
+  });
+  describe('find type or token', () => {
+    let stubFindInstanceByToken: sinon.SinonStub;
+    const testToken = 'test';
+    beforeEach(() => {
+      stubFindInstanceByToken = sinon.stub(
+        containerScanner,
+        'findInstanceByToken',
+      );
+    });
+    it('by default should use flat container for searching injection', () => {
+      containerScanner.find(testToken);
+      expect(stubFindInstanceByToken).calledOnceWithExactly(
+        testToken,
+        (containerScanner as any).flatContainer,
+      );
+    });
+    it('should search in specific module', () => {
+      const testModule = new Module(AppModule, container);
+      containerScanner.find(testToken, testModule);
+      expect(stubFindInstanceByToken).calledOnceWithExactly(
+        testToken,
+        testModule,
+      );
+    });
   });
   describe('find injectables for controller methods', () => {
     class Test {
@@ -58,7 +82,7 @@ describe('ContainerScanner', () => {
       expect(() =>
         containerScanner.getWrapperCollectionPairByHost(
           undefined,
-          new Module(TestModule, []),
+          new Module(TestModule, container),
         ),
       ).throws(UnknownElementError);
     });

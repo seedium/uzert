@@ -1,9 +1,9 @@
-import { DynamicModule, Type } from '../interfaces';
+import { Abstract, DynamicModule, Type } from '../interfaces';
 import { ModuleTokenFactory } from './module-token-factory';
 import { isDynamicModule } from '../utils';
 
 export interface ModuleFactory {
-  type: Type<unknown>;
+  type: Type<unknown> | Abstract<unknown>;
   token: string;
   dynamicMetadata?: Partial<DynamicModule>;
 }
@@ -21,7 +21,7 @@ export class ModuleCompiler {
   public async extractMetadata(
     metatype: Type<unknown> | DynamicModule | Promise<DynamicModule>,
   ): Promise<{
-    type: Type<unknown>;
+    type: Type<unknown> | Abstract<unknown>;
     dynamicMetadata?: Partial<DynamicModule> | undefined;
   }> {
     metatype = await metatype;
