@@ -1,6 +1,10 @@
 import { Abstract } from './abstract.interface';
 
-export type ProviderToken = string | symbol | Type<unknown> | Abstract<unknown>;
+export type ProviderToken<T = unknown> =
+  | string
+  | symbol
+  | Type<T>
+  | Abstract<T>;
 
 export interface Type<T> extends Function {
   new (...args: unknown[]): T;

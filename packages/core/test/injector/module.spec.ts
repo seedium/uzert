@@ -2,8 +2,9 @@ import * as chai from 'chai';
 import * as sinon from 'sinon';
 import * as sinonChai from 'sinon-chai';
 import { Module } from '../../injector/module';
-import { FactoryProvider, Provider } from '../../interfaces';
+import { Provider } from '../../interfaces';
 import { UnknownExportError } from '../../errors';
+import { UzertContainer, ModuleRef } from '../../injector';
 
 chai.use(sinonChai);
 const expect = chai.expect;
@@ -30,11 +31,28 @@ describe('Module', () => {
     }
   }
   beforeEach(() => {
-    module = new Module(AppModule, []);
-    relatedModule = new Module(RelatedModule, []);
+    const container = new UzertContainer();
+    module = new Module(AppModule, container);
+    relatedModule = new Module(RelatedModule, container);
   });
   afterEach(() => {
     sinon.restore();
+  });
+  describe('creating module', () => {
+    it('should add module as provider', () => {
+      expect(module.providers.size).eq(2);
+      expect(module.providers.has(AppModule.name)).is.true;
+      const moduleProvider = module.providers.get(AppModule.name);
+      expect(moduleProvider.name).eq(AppModule.name);
+      expect(moduleProvider.metatype).eq(AppModule);
+      expect(moduleProvider.host).eq(module);
+    });
+    it('should add module ref to providers', () => {
+      expect(module.providers.has(ModuleRef.name)).is.true;
+      const moduleRefProvider = module.providers.get(ModuleRef.name);
+      expect(moduleRefProvider.metatype).eq(ModuleRef);
+      expect(moduleRefProvider.instance).not.null;
+    });
   });
   describe('get provider static token', () => {
     it('should return symbol token', () => {

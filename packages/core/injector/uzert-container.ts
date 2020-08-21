@@ -110,7 +110,7 @@ export class UzertContainer {
       return;
     }
 
-    const moduleRef = new Module(type, scope);
+    const moduleRef = new Module(type, this);
     /*
      * If custom http provider is provided need to add they to the root module,
      * for properly initialization within all available modules in the application.

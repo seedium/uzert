@@ -14,11 +14,12 @@ export class ContainerScanner {
   constructor(private readonly container: UzertContainer) {}
   public find<TInput = unknown, TResult = TInput>(
     typeOrToken: ProviderToken,
+    contextModule?: Partial<Module>,
   ): TResult {
     this.initFlatContainer();
     return this.findInstanceByToken<TInput, TResult>(
       typeOrToken,
-      this.flatContainer,
+      contextModule ? contextModule : this.flatContainer,
     );
   }
   public findInstanceByToken<TInput = unknown, TResult = TInput>(

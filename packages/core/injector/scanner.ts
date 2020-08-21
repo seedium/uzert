@@ -8,6 +8,7 @@ import {
   IInjectable,
   InjectablesSchema,
   CustomProvider,
+  Abstract,
 } from '../interfaces';
 import { MODULE_KEYS, PIPES_METADATA } from '../constants';
 import { MetadataScanner } from '../metadata-scanner';
@@ -86,7 +87,7 @@ export class DependenciesScanner {
     }
   }
   public async reflectImports(
-    module: Type<unknown>,
+    module: Type<unknown> | Abstract<unknown>,
     token: string,
     context: string,
   ): Promise<void> {
@@ -108,7 +109,10 @@ export class DependenciesScanner {
       );
     }
   }
-  public reflectProviders(module: Type<unknown>, token: string): void {
+  public reflectProviders(
+    module: Type<unknown> | Abstract<unknown>,
+    token: string,
+  ): void {
     const providers = [
       ...this.reflectMetadata<Type<unknown>[]>(module, MODULE_KEYS.PROVIDERS),
       ...this.container.getDynamicMetadataByToken(
@@ -120,7 +124,10 @@ export class DependenciesScanner {
       this.insertProvider(provider as Provider, token);
     });
   }
-  public reflectControllers(module: Type<unknown>, token: string): void {
+  public reflectControllers(
+    module: Type<unknown> | Abstract<unknown>,
+    token: string,
+  ): void {
     const controllers = [
       ...this.reflectMetadata<Type<unknown>[]>(module, MODULE_KEYS.CONTROLLERS),
       ...this.container.getDynamicMetadataByToken(
@@ -134,7 +141,10 @@ export class DependenciesScanner {
       this.reflectDynamicMetadata(controller as Type<unknown>, token);
     });
   }
-  public reflectRoutes(module: Type<unknown>, token: string): void {
+  public reflectRoutes(
+    module: Type<unknown> | Abstract<unknown>,
+    token: string,
+  ): void {
     const routes = [
       ...this.reflectMetadata(module, MODULE_KEYS.ROUTES),
       ...this.container.getDynamicMetadataByToken(
@@ -146,7 +156,10 @@ export class DependenciesScanner {
       this.insertRoute(route as Type<RouteModule>, token);
     });
   }
-  public reflectExports(module: Type<unknown>, token: string): void {
+  public reflectExports(
+    module: Type<unknown> | Abstract<unknown>,
+    token: string,
+  ): void {
     const exports = [
       ...this.reflectMetadata<Type<unknown>[]>(module, MODULE_KEYS.EXPORTS),
       ...this.container.getDynamicMetadataByToken(
@@ -159,7 +172,7 @@ export class DependenciesScanner {
     );
   }
   public reflectMetadata<T = unknown[]>(
-    metatype: Type<unknown>,
+    metatype: Type<unknown> | Abstract<unknown>,
     metadataKey: string,
   ): T {
     return Reflect.getMetadata(metadataKey, metatype) || [];

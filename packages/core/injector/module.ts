@@ -26,6 +26,8 @@ import { InstanceWrapper } from './instance-wrapper';
 import { getRandomString } from '../utils/get-random-string';
 import { CONTROLLER_ID_KEY } from './injector.constants';
 import { UnknownExportError } from '../errors';
+import { UzertContainer } from './uzert-container';
+import { ModuleRef } from './module-ref';
 
 export class Module {
   private readonly _id: string;
@@ -49,15 +51,16 @@ export class Module {
   private readonly _exports = new Set<ProviderStaticToken>();
 
   constructor(
-    private readonly _metatype: Type<unknown>,
-    private readonly _scope: Type<unknown>[],
+    private readonly _metatype: Type<unknown> | Abstract<unknown>,
+    private readonly _container: UzertContainer,
   ) {
+    this.addCoreProviders();
     this._id = getRandomString();
   }
   get id(): string {
     return this._id;
   }
-  get metatype(): Type<unknown> {
+  get metatype(): Type<unknown> | Abstract<unknown> {
     return this._metatype;
   }
   get imports(): Set<Module> {
@@ -77,6 +80,53 @@ export class Module {
   }
   get exports(): Set<string | symbol> {
     return this._exports;
+  }
+  public addCoreProviders(): void {
+    this.addModuleAsProvider();
+    this.addModuleRef();
+  }
+  public addModuleAsProvider(): void {
+    this._providers.set(
+      this._metatype.name,
+      new InstanceWrapper({
+        name: this._metatype.name,
+        metatype: this._metatype,
+        isResolved: false,
+        instance: null,
+        host: this,
+      }),
+    );
+  }
+  public addModuleRef(): void {
+    const moduleRef = this.createModuleReferenceType();
+    this._providers.set(
+      ModuleRef.name,
+      new InstanceWrapper({
+        name: ModuleRef.name,
+        metatype: ModuleRef,
+        isResolved: true,
+        instance: new moduleRef(),
+        host: this,
+      }),
+    );
+  }
+  public createModuleReferenceType(): Type<ModuleRef> {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const self = this;
+    return class extends ModuleRef {
+      constructor() {
+        super(self._container);
+      }
+
+      public get<TInput = unknown, TResult = TInput>(
+        typeOrToken: Type<TInput> | string | symbol,
+        options: { strict: boolean } = { strict: true },
+      ): TResult {
+        return !(options && options.strict)
+          ? this.find<TInput, TResult>(typeOrToken)
+          : this.find<TInput, TResult>(typeOrToken, self);
+      }
+    };
   }
   public addProvider(provider: Provider): string {
     if (this.isCustomProvider(provider)) {
