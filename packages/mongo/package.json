@@ -1,0 +1,33 @@
+{
+  "name": "@uzert/mongo",
+  "version": "0.0.0",
+  "description": "Package for using mongo database in the Uzert application. Contains some of useful tools for working with collections",
+  "author": "Seedium",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seedium/uzert.git"
+  },
+  "keywords": [
+    "mongo",
+    "database",
+    "uzert"
+  ],
+  "homepage": "https://github.com/seedium/uzert#readme",
+  "main": "index.ts",
+  "bugs": {
+    "url": "https://github.com/seedium/uzert/issues"
+  },
+  "peerDependencies": {
+    "@uzert/core": "1.0.4",
+    "reflect-metadata": "0.1.13"
+  },
+  "dependencies": {
+    "@types/mongodb": "3.5.25",
+    "mongodb": "3.6.0",
+    "tslib": "2.0.1"
+  },
+  "devDependencies": {
+    "@uzert/core": "1.0.4"
+  }
+}
