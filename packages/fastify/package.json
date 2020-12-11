@@ -19,11 +19,11 @@
   },
   "dependencies": {
     "@types/qs": "6.9.4",
-    "@types/uuid": "8.0.1",
+    "@types/uuid": "8.3.0",
     "fastify": "3.2.0",
     "qs": "6.9.4",
     "tslib": "2.0.1",
-    "uuid": "8.3.0"
+    "uuid": "8.3.2"
   },
   "devDependencies": {
     "@uzert/core": "1.0.4",
