@@ -52,7 +52,7 @@
     "chalk": "4.1.0",
     "concurrently": "5.3.0",
     "delete-empty": "3.0.0",
-    "eslint": "7.6.0",
+    "eslint": "7.32.0",
     "eslint-config-prettier": "6.11.0",
     "fastify": "3.2.0",
     "gulp": "4.0.2",
